@@ -87,7 +87,6 @@ Essas funcionalidades não fazem parte da entrega principal neste momento.
 - Maria Luisa
 - Maria Eduarda Prudente
 - Rafael Franco
-- Gustavo 
 
 ## Status
 
