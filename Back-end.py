@@ -18,6 +18,3 @@ def conectar_bd():
         return None
 
 conectar_bd()
-
-
-
