@@ -8,7 +8,7 @@ def conectar_bd():
             port= "10974",
             database= "sistema_cursos",
             user= "Malu",
-            password= "AVNS_Rae3jtnIo2Z_Bts47Pf"
+            password= "zzzzz"
         )
         if conexao.is_connected():
             print("Conexão com MySQL estabelecida com sucesso!")
