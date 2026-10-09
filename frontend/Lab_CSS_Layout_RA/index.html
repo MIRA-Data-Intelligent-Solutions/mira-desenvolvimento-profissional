@@ -11,14 +11,16 @@
 
     <!-- Header / Navbar Flexbox -->
     <header class="navbar">
-        <div class="logo"><strong>Minha Logo</strong></div>
+        <div class="logo"><img src="C:\Users\25897109\mira-desenvolvimento-profissional\frontend\Lab_CSS_Layout_RA\img\Logo branca.png"</div>
         <nav class="menu">
             <a href="#">Início</a>
             <a href="#">Dashboard</a>
-            <a href="#">Cadastrar Usuários</a>
-            <a href="#">Cursos & Treinamentos</a>
-            <a href="#">Relatórios</a>
-            <a href="#">Certificados</a>
+            <a href="#">Colaboradores</a>
+            <a href="#">Setores</a>
+            <a href="#">Cursos</a>
+            <a href="#">Progresso</a>
+            <a href="#">Configurações</a>
+            <a href="#">Meu Perfil</a>
         </nav>
     </header>
 
@@ -79,7 +81,7 @@
             <nav class="menu-sidebar">
                 <a href="#">Mês</a>
                 <a href="#">Bimestre</a>
-                <a href="#">Trimestre</a>
+                <a href="#">Trimestre-</a>
                 <a href="#">Semestre</a>
             </nav>
         </aside>
@@ -88,9 +90,38 @@
         <section class="content">
             <img src="img/dashboard.png" alt="Gráficos do Dashboard" class="img-fluida">
         </section>
-        
-        <footer class="footer">Evolução do Progresso do Usuário</footer>
     </main>
+
+    <div class="tabela-container">
+        <small class="aviso-arraste">↔ Arraste para os lados para ver a tabela completa</small>
+        <div class="tabela-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Status</th>
+                        <th>Progresso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1001</td>
+                        <td>Empresa X</td>
+                        <td><span class="status ativo">Ativo</span></td>
+                        <td>85%</td>
+                    </tr>
+                    <tr>
+                        <td>1002</td>
+                        <td>Empresa Y</td>
+                        <td><span class="status pendente">Pendente</span></td>
+                        <td>40%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 
     <!-- Wrapper da Tabela com Indicação de Arraste -->
     <div class="tabela-container">
