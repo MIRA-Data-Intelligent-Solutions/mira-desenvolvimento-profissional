@@ -1,69 +1,84 @@
 import os
-import mysql.connector
+import bcrypt
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from dotenv import load_dotenv
-from mysql.connector import Error, IntegrityError
+from mysql.connector import Error, IntegrityError, pooling
+
 load_dotenv()
 
+
+class BancoDeDados:
+    def __init__(self):
+        self.pool = pooling.MySQLConnectionPool(
+            pool_name="gdp_pool",
+            pool_size=5,
+            host=os.getenv("DB_HOST"),
+            port=int(os.getenv("DB_PORT", 3306)),
+            database=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            # ssl_ca="ca.pem",
+        )
+
+    def cadastrar_usuario(self, nome, email, senha_hash):
+        conexao = self.pool.get_connection()
+        cursor = conexao.cursor()
+        try:
+            cursor.execute(
+                "INSERT INTO Usuario (nome, email, senha_hash) VALUES (%s, %s, %s)",
+                (nome, email, senha_hash),
+            )
+            conexao.commit()
+            return cursor.lastrowid
+        except IntegrityError:
+            conexao.rollback()
+            return "duplicado"
+        except Error as erro:
+            conexao.rollback()
+            print(f"Erro no MySQL: {erro}")
+            return None
+        finally:
+            cursor.close()
+            conexao.close()  # devolve a conexão ao pool
+
+    def ler_usuarios(self):
+        conexao = self.pool.get_connection()
+        cursor = conexao.cursor(dictionary=True)
+        try:
+            cursor.execute("SELECT id, nome, email FROM Usuario")
+            return cursor.fetchall()
+        finally:
+            cursor.close()
+            conexao.close()
+
+
 app = FastAPI()
+bd = BancoDeDados()
+
 
 class UsuarioCadastro(BaseModel):
     nome: str
     email: EmailStr
-    senha: str
+    senha: str = Field(min_length=8)
 
 
-def conectar_bd():
-    try:
-        conexao = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            port=int(os.getenv("DB_PORT")),
-            database=os.getenv("DB_NAME"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            # ssl_ca="ca.pem",  # se a Aiven exigir o certificado
-        )
-        if conexao.is_connected():
-            print("Conexão com MySQL estabelecida com sucesso!")
-        return conexao
-    except Error as erro:
-        print(f"Erro ao conectar ao MySQL: {erro}")
-        return None
+def padronizar_nome(nome: str) -> str:
+    minusculas = {"da", "de", "do", "das", "dos", "e"}
+    palavras = nome.lower().split()
+    return " ".join(
+        p if (i > 0 and p in minusculas) else p.capitalize()
+        for i, p in enumerate(palavras)
+    )
 
-def cadastrar_usuario(conexao, nome, email, senha_hash, telefone):
-    cursor = None
-    try:
-        cursor = conexao.cursor()
-        sql = "INSERT INTO Usuario (nome, email, senha_hash) VALUES (%s, %s, %s)"
-        cursor.execute(sql, (nome, email, senha_hash))
-        conexao.commit()
-        return cursor.lastrowid
-    except IntegrityError:
-        conexao.rollback()
-        return "duplicado"
-    except Error as erro:
-        conexao.rollback()
-        print(f"Erro no MySQL: {erro}")
-        return None
-    finally:
-        if cursor:
-            cursor.close()
 
 @app.post("/cadastro", status_code=201)
 def cadastro(usuario: UsuarioCadastro):
-    # O JSON já chegou convertido em objeto: cada campo é uma string normal
-    nome = usuario.nome
-    email = usuario.email
-    senha = usuario.senha
+    nome = padronizar_nome(usuario.nome)
+    email = usuario.email.lower()
+    senha_hash = bcrypt.hashpw(usuario.senha.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
-    senha_hash = bcrypt.hash(senha)  # nunca salve a senha em texto puro
-
-    conexao = get_conexao()
-    try:
-        resultado = cadastrar_usuario(conexao, nome, email, senha_hash, telefone)
-    finally:
-        conexao.close()
+    resultado = bd.cadastrar_usuario(nome, email, senha_hash)
 
     if resultado == "duplicado":
         raise HTTPException(status_code=409, detail="E-mail já cadastrado")
@@ -71,28 +86,3 @@ def cadastro(usuario: UsuarioCadastro):
         raise HTTPException(status_code=500, detail="Erro interno ao cadastrar")
 
     return {"mensagem": "Usuário cadastrado!", "id": resultado}
-
-def ler_dados(conexao):
-    cursor = None
-    try:
-        cursor = conexao.cursor()
-        cursor.execute("SELECT * FROM Usuario")
-        for linha in cursor.fetchall():
-            print(linha)
-    except Error as erro:
-        print(f"Erro ao ler dados do MySQL: {erro}")
-    finally:
-        if cursor:
-            cursor.close()
-
-'''if __name__ == "__main__":
-    conexao = conectar_bd()
-    if conexao:
-        try:
-            ler_dados(conexao)
-        finally:
-            conexao.close()
-            print("Conexão encerrada.")'''
-
-
-conectar_bd()

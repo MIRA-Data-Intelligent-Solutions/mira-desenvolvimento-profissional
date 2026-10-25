@@ -1,5 +1,5 @@
 pip install fastapi uvicorn mysql-connector-python "pydantic[email]" "passlib[bcrypt]"
-uvicorn main:app --reload
+uvicorn bbackend:app --reload
 
 ------------
 
