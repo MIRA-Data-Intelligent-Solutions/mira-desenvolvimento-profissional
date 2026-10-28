@@ -1,0 +1,10 @@
+pip install fastapi uvicorn mysql-connector-python "pydantic[email]" "passlib[bcrypt]"
+uvicorn bbackend:app --reload
+
+------------
+
+pip install python-dotenv mysql-connector-python
+
+------------
+
+
