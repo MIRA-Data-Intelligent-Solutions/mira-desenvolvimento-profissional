@@ -1,0 +1,252 @@
+/* ==========================================================================
+   LAYOUT — casca da aplicação (sidebar + conteúdo) e cabeçalho de página
+   Medidas do Figma (1440px): sidebar 240px, conteúdo com 40px de respiro e 1120px úteis.
+   ========================================================================== */
+
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 24px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  z-index: var(--z-sidebar);
+}
+
+.sidebar__logo {
+  display: flex;
+  align-items: center;
+  min-height: 67px;
+}
+.sidebar__logo img {
+  width: 100%;
+  max-width: 192px;
+  height: auto;
+}
+.logo--dark {
+  display: none;
+}
+[data-theme='dark'] .logo--dark {
+  display: block;
+}
+[data-theme='dark'] .logo--light {
+  display: none;
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-nav);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-medium);
+  line-height: 1;
+  color: var(--text-muted);
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.nav-link:hover {
+  background: var(--nav-hover-bg);
+  color: var(--text);
+}
+.nav-link[aria-current='page'] {
+  background: var(--nav-active-bg);
+  color: var(--text);
+}
+.nav-link[aria-current='page'] .icon {
+  color: var(--icon-active);
+}
+
+.sidebar__profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.sidebar__user {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+  font-family: var(--font-nav);
+}
+.sidebar__user-name {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar__user-mode {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+.sidebar__logout {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.sidebar__logout:hover {
+  background: var(--nav-hover-bg);
+  color: var(--text);
+}
+
+.avatar {
+  --size: 36px;
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: var(--avatar-bg, var(--primary));
+  color: #fff;
+  font-size: calc(var(--size) * 0.36);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+
+/* ---------- Barra superior (somente telas pequenas) ---------- */
+.topbar {
+  display: none;
+}
+.scrim {
+  display: none;
+}
+
+/* ---------- Conteúdo ---------- */
+.main {
+  min-width: 0;
+  padding: var(--page-pad);
+}
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-gap, 28px);
+  max-width: var(--page-max);
+  margin-inline: auto;
+}
+.page:focus {
+  outline: none;
+}
+
+/* ---------- Cabeçalho de página ---------- */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+}
+.page-header__titles {
+  min-width: 0;
+}
+.page-title {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  line-height: 1.2;
+  color: var(--text);
+}
+.page-subtitle {
+  margin-top: 4px;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-medium);
+  color: var(--text-muted);
+}
+.page-header__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.icon-btn {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  color: var(--text);
+  transition: background-color var(--dur) var(--ease);
+}
+.icon-btn:hover {
+  background: var(--nav-hover-bg);
+}
+.icon-btn__count {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: var(--radius-pill);
+  background: var(--c-red);
+  color: #fff;
+  font-size: 9px;
+  font-weight: var(--fw-bold);
+  line-height: 15px;
+  text-align: center;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-medium);
+  color: var(--text-body);
+  transition: color var(--dur) var(--ease);
+}
+.back-link:hover {
+  color: var(--text);
+}
+
+/* ---------- Utilitários de grade ---------- */
+.grid {
+  display: grid;
+  gap: var(--grid-gap, 32px);
+}
+.grid--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}

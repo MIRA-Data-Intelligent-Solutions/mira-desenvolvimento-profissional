@@ -1,0 +1,104 @@
+{
+  "kpis": [
+    {
+      "label": "Progresso Geral",
+      "value": "78%",
+      "delta": "+6%"
+    },
+    {
+      "label": "Média de Horas",
+      "value": "42h",
+      "delta": "+14%"
+    },
+    {
+      "label": "Taxa de Conclusão",
+      "value": "68%",
+      "delta": "+8%"
+    },
+    {
+      "label": "Colaboradores Ativos",
+      "value": "321",
+      "delta": "+12%"
+    }
+  ],
+  "legendSectors": [
+    "tecnologia",
+    "rh",
+    "financeiro",
+    "comercial"
+  ],
+  "ranking": [
+    {
+      "position": 1,
+      "collaboratorId": "u10",
+      "name": "Fernanda Alves",
+      "sector": "Jurídico",
+      "progress": 93,
+      "hours": 58,
+      "completed": 6
+    },
+    {
+      "position": 2,
+      "collaboratorId": "u03",
+      "name": "Ana Costa",
+      "sector": "RH",
+      "progress": 91,
+      "hours": 56,
+      "completed": 6
+    },
+    {
+      "position": 3,
+      "collaboratorId": "u05",
+      "name": "Patricia Lima",
+      "sector": "Atendimento",
+      "progress": 88,
+      "hours": 50,
+      "completed": 5
+    },
+    {
+      "position": 4,
+      "collaboratorId": "u01",
+      "name": "Maria Silva",
+      "sector": "Tecnologia",
+      "progress": 84,
+      "hours": 42,
+      "completed": 4
+    },
+    {
+      "position": 5,
+      "collaboratorId": "u07",
+      "name": "Rafael Marques",
+      "sector": "Tecnologia",
+      "progress": 84,
+      "hours": 42,
+      "completed": 4
+    },
+    {
+      "position": 6,
+      "collaboratorId": "u08",
+      "name": "Beatriz Rocha",
+      "sector": "Marketing",
+      "progress": 79,
+      "hours": 37,
+      "completed": 3
+    },
+    {
+      "position": 7,
+      "collaboratorId": "u02",
+      "name": "João Santos",
+      "sector": "Financeiro",
+      "progress": 72,
+      "hours": 31,
+      "completed": 2
+    },
+    {
+      "position": 8,
+      "collaboratorId": "u06",
+      "name": "Lucas Lima",
+      "sector": "Comercial",
+      "progress": 68,
+      "hours": 28,
+      "completed": 1
+    }
+  ]
+}

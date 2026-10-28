@@ -1,0 +1,2264 @@
+{
+  "totalActive": 321,
+  "sectorsFilter": [
+    "Tecnologia",
+    "RH",
+    "Financeiro",
+    "Comercial",
+    "Atendimento",
+    "Marketing",
+    "Logística",
+    "Jurídico"
+  ],
+  "items": [
+    {
+      "id": "u01",
+      "name": "Maria Silva",
+      "email": "maria.silva@mira.com",
+      "sector": "tecnologia",
+      "sectorName": "Tecnologia",
+      "role": "Senior Developer",
+      "status": "Ativo",
+      "progress": 84,
+      "hours": 42,
+      "courses": 6,
+      "completedCourses": 4,
+      "skills": [
+        "React",
+        "Node.js",
+        "Docker",
+        "Sistemas Distribuídos",
+        "Liderança"
+      ],
+      "competencies": [
+        "Python",
+        "Pandas",
+        "SQL",
+        "Power BI",
+        "Comunicação",
+        "Gestão de Projetos"
+      ],
+      "kpis": {
+        "hours": {
+          "value": 42,
+          "delta": "+14%"
+        },
+        "progress": {
+          "value": 84,
+          "delta": "+6%"
+        },
+        "inProgress": {
+          "value": 6,
+          "delta": "Estável",
+          "note": "matrículas ativas"
+        },
+        "completed": {
+          "value": 4,
+          "delta": "+2",
+          "note": "novas certificações"
+        }
+      },
+      "frequency": [
+        {
+          "date": "2026-05-22",
+          "value": 65
+        },
+        {
+          "date": "2026-05-23",
+          "value": 45
+        },
+        {
+          "date": "2026-05-24",
+          "value": 45
+        },
+        {
+          "date": "2026-05-25",
+          "value": 69
+        },
+        {
+          "date": "2026-05-26",
+          "value": 71
+        },
+        {
+          "date": "2026-05-27",
+          "value": 69
+        },
+        {
+          "date": "2026-05-28",
+          "value": 70
+        },
+        {
+          "date": "2026-05-29",
+          "value": 70
+        },
+        {
+          "date": "2026-05-30",
+          "value": 35
+        },
+        {
+          "date": "2026-05-31",
+          "value": 33
+        },
+        {
+          "date": "2026-06-01",
+          "value": 63
+        },
+        {
+          "date": "2026-06-02",
+          "value": 55
+        },
+        {
+          "date": "2026-06-03",
+          "value": 57
+        },
+        {
+          "date": "2026-06-04",
+          "value": 45
+        },
+        {
+          "date": "2026-06-05",
+          "value": 49
+        },
+        {
+          "date": "2026-06-06",
+          "value": 30
+        },
+        {
+          "date": "2026-06-07",
+          "value": 26
+        },
+        {
+          "date": "2026-06-08",
+          "value": 53
+        },
+        {
+          "date": "2026-06-09",
+          "value": 53
+        },
+        {
+          "date": "2026-06-10",
+          "value": 43
+        },
+        {
+          "date": "2026-06-11",
+          "value": 45
+        },
+        {
+          "date": "2026-06-12",
+          "value": 53
+        },
+        {
+          "date": "2026-06-13",
+          "value": 36
+        },
+        {
+          "date": "2026-06-14",
+          "value": 33
+        },
+        {
+          "date": "2026-06-15",
+          "value": 57
+        },
+        {
+          "date": "2026-06-16",
+          "value": 62
+        },
+        {
+          "date": "2026-06-17",
+          "value": 60
+        },
+        {
+          "date": "2026-06-18",
+          "value": 64
+        },
+        {
+          "date": "2026-06-19",
+          "value": 68
+        },
+        {
+          "date": "2026-06-20",
+          "value": 42
+        }
+      ],
+      "recentCourses": [
+        {
+          "title": "Python para Dados",
+          "status": "Concluído",
+          "progress": 100
+        },
+        {
+          "title": "Arquitetura Cloud",
+          "status": "Em Andamento",
+          "progress": 75
+        },
+        {
+          "title": "Scrum Master Prep",
+          "status": "Em Andamento",
+          "progress": 40
+        }
+      ],
+      "certificates": [
+        {
+          "title": "Introdução ao Python e Sintaxe Básica",
+          "issuedAt": "15/04/2026"
+        },
+        {
+          "title": "Estruturas de Dados Básicas",
+          "issuedAt": "02/05/2026"
+        }
+      ]
+    },
+    {
+      "id": "u02",
+      "name": "João Santos",
+      "email": "joao.santos@mira.com",
+      "sector": "financeiro",
+      "sectorName": "Financeiro",
+      "role": "Analista Financeiro",
+      "status": "Ativo",
+      "progress": 72,
+      "hours": 31,
+      "courses": 4,
+      "completedCourses": 2,
+      "skills": [
+        "Excel",
+        "Orçamento",
+        "Power BI"
+      ],
+      "competencies": [
+        "Excel",
+        "SQL",
+        "Comunicação"
+      ],
+      "kpis": {
+        "hours": {
+          "value": 31,
+          "delta": "+14%"
+        },
+        "progress": {
+          "value": 72,
+          "delta": "+6%"
+        },
+        "inProgress": {
+          "value": 4,
+          "delta": "Estável",
+          "note": "matrículas ativas"
+        },
+        "completed": {
+          "value": 2,
+          "delta": "+2",
+          "note": "novas certificações"
+        }
+      },
+      "frequency": [
+        {
+          "date": "2026-05-22",
+          "value": 79
+        },
+        {
+          "date": "2026-05-23",
+          "value": 46
+        },
+        {
+          "date": "2026-05-24",
+          "value": 39
+        },
+        {
+          "date": "2026-05-25",
+          "value": 63
+        },
+        {
+          "date": "2026-05-26",
+          "value": 70
+        },
+        {
+          "date": "2026-05-27",
+          "value": 66
+        },
+        {
+          "date": "2026-05-28",
+          "value": 62
+        },
+        {
+          "date": "2026-05-29",
+          "value": 55
+        },
+        {
+          "date": "2026-05-30",
+          "value": 34
+        },
+        {
+          "date": "2026-05-31",
+          "value": 33
+        },
+        {
+          "date": "2026-06-01",
+          "value": 53
+        },
+        {
+          "date": "2026-06-02",
+          "value": 47
+        },
+        {
+          "date": "2026-06-03",
+          "value": 50
+        },
+        {
+          "date": "2026-06-04",
+          "value": 49
+        },
+        {
+          "date": "2026-06-05",
+          "value": 54
+        },
+        {
+          "date": "2026-06-06",
+          "value": 35
+        },
+        {
+          "date": "2026-06-07",
+          "value": 36
+        },
+        {
+          "date": "2026-06-08",
+          "value": 57
+        },
+        {
+          "date": "2026-06-09",
+          "value": 58
+        },
+        {
+          "date": "2026-06-10",
+          "value": 59
+        },
+        {
+          "date": "2026-06-11",
+          "value": 59
+        },
+        {
+          "date": "2026-06-12",
+          "value": 61
+        },
+        {
+          "date": "2026-06-13",
+          "value": 41
+        },
+        {
+          "date": "2026-06-14",
+          "value": 41
+        },
+        {
+          "date": "2026-06-15",
+          "value": 71
+        },
+        {
+          "date": "2026-06-16",
+          "value": 79
+        },
+        {
+          "date": "2026-06-17",
+          "value": 75
+        },
+        {
+          "date": "2026-06-18",
+          "value": 75
+        },
+        {
+          "date": "2026-06-19",
+          "value": 71
+        },
+        {
+          "date": "2026-06-20",
+          "value": 40
+        }
+      ],
+      "recentCourses": [
+        {
+          "title": "Power BI Avançado",
+          "status": "Em Andamento",
+          "progress": 63
+        },
+        {
+          "title": "Scrum Master Prep",
+          "status": "Em Andamento",
+          "progress": 39
+        },
+        {
+          "title": "Prevenção Contra Incêndio",
+          "status": "Em Andamento",
+          "progress": 90
+        }
+      ],
+      "certificates": [
+        {
+          "title": "Introdução ao Python e Sintaxe Básica",
+          "issuedAt": "15/04/2026"
+        },
+        {
+          "title": "Estruturas de Dados Básicas",
+          "issuedAt": "02/05/2026"
+        }
+      ]
+    },
+    {
+      "id": "u03",
+      "name": "Ana Costa",
+      "email": "ana.costa@mira.com",
+      "sector": "rh",
+      "sectorName": "RH",
+      "role": "Analista de RH",
+      "status": "Ativo",
+      "progress": 91,
+      "hours": 56,
+      "courses": 8,
+      "completedCourses": 6,
+      "skills": [
+        "Recrutamento",
+        "Treinamento",
+        "Comunicação"
+      ],
+      "competencies": [
+        "Comunicação",
+        "Liderança",
+        "Gestão de Pessoas"
+      ],
+      "kpis": {
+        "hours": {
+          "value": 56,
+          "delta": "+14%"
+        },
+        "progress": {
+          "value": 91,
+          "delta": "+6%"
+        },
+        "inProgress": {
+          "value": 8,
+          "delta": "Estável",
+          "note": "matrículas ativas"
+        },
+        "completed": {
+          "value": 6,
+          "delta": "+2",
+          "note": "novas certificações"
+        }
+      },
+      "frequency": [
+        {
+          "date": "2026-05-22",
+          "value": 64
+        },
+        {
+          "date": "2026-05-23",
+          "value": 39
+        },
+        {
+          "date": "2026-05-24",
+          "value": 36
+        },
+        {
+          "date": "2026-05-25",
+          "value": 61
+        },
+        {
+          "date": "2026-05-26",
+          "value": 59
+        },
+        {
+          "date": "2026-05-27",
+          "value": 50
+        },
+        {
+          "date": "2026-05-28",
+          "value": 49
+        },
+        {
+          "date": "2026-05-29",
+          "value": 58
+        },
+        {
+          "date": "2026-05-30",
+          "value": 30
+        },
+        {
+          "date": "2026-05-31",
+          "value": 30
+        },
+        {
+          "date": "2026-06-01",
+          "value": 61
+        },
+        {
+          "date": "2026-06-02",
+          "value": 56
+        },
+        {
+          "date": "2026-06-03",
+          "value": 63
+        },
+        {
+          "date": "2026-06-04",
+          "value": 61
+        },
+        {
+          "date": "2026-06-05",
+          "value": 65
+        },
+        {
+          "date": "2026-06-06",
+          "value": 37
+        },
+        {
+          "date": "2026-06-07",
+          "value": 42
+        },
+        {
+          "date": "2026-06-08",
+          "value": 76
+        },
+        {
+          "date": "2026-06-09",
+          "value": 74
+        },
+        {
+          "date": "2026-06-10",
+          "value": 78
+        },
+        {
+          "date": "2026-06-11",
+          "value": 79
+        },
+        {
+          "date": "2026-06-12",
+          "value": 72
+        },
+        {
+          "date": "2026-06-13",
+          "value": 48
+        },
+        {
+          "date": "2026-06-14",
+          "value": 47
+        },
+        {
+          "date": "2026-06-15",
+          "value": 74
+        },
+        {
+          "date": "2026-06-16",
+          "value": 69
+        },
+        {
+          "date": "2026-06-17",
+          "value": 77
+        },
+        {
+          "date": "2026-06-18",
+          "value": 70
+        },
+        {
+          "date": "2026-06-19",
+          "value": 71
+        },
+        {
+          "date": "2026-06-20",
+          "value": 42
+        }
+      ],
+      "recentCourses": [
+        {
+          "title": "Consultas SQL",
+          "status": "Em Andamento",
+          "progress": 66
+        },
+        {
+          "title": "Liderança Situacional",
+          "status": "Em Andamento",
+          "progress": 43
+        },
+        {
+          "title": "Prevenção Contra Incêndio",
+          "status": "Em Andamento",
+          "progress": 90
+        }
+      ],
+      "certificates": [
+        {
+          "title": "Introdução ao Python e Sintaxe Básica",
+          "issuedAt": "15/04/2026"
+        },
+        {
+          "title": "Estruturas de Dados Básicas",
+          "issuedAt": "02/05/2026"
+        }
+      ]
+    },
+    {
+      "id": "u04",
+      "name": "Carlos Oliveira",
+      "email": "carlos.o@mira.com",
+      "sector": "comercial",
+      "sectorName": "Comercial",
+      "role": "Executivo de Contas",
+      "status": "Ativo",
+      "progress": 65,
+      "hours": 28,
+      "courses": 3,
+      "completedCourses": 1,
+      "skills": [
+        "Negociação",
+        "CRM",
+        "Vendas Consultivas"
+      ],
+      "competencies": [
+        "Negociação",
+        "Comunicação"
+      ],
+      "kpis": {
+        "hours": {
+          "value": 28,
+          "delta": "+14%"
+        },
+        "progress": {
+          "value": 65,
+          "delta": "+6%"
+        },
+        "inProgress": {
+          "value": 3,
+          "delta": "Estável",
+          "note": "matrículas ativas"
+        },
+        "completed": {
+          "value": 1,
+          "delta": "+2",
+          "note": "novas certificações"
+        }
+      },
+      "frequency": [
+        {
+          "date": "2026-05-22",
+          "value": 56
+        },
+        {
+          "date": "2026-05-23",
+          "value": 32
+        },
+        {
+          "date": "2026-05-24",
+          "value": 33
+        },
+        {
+          "date": "2026-05-25",
+          "value": 52
+        },
+        {
+          "date": "2026-05-26",
+          "value": 51
+        },
+        {
+          "date": "2026-05-27",
+          "value": 56
+        },
+        {
+          "date": "2026-05-28",
+          "value": 64
+        },
+        {
+          "date": "2026-05-29",
+          "value": 64
+        },
+        {
+          "date": "2026-05-30",
+          "value": 39
+        },
+        {
+          "date": "2026-05-31",
+          "value": 37
+        },
+        {
+          "date": "2026-06-01",
+          "value": 68
+        },
+        {
+          "date": "2026-06-02",
+          "value": 68
+        },
+        {
+          "date": "2026-06-03",
+          "value": 69
+        },
+        {
+          "date": "2026-06-04",
+          "value": 71
+        },
+        {
+          "date": "2026-06-05",
+          "value": 74
+        },
+        {
+          "date": "2026-06-06",
+          "value": 50
+        },
+        {
+          "date": "2026-06-07",
+          "value": 50
+        },
+        {
+          "date": "2026-06-08",
+          "value": 84
+        },
+        {
+          "date": "2026-06-09",
+          "value": 84
+        },
+        {
+          "date": "2026-06-10",
+          "value": 76
+        },
+        {
+          "date": "2026-06-11",
+          "value": 76
+        },
+        {
+          "date": "2026-06-12",
+          "value": 78
+        },
+        {
+          "date": "2026-06-13",
+          "value": 46
+        },
+        {
+          "date": "2026-06-14",
+          "value": 46
+        },
+        {
+          "date": "2026-06-15",
+          "value": 74
+        },
+        {
+          "date": "2026-06-16",
+          "value": 62
+        },
+        {
+          "date": "2026-06-17",
+          "value": 66
+        },
+        {
+          "date": "2026-06-18",
+          "value": 64
+        },
+        {
+          "date": "2026-06-19",
+          "value": 60
+        },
+        {
+          "date": "2026-06-20",
+          "value": 32
+        }
+      ],
+      "recentCourses": [
+        {
+          "title": "Prevenção Contra Incêndio",
+          "status": "Em Andamento",
+          "progress": 69
+        },
+        {
+          "title": "Arquitetura Cloud",
+          "status": "Em Andamento",
+          "progress": 47
+        },
+        {
+          "title": "Prevenção Contra Incêndio",
+          "status": "Em Andamento",
+          "progress": 90
+        }
+      ],
+      "certificates": [
+        {
+          "title": "Introdução ao Python e Sintaxe Básica",
+          "issuedAt": "15/04/2026"
+        }
+      ]
+    },
+    {
+      "id": "u05",
+      "name": "Patricia Lima",
+      "email": "patricia.lima@mira.com",
+      "sector": "atendimento",
+      "sectorName": "Atendimento",
+      "role": "Supervisora de Atendimento",
+      "status": "Ativo",
+      "progress": 88,
+      "hours": 50,
+      "courses": 7,
+      "completedCourses": 5,
+      "skills": [
+        "Atendimento",
+        "Gestão de Equipes",
+        "Comunicação"
+      ],
+      "competencies": [
+        "Comunicação",
+        "Gestão de Conflitos"
+      ],
+      "kpis": {
+        "hours": {
+          "value": 50,
+          "delta": "+14%"
+        },
+        "progress": {
+          "value": 88,
+          "delta": "+6%"
+        },
+        "inProgress": {
+          "value": 7,
+          "delta": "Estável",
+          "note": "matrículas ativas"
+        },
+        "completed": {
+          "value": 5,
+          "delta": "+2",
+          "note": "novas certificações"
+        }
+      },
+      "frequency": [
+        {
+          "date": "2026-05-22",
+          "value": 61
+        },
+        {
+          "date": "2026-05-23",
+          "value": 38
+        },
+        {
+          "date": "2026-05-24",
+          "value": 39
+        },
+        {
+          "date": "2026-05-25",
+          "value": 70
+        },
+        {
+          "date": "2026-05-26",
+          "value": 70
+        },
+        {
+          "date": "2026-05-27",
+          "value": 75
+        },
+        {
+          "date": "2026-05-28",
+          "value": 66
+        },
+        {
+          "date": "2026-05-29",
+          "value": 74
+        },
+        {
+          "date": "2026-05-30",
+          "value": 49
+        },
+        {
+          "date": "2026-05-31",
+          "value": 49
+        },
+        {
+          "date": "2026-06-01",
+          "value": 86
+        },
+        {
+          "date": "2026-06-02",
+          "value": 78
+        },
+        {
+          "date": "2026-06-03",
+          "value": 83
+        },
+        {
+          "date": "2026-06-04",
+          "value": 80
+        },
+        {
+          "date": "2026-06-05",
+          "value": 84
+        },
+        {
+          "date": "2026-06-06",
+          "value": 50
+        },
+        {
+          "date": "2026-06-07",
+          "value": 45
+        },
+        {
+          "date": "2026-06-08",
+          "value": 75
+        },
+        {
+          "date": "2026-06-09",
+          "value": 74
+        },
+        {
+          "date": "2026-06-10",
+          "value": 79
+        },
+        {
+          "date": "2026-06-11",
+          "value": 74
+        },
+        {
+          "date": "2026-06-12",
+          "value": 65
+        },
+        {
+          "date": "2026-06-13",
+          "value": 42
+        },
+        {
+          "date": "2026-06-14",
+          "value": 36
+        },
+        {
+          "date": "2026-06-15",
+          "value": 63
+        },
+        {
+          "date": "2026-06-16",
+          "value": 56
+        },
+        {
+          "date": "2026-06-17",
+          "value": 54
+        },
+        {
+          "date": "2026-06-18",
+          "value": 64
+        },
+        {
+          "date": "2026-06-19",
+          "value": 56
+        },
+        {
+          "date": "2026-06-20",
+          "value": 34
+        }
+      ],
+      "recentCourses": [
+        {
+          "title": "Python para Dados",
+          "status": "Em Andamento",
+          "progress": 72
+        },
+        {
+          "title": "Scrum Master Prep",
+          "status": "Em Andamento",
+          "progress": 51
+        },
+        {
+          "title": "Prevenção Contra Incêndio",
+          "status": "Em Andamento",
+          "progress": 90
+        }
+      ],
+      "certificates": [
+        {
+          "title": "Introdução ao Python e Sintaxe Básica",
+          "issuedAt": "15/04/2026"
+        },
+        {
+          "title": "Estruturas de Dados Básicas",
+          "issuedAt": "02/05/2026"
+        }
+      ]
+    },
+    {
+      "id": "u06",
+      "name": "Lucas Lima",
+      "email": "lucas.lima@mira.com",
+      "sector": "comercial",
+      "sectorName": "Comercial",
+      "role": "Executivo de Contas",
+      "status": "Ativo",
+      "progress": 68,
+      "hours": 28,
+      "courses": 3,
+      "completedCourses": 1,
+      "skills": [
+        "Negociação",
+        "CRM"
+      ],
+      "competencies": [
+        "Negociação",
+        "Excel"
+      ],
+      "kpis": {
+        "hours": {
+          "value": 28,
+          "delta": "+14%"
+        },
+        "progress": {
+          "value": 68,
+          "delta": "+6%"
+        },
+        "inProgress": {
+          "value": 3,
+          "delta": "Estável",
+          "note": "matrículas ativas"
+        },
+        "completed": {
+          "value": 1,
+          "delta": "+2",
+          "note": "novas certificações"
+        }
+      },
+      "frequency": [
+        {
+          "date": "2026-05-22",
+          "value": 75
+        },
+        {
+          "date": "2026-05-23",
+          "value": 46
+        },
+        {
+          "date": "2026-05-24",
+          "value": 46
+        },
+        {
+          "date": "2026-05-25",
+          "value": 76
+        },
+        {
+          "date": "2026-05-26",
+          "value": 75
+        },
+        {
+          "date": "2026-05-27",
+          "value": 85
+        },
+        {
+          "date": "2026-05-28",
+          "value": 85
+        },
+        {
+          "date": "2026-05-29",
+          "value": 89
+        },
+        {
+          "date": "2026-05-30",
+          "value": 51
+        },
+        {
+          "date": "2026-05-31",
+          "value": 54
+        },
+        {
+          "date": "2026-06-01",
+          "value": 83
+        },
+        {
+          "date": "2026-06-02",
+          "value": 88
+        },
+        {
+          "date": "2026-06-03",
+          "value": 86
+        },
+        {
+          "date": "2026-06-04",
+          "value": 80
+        },
+        {
+          "date": "2026-06-05",
+          "value": 79
+        },
+        {
+          "date": "2026-06-06",
+          "value": 46
+        },
+        {
+          "date": "2026-06-07",
+          "value": 41
+        },
+        {
+          "date": "2026-06-08",
+          "value": 71
+        },
+        {
+          "date": "2026-06-09",
+          "value": 72
+        },
+        {
+          "date": "2026-06-10",
+          "value": 63
+        },
+        {
+          "date": "2026-06-11",
+          "value": 68
+        },
+        {
+          "date": "2026-06-12",
+          "value": 65
+        },
+        {
+          "date": "2026-06-13",
+          "value": 40
+        },
+        {
+          "date": "2026-06-14",
+          "value": 36
+        },
+        {
+          "date": "2026-06-15",
+          "value": 58
+        },
+        {
+          "date": "2026-06-16",
+          "value": 68
+        },
+        {
+          "date": "2026-06-17",
+          "value": 70
+        },
+        {
+          "date": "2026-06-18",
+          "value": 67
+        },
+        {
+          "date": "2026-06-19",
+          "value": 66
+        },
+        {
+          "date": "2026-06-20",
+          "value": 41
+        }
+      ],
+      "recentCourses": [
+        {
+          "title": "Power BI Avançado",
+          "status": "Em Andamento",
+          "progress": 75
+        },
+        {
+          "title": "Liderança Situacional",
+          "status": "Em Andamento",
+          "progress": 55
+        },
+        {
+          "title": "Prevenção Contra Incêndio",
+          "status": "Em Andamento",
+          "progress": 90
+        }
+      ],
+      "certificates": [
+        {
+          "title": "Introdução ao Python e Sintaxe Básica",
+          "issuedAt": "15/04/2026"
+        }
+      ]
+    },
+    {
+      "id": "u07",
+      "name": "Rafael Marques",
+      "email": "rafael.marques@mira.com",
+      "sector": "tecnologia",
+      "sectorName": "Tecnologia",
+      "role": "Analista I de Desenvolvimento",
+      "status": "Ativo",
+      "progress": 84,
+      "hours": 42,
+      "courses": 6,
+      "completedCourses": 4,
+      "skills": [
+        "React",
+        "Node.js",
+        "Docker",
+        "Sistemas Distribuídos",
+        "Liderança"
+      ],
+      "competencies": [
+        "Python",
+        "Pandas",
+        "SQL",
+        "Power BI",
+        "Comunicação",
+        "Gestão de Projetos"
+      ],
+      "kpis": {
+        "hours": {
+          "value": 42,
+          "delta": "+14%"
+        },
+        "progress": {
+          "value": 84,
+          "delta": "+6%"
+        },
+        "inProgress": {
+          "value": 6,
+          "delta": "Estável",
+          "note": "matrículas ativas"
+        },
+        "completed": {
+          "value": 4,
+          "delta": "+2",
+          "note": "novas certificações"
+        }
+      },
+      "frequency": [
+        {
+          "date": "2026-05-22",
+          "value": 83
+        },
+        {
+          "date": "2026-05-23",
+          "value": 50
+        },
+        {
+          "date": "2026-05-24",
+          "value": 54
+        },
+        {
+          "date": "2026-05-25",
+          "value": 84
+        },
+        {
+          "date": "2026-05-26",
+          "value": 90
+        },
+        {
+          "date": "2026-05-27",
+          "value": 87
+        },
+        {
+          "date": "2026-05-28",
+          "value": 83
+        },
+        {
+          "date": "2026-05-29",
+          "value": 87
+        },
+        {
+          "date": "2026-05-30",
+          "value": 47
+        },
+        {
+          "date": "2026-05-31",
+          "value": 49
+        },
+        {
+          "date": "2026-06-01",
+          "value": 75
+        },
+        {
+          "date": "2026-06-02",
+          "value": 72
+        },
+        {
+          "date": "2026-06-03",
+          "value": 74
+        },
+        {
+          "date": "2026-06-04",
+          "value": 76
+        },
+        {
+          "date": "2026-06-05",
+          "value": 65
+        },
+        {
+          "date": "2026-06-06",
+          "value": 39
+        },
+        {
+          "date": "2026-06-07",
+          "value": 41
+        },
+        {
+          "date": "2026-06-08",
+          "value": 71
+        },
+        {
+          "date": "2026-06-09",
+          "value": 66
+        },
+        {
+          "date": "2026-06-10",
+          "value": 65
+        },
+        {
+          "date": "2026-06-11",
+          "value": 72
+        },
+        {
+          "date": "2026-06-12",
+          "value": 63
+        },
+        {
+          "date": "2026-06-13",
+          "value": 44
+        },
+        {
+          "date": "2026-06-14",
+          "value": 42
+        },
+        {
+          "date": "2026-06-15",
+          "value": 70
+        },
+        {
+          "date": "2026-06-16",
+          "value": 73
+        },
+        {
+          "date": "2026-06-17",
+          "value": 78
+        },
+        {
+          "date": "2026-06-18",
+          "value": 86
+        },
+        {
+          "date": "2026-06-19",
+          "value": 81
+        },
+        {
+          "date": "2026-06-20",
+          "value": 52
+        }
+      ],
+      "recentCourses": [
+        {
+          "title": "Consultas SQL",
+          "status": "Em Andamento",
+          "progress": 78
+        },
+        {
+          "title": "Arquitetura Cloud",
+          "status": "Em Andamento",
+          "progress": 59
+        },
+        {
+          "title": "Prevenção Contra Incêndio",
+          "status": "Em Andamento",
+          "progress": 90
+        }
+      ],
+      "certificates": [
+        {
+          "title": "Introdução ao Python e Sintaxe Básica",
+          "issuedAt": "15/04/2026"
+        },
+        {
+          "title": "Estruturas de Dados Básicas",
+          "issuedAt": "02/05/2026"
+        }
+      ]
+    },
+    {
+      "id": "u08",
+      "name": "Beatriz Rocha",
+      "email": "beatriz.rocha@mira.com",
+      "sector": "marketing",
+      "sectorName": "Marketing",
+      "role": "Analista de Marketing",
+      "status": "Ativo",
+      "progress": 79,
+      "hours": 37,
+      "courses": 5,
+      "completedCourses": 3,
+      "skills": [
+        "SEO",
+        "Mídia Paga",
+        "Copywriting"
+      ],
+      "competencies": [
+        "SEO",
+        "Análise de Dados"
+      ],
+      "kpis": {
+        "hours": {
+          "value": 37,
+          "delta": "+14%"
+        },
+        "progress": {
+          "value": 79,
+          "delta": "+6%"
+        },
+        "inProgress": {
+          "value": 5,
+          "delta": "Estável",
+          "note": "matrículas ativas"
+        },
+        "completed": {
+          "value": 3,
+          "delta": "+2",
+          "note": "novas certificações"
+        }
+      },
+      "frequency": [
+        {
+          "date": "2026-05-22",
+          "value": 69
+        },
+        {
+          "date": "2026-05-23",
+          "value": 46
+        },
+        {
+          "date": "2026-05-24",
+          "value": 39
+        },
+        {
+          "date": "2026-05-25",
+          "value": 71
+        },
+        {
+          "date": "2026-05-26",
+          "value": 62
+        },
+        {
+          "date": "2026-05-27",
+          "value": 61
+        },
+        {
+          "date": "2026-05-28",
+          "value": 68
+        },
+        {
+          "date": "2026-05-29",
+          "value": 55
+        },
+        {
+          "date": "2026-05-30",
+          "value": 35
+        },
+        {
+          "date": "2026-05-31",
+          "value": 32
+        },
+        {
+          "date": "2026-06-01",
+          "value": 51
+        },
+        {
+          "date": "2026-06-02",
+          "value": 50
+        },
+        {
+          "date": "2026-06-03",
+          "value": 45
+        },
+        {
+          "date": "2026-06-04",
+          "value": 53
+        },
+        {
+          "date": "2026-06-05",
+          "value": 44
+        },
+        {
+          "date": "2026-06-06",
+          "value": 27
+        },
+        {
+          "date": "2026-06-07",
+          "value": 27
+        },
+        {
+          "date": "2026-06-08",
+          "value": 49
+        },
+        {
+          "date": "2026-06-09",
+          "value": 53
+        },
+        {
+          "date": "2026-06-10",
+          "value": 61
+        },
+        {
+          "date": "2026-06-11",
+          "value": 58
+        },
+        {
+          "date": "2026-06-12",
+          "value": 57
+        },
+        {
+          "date": "2026-06-13",
+          "value": 37
+        },
+        {
+          "date": "2026-06-14",
+          "value": 43
+        },
+        {
+          "date": "2026-06-15",
+          "value": 64
+        },
+        {
+          "date": "2026-06-16",
+          "value": 72
+        },
+        {
+          "date": "2026-06-17",
+          "value": 70
+        },
+        {
+          "date": "2026-06-18",
+          "value": 74
+        },
+        {
+          "date": "2026-06-19",
+          "value": 71
+        },
+        {
+          "date": "2026-06-20",
+          "value": 44
+        }
+      ],
+      "recentCourses": [
+        {
+          "title": "Prevenção Contra Incêndio",
+          "status": "Em Andamento",
+          "progress": 81
+        },
+        {
+          "title": "Scrum Master Prep",
+          "status": "Em Andamento",
+          "progress": 63
+        },
+        {
+          "title": "Prevenção Contra Incêndio",
+          "status": "Em Andamento",
+          "progress": 90
+        }
+      ],
+      "certificates": [
+        {
+          "title": "Introdução ao Python e Sintaxe Básica",
+          "issuedAt": "15/04/2026"
+        },
+        {
+          "title": "Estruturas de Dados Básicas",
+          "issuedAt": "02/05/2026"
+        }
+      ]
+    },
+    {
+      "id": "u09",
+      "name": "Gustavo Pereira",
+      "email": "gustavo.pereira@mira.com",
+      "sector": "logistica",
+      "sectorName": "Logística",
+      "role": "Analista de Logística",
+      "status": "Ativo",
+      "progress": 61,
+      "hours": 24,
+      "courses": 2,
+      "completedCourses": 1,
+      "skills": [
+        "Roteirização",
+        "Estoque",
+        "Excel"
+      ],
+      "competencies": [
+        "Excel",
+        "Segurança do Trabalho"
+      ],
+      "kpis": {
+        "hours": {
+          "value": 24,
+          "delta": "+14%"
+        },
+        "progress": {
+          "value": 61,
+          "delta": "+6%"
+        },
+        "inProgress": {
+          "value": 2,
+          "delta": "Estável",
+          "note": "matrículas ativas"
+        },
+        "completed": {
+          "value": 1,
+          "delta": "+2",
+          "note": "novas certificações"
+        }
+      },
+      "frequency": [
+        {
+          "date": "2026-05-22",
+          "value": 68
+        },
+        {
+          "date": "2026-05-23",
+          "value": 38
+        },
+        {
+          "date": "2026-05-24",
+          "value": 35
+        },
+        {
+          "date": "2026-05-25",
+          "value": 65
+        },
+        {
+          "date": "2026-05-26",
+          "value": 52
+        },
+        {
+          "date": "2026-05-27",
+          "value": 56
+        },
+        {
+          "date": "2026-05-28",
+          "value": 59
+        },
+        {
+          "date": "2026-05-29",
+          "value": 48
+        },
+        {
+          "date": "2026-05-30",
+          "value": 31
+        },
+        {
+          "date": "2026-05-31",
+          "value": 32
+        },
+        {
+          "date": "2026-06-01",
+          "value": 46
+        },
+        {
+          "date": "2026-06-02",
+          "value": 51
+        },
+        {
+          "date": "2026-06-03",
+          "value": 57
+        },
+        {
+          "date": "2026-06-04",
+          "value": 55
+        },
+        {
+          "date": "2026-06-05",
+          "value": 61
+        },
+        {
+          "date": "2026-06-06",
+          "value": 34
+        },
+        {
+          "date": "2026-06-07",
+          "value": 36
+        },
+        {
+          "date": "2026-06-08",
+          "value": 61
+        },
+        {
+          "date": "2026-06-09",
+          "value": 69
+        },
+        {
+          "date": "2026-06-10",
+          "value": 76
+        },
+        {
+          "date": "2026-06-11",
+          "value": 74
+        },
+        {
+          "date": "2026-06-12",
+          "value": 77
+        },
+        {
+          "date": "2026-06-13",
+          "value": 44
+        },
+        {
+          "date": "2026-06-14",
+          "value": 47
+        },
+        {
+          "date": "2026-06-15",
+          "value": 70
+        },
+        {
+          "date": "2026-06-16",
+          "value": 72
+        },
+        {
+          "date": "2026-06-17",
+          "value": 75
+        },
+        {
+          "date": "2026-06-18",
+          "value": 74
+        },
+        {
+          "date": "2026-06-19",
+          "value": 68
+        },
+        {
+          "date": "2026-06-20",
+          "value": 37
+        }
+      ],
+      "recentCourses": [
+        {
+          "title": "Python para Dados",
+          "status": "Em Andamento",
+          "progress": 84
+        },
+        {
+          "title": "Liderança Situacional",
+          "status": "Em Andamento",
+          "progress": 67
+        },
+        {
+          "title": "Prevenção Contra Incêndio",
+          "status": "Em Andamento",
+          "progress": 90
+        }
+      ],
+      "certificates": [
+        {
+          "title": "Introdução ao Python e Sintaxe Básica",
+          "issuedAt": "15/04/2026"
+        }
+      ]
+    },
+    {
+      "id": "u10",
+      "name": "Fernanda Alves",
+      "email": "fernanda.alves@mira.com",
+      "sector": "juridico",
+      "sectorName": "Jurídico",
+      "role": "Advogado Pleno",
+      "status": "Ativo",
+      "progress": 93,
+      "hours": 58,
+      "courses": 8,
+      "completedCourses": 6,
+      "skills": [
+        "Contratos",
+        "Compliance",
+        "LGPD"
+      ],
+      "competencies": [
+        "LGPD",
+        "Contratos"
+      ],
+      "kpis": {
+        "hours": {
+          "value": 58,
+          "delta": "+14%"
+        },
+        "progress": {
+          "value": 93,
+          "delta": "+6%"
+        },
+        "inProgress": {
+          "value": 8,
+          "delta": "Estável",
+          "note": "matrículas ativas"
+        },
+        "completed": {
+          "value": 6,
+          "delta": "+2",
+          "note": "novas certificações"
+        }
+      },
+      "frequency": [
+        {
+          "date": "2026-05-22",
+          "value": 61
+        },
+        {
+          "date": "2026-05-23",
+          "value": 34
+        },
+        {
+          "date": "2026-05-24",
+          "value": 34
+        },
+        {
+          "date": "2026-05-25",
+          "value": 52
+        },
+        {
+          "date": "2026-05-26",
+          "value": 58
+        },
+        {
+          "date": "2026-05-27",
+          "value": 58
+        },
+        {
+          "date": "2026-05-28",
+          "value": 57
+        },
+        {
+          "date": "2026-05-29",
+          "value": 52
+        },
+        {
+          "date": "2026-05-30",
+          "value": 35
+        },
+        {
+          "date": "2026-05-31",
+          "value": 35
+        },
+        {
+          "date": "2026-06-01",
+          "value": 59
+        },
+        {
+          "date": "2026-06-02",
+          "value": 70
+        },
+        {
+          "date": "2026-06-03",
+          "value": 74
+        },
+        {
+          "date": "2026-06-04",
+          "value": 65
+        },
+        {
+          "date": "2026-06-05",
+          "value": 77
+        },
+        {
+          "date": "2026-06-06",
+          "value": 45
+        },
+        {
+          "date": "2026-06-07",
+          "value": 45
+        },
+        {
+          "date": "2026-06-08",
+          "value": 75
+        },
+        {
+          "date": "2026-06-09",
+          "value": 80
+        },
+        {
+          "date": "2026-06-10",
+          "value": 78
+        },
+        {
+          "date": "2026-06-11",
+          "value": 80
+        },
+        {
+          "date": "2026-06-12",
+          "value": 79
+        },
+        {
+          "date": "2026-06-13",
+          "value": 42
+        },
+        {
+          "date": "2026-06-14",
+          "value": 46
+        },
+        {
+          "date": "2026-06-15",
+          "value": 77
+        },
+        {
+          "date": "2026-06-16",
+          "value": 74
+        },
+        {
+          "date": "2026-06-17",
+          "value": 67
+        },
+        {
+          "date": "2026-06-18",
+          "value": 58
+        },
+        {
+          "date": "2026-06-19",
+          "value": 55
+        },
+        {
+          "date": "2026-06-20",
+          "value": 32
+        }
+      ],
+      "recentCourses": [
+        {
+          "title": "Power BI Avançado",
+          "status": "Em Andamento",
+          "progress": 87
+        },
+        {
+          "title": "Arquitetura Cloud",
+          "status": "Em Andamento",
+          "progress": 71
+        },
+        {
+          "title": "Prevenção Contra Incêndio",
+          "status": "Em Andamento",
+          "progress": 90
+        }
+      ],
+      "certificates": [
+        {
+          "title": "Introdução ao Python e Sintaxe Básica",
+          "issuedAt": "15/04/2026"
+        },
+        {
+          "title": "Estruturas de Dados Básicas",
+          "issuedAt": "02/05/2026"
+        }
+      ]
+    },
+    {
+      "id": "u11",
+      "name": "Thiago Barros",
+      "email": "thiago.barros@mira.com",
+      "sector": "logistica",
+      "sectorName": "Logística",
+      "role": "Analista",
+      "status": "Inativo",
+      "progress": 38,
+      "hours": 9,
+      "courses": 1,
+      "completedCourses": 0,
+      "skills": [
+        "Atendimento"
+      ],
+      "competencies": [
+        "Comunicação"
+      ],
+      "kpis": {
+        "hours": {
+          "value": 9,
+          "delta": "-4%"
+        },
+        "progress": {
+          "value": 38,
+          "delta": "-2%"
+        },
+        "inProgress": {
+          "value": 1,
+          "delta": "Estável",
+          "note": "matrículas ativas"
+        },
+        "completed": {
+          "value": 0,
+          "delta": "0",
+          "note": "novas certificações"
+        }
+      },
+      "frequency": [
+        {
+          "date": "2026-05-22",
+          "value": 17
+        },
+        {
+          "date": "2026-05-23",
+          "value": 11
+        },
+        {
+          "date": "2026-05-24",
+          "value": 14
+        },
+        {
+          "date": "2026-05-25",
+          "value": 20
+        },
+        {
+          "date": "2026-05-26",
+          "value": 22
+        },
+        {
+          "date": "2026-05-27",
+          "value": 25
+        },
+        {
+          "date": "2026-05-28",
+          "value": 23
+        },
+        {
+          "date": "2026-05-29",
+          "value": 30
+        },
+        {
+          "date": "2026-05-30",
+          "value": 20
+        },
+        {
+          "date": "2026-05-31",
+          "value": 23
+        },
+        {
+          "date": "2026-06-01",
+          "value": 32
+        },
+        {
+          "date": "2026-06-02",
+          "value": 36
+        },
+        {
+          "date": "2026-06-03",
+          "value": 35
+        },
+        {
+          "date": "2026-06-04",
+          "value": 45
+        },
+        {
+          "date": "2026-06-05",
+          "value": 44
+        },
+        {
+          "date": "2026-06-06",
+          "value": 21
+        },
+        {
+          "date": "2026-06-07",
+          "value": 28
+        },
+        {
+          "date": "2026-06-08",
+          "value": 45
+        },
+        {
+          "date": "2026-06-09",
+          "value": 39
+        },
+        {
+          "date": "2026-06-10",
+          "value": 36
+        },
+        {
+          "date": "2026-06-11",
+          "value": 29
+        },
+        {
+          "date": "2026-06-12",
+          "value": 24
+        },
+        {
+          "date": "2026-06-13",
+          "value": 16
+        },
+        {
+          "date": "2026-06-14",
+          "value": 12
+        },
+        {
+          "date": "2026-06-15",
+          "value": 19
+        },
+        {
+          "date": "2026-06-16",
+          "value": 17
+        },
+        {
+          "date": "2026-06-17",
+          "value": 13
+        },
+        {
+          "date": "2026-06-18",
+          "value": 18
+        },
+        {
+          "date": "2026-06-19",
+          "value": 17
+        },
+        {
+          "date": "2026-06-20",
+          "value": 13
+        }
+      ],
+      "recentCourses": [
+        {
+          "title": "Prevenção Contra Incêndio",
+          "status": "Em Andamento",
+          "progress": 38
+        }
+      ],
+      "certificates": []
+    },
+    {
+      "id": "u12",
+      "name": "Camila Duarte",
+      "email": "camila.duarte@mira.com",
+      "sector": "atendimento",
+      "sectorName": "Atendimento",
+      "role": "Analista",
+      "status": "Inativo",
+      "progress": 45,
+      "hours": 9,
+      "courses": 1,
+      "completedCourses": 0,
+      "skills": [
+        "Atendimento"
+      ],
+      "competencies": [
+        "Comunicação"
+      ],
+      "kpis": {
+        "hours": {
+          "value": 9,
+          "delta": "-4%"
+        },
+        "progress": {
+          "value": 45,
+          "delta": "-2%"
+        },
+        "inProgress": {
+          "value": 1,
+          "delta": "Estável",
+          "note": "matrículas ativas"
+        },
+        "completed": {
+          "value": 0,
+          "delta": "0",
+          "note": "novas certificações"
+        }
+      },
+      "frequency": [
+        {
+          "date": "2026-05-22",
+          "value": 23
+        },
+        {
+          "date": "2026-05-23",
+          "value": 16
+        },
+        {
+          "date": "2026-05-24",
+          "value": 18
+        },
+        {
+          "date": "2026-05-25",
+          "value": 26
+        },
+        {
+          "date": "2026-05-26",
+          "value": 27
+        },
+        {
+          "date": "2026-05-27",
+          "value": 34
+        },
+        {
+          "date": "2026-05-28",
+          "value": 35
+        },
+        {
+          "date": "2026-05-29",
+          "value": 43
+        },
+        {
+          "date": "2026-05-30",
+          "value": 26
+        },
+        {
+          "date": "2026-05-31",
+          "value": 25
+        },
+        {
+          "date": "2026-06-01",
+          "value": 42
+        },
+        {
+          "date": "2026-06-02",
+          "value": 43
+        },
+        {
+          "date": "2026-06-03",
+          "value": 36
+        },
+        {
+          "date": "2026-06-04",
+          "value": 38
+        },
+        {
+          "date": "2026-06-05",
+          "value": 32
+        },
+        {
+          "date": "2026-06-06",
+          "value": 23
+        },
+        {
+          "date": "2026-06-07",
+          "value": 15
+        },
+        {
+          "date": "2026-06-08",
+          "value": 32
+        },
+        {
+          "date": "2026-06-09",
+          "value": 21
+        },
+        {
+          "date": "2026-06-10",
+          "value": 26
+        },
+        {
+          "date": "2026-06-11",
+          "value": 19
+        },
+        {
+          "date": "2026-06-12",
+          "value": 19
+        },
+        {
+          "date": "2026-06-13",
+          "value": 13
+        },
+        {
+          "date": "2026-06-14",
+          "value": 8
+        },
+        {
+          "date": "2026-06-15",
+          "value": 12
+        },
+        {
+          "date": "2026-06-16",
+          "value": 23
+        },
+        {
+          "date": "2026-06-17",
+          "value": 19
+        },
+        {
+          "date": "2026-06-18",
+          "value": 16
+        },
+        {
+          "date": "2026-06-19",
+          "value": 28
+        },
+        {
+          "date": "2026-06-20",
+          "value": 18
+        }
+      ],
+      "recentCourses": [
+        {
+          "title": "Prevenção Contra Incêndio",
+          "status": "Em Andamento",
+          "progress": 45
+        }
+      ],
+      "certificates": []
+    }
+  ]
+}

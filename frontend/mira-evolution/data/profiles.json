@@ -1,0 +1,36 @@
+{
+  "gestor": {
+    "userId": "g01",
+    "name": "Madu Oliveira",
+    "firstName": "Madu",
+    "title": "Gestora de Desenvolvimento",
+    "email": "madu.oliveira@mira.com",
+    "phone": "+55 (11) 98888-7777",
+    "department": "Recursos Humanos / T&D",
+    "bio": "Gestora com foco em desenvolvimento de pessoas e acompanhamento da evolução das equipes.",
+    "skills": [
+      "React",
+      "Node.js",
+      "Docker",
+      "Sistemas Distribuídos",
+      "Liderança"
+    ]
+  },
+  "colaborador": {
+    "userId": "u07",
+    "name": "Rafael Marques",
+    "firstName": "Rafael",
+    "title": "Analista I de Desenvolvimento",
+    "email": "rafael.marques@mira.com",
+    "phone": "+55 (11) 98888-7777",
+    "department": "Recursos Humanos / T&D",
+    "bio": "Especialista em Gestão de Pessoas e Desenvolvimento Organizacional com mais de 8 anos de experiência na estruturação de treinamentos corporativos de alta performance.",
+    "skills": [
+      "React",
+      "Node.js",
+      "Docker",
+      "Sistemas Distribuídos",
+      "Liderança"
+    ]
+  }
+}
