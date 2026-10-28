@@ -108,7 +108,7 @@ function montarFerramentasDoTopo(sessao) {
   var escuro = Tema.obter() === 'dark';
   var mostrarTema = $('[data-tools]').data('semTema') === undefined;   // Configurações usa data-sem-tema
   $('[data-tools]').html(
-    '<button type="button" class="icon-btn" data-action="notifications" aria-haspopup="dialog" aria-expanded="false" aria-label="Notificações">' +
+    '<button type="button" style="display:none" class="icon-btn" data-action="notifications" aria-haspopup="dialog" aria-expanded="false" aria-label="Notificações">' +
       icon('bell', { size: 22 }) + '<span class="icon-btn__count" data-notif-count hidden>0</span></button>' +
     (mostrarTema
       ? '<button type="button" class="icon-btn" data-action="toggle-theme" aria-pressed="' + escuro + '" aria-label="' + (escuro ? 'Ativar tema claro' : 'Ativar tema escuro') + '">' + icon(escuro ? 'moon' : 'sun', { size: 22 }) + '</button>'
