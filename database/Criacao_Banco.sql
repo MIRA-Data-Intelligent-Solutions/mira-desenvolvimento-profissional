@@ -133,7 +133,7 @@ create table Curso_Competencia(
 			unique (id_usuario, id_curso),
 		
         constraint fk_curso_usuario_usuario
-		foreign key (id_curso) references Usuario(id_usuario)
+		foreign key (id_usuario) references Usuario(id_usuario)
         on delete cascade,
         
         constraint fk_curso_usuario_curso
