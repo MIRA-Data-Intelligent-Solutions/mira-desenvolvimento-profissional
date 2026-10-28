@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7f9" />
+    <meta name="description" content="Mira Evolution — transforme dados em direção." />
+    <title>Meu Perfil — Mira Evolution</title>
+
+    <!-- Aplica o tema salvo antes de desenhar a tela (evita "piscar") -->
+    <script src="./js/comum/tema.js"></script>
+
+    <!-- Fontes do Figma: Inter (conteúdo) e Geist (menu lateral). Se não carregarem, usa a fonte do sistema. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Inter:wght@200;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link rel="icon" href="./assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./css/tokens.css" />
+    <link rel="stylesheet" href="./css/themes.css" />
+    <link rel="stylesheet" href="./css/base.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+    <link rel="stylesheet" href="./css/pages.css" />
+    <link rel="stylesheet" href="./css/responsive.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#page-root">Pular para o conteúdo</a>
+    <div class="app">
+      <!-- Menu lateral e barra do topo: preenchidos por js/comum/layout.js -->
+      <aside class="sidebar" id="sidebar" aria-label="Navegação principal"></aside>
+      <header class="topbar"></header>
+      <div class="scrim" data-action="close-menu"></div>
+
+      <main class="main" id="main">
+        <div id="page-root" tabindex="-1">
+          <div class="page profile" style="--page-gap:24px">
+            <header class="page-header">
+              <div class="page-header__titles">
+                <h1 class="page-title">Meu Perfil</h1>
+                <p class="page-subtitle">Gerencie suas informações pessoais e profissionais.</p>
+              </div>
+              <div class="page-header__actions"><div class="header-tools" data-tools></div></div>
+            </header>
+
+            <div class="profile__layout">
+              <aside class="card card__pad profile__card" id="cartao-perfil" aria-label="Resumo do perfil"></aside>
+
+              <form class="card card__pad profile__form" id="form-perfil" novalidate aria-labelledby="pf-title">
+                <h2 class="card__title card__title--lg" id="pf-title">Informações pessoais</h2>
+                <div class="settings__grid">
+                  <label class="field"><span class="field__label">Nome completo</span><input class="input" name="name" autocomplete="name"></label>
+                  <label class="field"><span class="field__label">Cargo</span><input class="input" name="title"></label>
+                  <label class="field"><span class="field__label">E-mail</span><input class="input" name="email" type="email" autocomplete="email"></label>
+                  <label class="field"><span class="field__label">Telefone</span><input class="input" name="phone" type="tel" inputmode="tel" autocomplete="tel"></label>
+                  <label class="field"><span class="field__label">Departamento</span><input class="input" name="department"></label>
+                </div>
+                <label class="field"><span class="field__label">Sobre mim</span><textarea class="input input--area" name="bio" rows="4"></textarea></label>
+                <div class="save-bar"><button type="button" class="btn btn--outline" id="btn-cancelar">Cancelar</button><button type="submit" class="btn btn--primary">Salvar</button></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <noscript>Esta aplicação precisa de JavaScript habilitado.</noscript>
+
+    <script src="./js/lib/jquery-3.6.1.min.js"></script>
+    <script src="./js/comum/config.js"></script>
+    <script src="./js/comum/ferramentas.js"></script>
+    <script src="./js/comum/icones.js"></script>
+    <script src="./js/comum/ui.js"></script>
+    <script src="./js/comum/widgets.js"></script>
+    <script src="./js/comum/dados.js"></script>
+    <script src="./js/comum/sessao.js"></script>
+    <script src="./js/comum/layout.js"></script>
+    <script src="./js/paginas/perfil.js"></script>
+  </body>
+</html>

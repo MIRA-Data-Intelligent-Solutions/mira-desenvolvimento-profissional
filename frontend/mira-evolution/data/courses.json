@@ -1,0 +1,158 @@
+{
+  "totalCourses": 24,
+  "categories": [
+    "Tecnologia",
+    "Dados",
+    "Gestão",
+    "Soft Skills",
+    "Segurança"
+  ],
+  "kpis": [
+    {
+      "label": "Total de Cursos",
+      "value": "24",
+      "delta": "+3%",
+      "note": "vs. Periodo Anterior"
+    },
+    {
+      "label": "Colaboradores Inscritos",
+      "value": "321",
+      "delta": "+14%",
+      "note": "vs. Periodo Anterior"
+    },
+    {
+      "label": "Cursos Concluídos",
+      "value": "1.208",
+      "delta": "+22%",
+      "note": "vs. Periodo Anterior"
+    },
+    {
+      "label": "Taxa Média de Conclusão",
+      "value": "68%",
+      "delta": "+6%",
+      "note": "vs. Periodo Anterior"
+    }
+  ],
+  "items": [
+    {
+      "id": "c01",
+      "title": "Introdução a Python para Análise de Dados",
+      "category": "Dados",
+      "enrolled": 124,
+      "avgProgress": 82,
+      "status": "Ativo"
+    },
+    {
+      "id": "c02",
+      "title": "Excel Avançado para Tomada de Decisão",
+      "category": "Dados",
+      "enrolled": 89,
+      "avgProgress": 71,
+      "status": "Ativo"
+    },
+    {
+      "id": "c03",
+      "title": "Metodologias Ágeis e Scrum para Negócios",
+      "category": "Gestão",
+      "enrolled": 156,
+      "avgProgress": 64,
+      "status": "Ativo"
+    },
+    {
+      "id": "c04",
+      "title": "Liderança e Gestão de Equipes de Alto Impacto",
+      "category": "Gestão",
+      "enrolled": 45,
+      "avgProgress": 42,
+      "status": "Em Breve"
+    },
+    {
+      "id": "c05",
+      "title": "Comunicação Não-Violenta no Trabalho",
+      "category": "Soft Skills",
+      "enrolled": 98,
+      "avgProgress": 55,
+      "status": "Ativo"
+    },
+    {
+      "id": "c06",
+      "title": "Python para Dados",
+      "category": "Dados",
+      "enrolled": 112,
+      "avgProgress": 82,
+      "status": "Ativo"
+    },
+    {
+      "id": "c07",
+      "title": "Power BI Avançado",
+      "category": "Dados",
+      "enrolled": 76,
+      "avgProgress": 78,
+      "status": "Ativo"
+    },
+    {
+      "id": "c08",
+      "title": "Consultas SQL",
+      "category": "Dados",
+      "enrolled": 93,
+      "avgProgress": 72,
+      "status": "Ativo"
+    },
+    {
+      "id": "c09",
+      "title": "Prevenção Contra Incêndio",
+      "category": "Segurança",
+      "enrolled": 210,
+      "avgProgress": 67,
+      "status": "Ativo"
+    },
+    {
+      "id": "c10",
+      "title": "Arquitetura Cloud",
+      "category": "Tecnologia",
+      "enrolled": 54,
+      "avgProgress": 75,
+      "status": "Ativo"
+    },
+    {
+      "id": "c11",
+      "title": "Scrum Master Prep",
+      "category": "Gestão",
+      "enrolled": 38,
+      "avgProgress": 40,
+      "status": "Ativo"
+    },
+    {
+      "id": "c12",
+      "title": "Liderança Situacional",
+      "category": "Gestão",
+      "enrolled": 61,
+      "avgProgress": 58,
+      "status": "Ativo"
+    },
+    {
+      "id": "c13",
+      "title": "Comunicação Assertiva",
+      "category": "Soft Skills",
+      "enrolled": 72,
+      "avgProgress": 49,
+      "status": "Ativo"
+    },
+    {
+      "id": "c14",
+      "title": "Introdução ao Python e Sintaxe Básica",
+      "category": "Tecnologia",
+      "enrolled": 140,
+      "avgProgress": 100,
+      "status": "Ativo"
+    },
+    {
+      "id": "c15",
+      "title": "Estruturas de Dados Básicas",
+      "category": "Tecnologia",
+      "enrolled": 133,
+      "avgProgress": 100,
+      "status": "Ativo"
+    }
+  ]
+}

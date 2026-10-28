@@ -1,0 +1,40 @@
+{
+  "general": {
+    "companyName": "TOTVS",
+    "cnpj": "13.844.360/0001-11",
+    "dateFormat": "DD/MM/YYYY"
+  },
+  "dateFormats": [
+    "DD/MM/YYYY",
+    "MM/DD/YYYY",
+    "YYYY-MM-DD"
+  ],
+  "integrations": [
+    {
+      "id": "udemy",
+      "name": "Udemy",
+      "status": "Conectado"
+    },
+    {
+      "id": "alura",
+      "name": "Alura",
+      "status": "Conectado"
+    },
+    {
+      "id": "coursera",
+      "name": "Coursera",
+      "status": "Pendente"
+    }
+  ],
+  "security": {
+    "passwordRenewalDays": 90,
+    "lastRenewalDaysAgo": 32,
+    "twoFactor": false
+  },
+  "renewalOptions": [
+    30,
+    60,
+    90,
+    180
+  ]
+}

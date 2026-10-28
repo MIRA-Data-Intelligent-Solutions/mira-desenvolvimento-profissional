@@ -1,0 +1,83 @@
+/* ==========================================================================
+   TEMAS — tokens de cor por tema.
+   O modo escuro foi extraído das telas "Dark" do Figma (não é o claro invertido):
+   fundos em azul-marinho (#000c29 / #001035), bordas azuis (#0e1e4a) e texto secundário #667386.
+   `data-theme` pode estar no <html> ou em qualquer container (a tela de login força "dark").
+   ========================================================================== */
+
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #f6f7f9;
+  --surface: #fefefe;
+  --surface-2: #f6f7f9; /* hover, cabeçalhos de tabela, campos desabilitados */
+  --border: #f1f2f4;
+  --border-strong: #e2e5ea; /* inputs, divisores que precisam de mais contraste */
+
+  --text: #03152c;
+  --text-body: #576270; /* texto de tabelas/listas */
+  --text-muted: #9d9d9d; /* subtítulos, menu inativo, rodapés de card */
+  --track: #d9d9d9; /* trilho das barras de progresso */
+
+  --nav-active-bg: rgba(176, 176, 176, 0.13);
+  --nav-hover-bg: rgba(176, 176, 176, 0.08);
+  --icon-active: var(--primary);
+
+  --input-bg: #fefefe;
+  --input-border: #e2e5ea;
+  --placeholder: #9d9d9d;
+
+  --chart-grid: #e8ebf0;
+  --chart-axis: #8d94a0;
+  --chart-line: var(--c-blue);
+  --chart-tooltip-bg: #fefefe;
+
+  --shadow-card: 0 1px 2px rgba(3, 21, 44, 0.04);
+  --shadow-pop: 0 14px 36px rgba(3, 21, 44, 0.16);
+  --overlay: rgba(3, 21, 44, 0.48);
+  --skeleton-a: #eceef2;
+  --skeleton-b: #f6f7f9;
+
+  --focus: #626eee;
+  --danger: #d6403b;
+  --success: #0aa56f;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #000c29;
+  --surface: #001035;
+  --surface-2: #00143f;
+  --border: #0e1e4a;
+  --border-strong: #1a2c63;
+
+  --text: #fefefe;
+  --text-body: #667386;
+  --text-muted: #667386;
+  --track: #3a4b65;
+
+  --nav-active-bg: rgba(111, 120, 219, 0.13);
+  --nav-hover-bg: rgba(111, 120, 219, 0.07);
+  --icon-active: #7f89f3;
+
+  --input-bg: #000c29;
+  --input-border: #14265a;
+  --placeholder: #667386;
+
+  --chart-grid: #11214f;
+  --chart-axis: #667386;
+  --chart-line: var(--c-blue);
+  --chart-tooltip-bg: #001a4d;
+
+  --shadow-card: none;
+  --shadow-pop: 0 18px 44px rgba(0, 4, 20, 0.7);
+  --overlay: rgba(0, 4, 20, 0.7);
+  --skeleton-a: #04174a;
+  --skeleton-b: #001035;
+
+  --focus: #8a94ff;
+  --danger: #ff6b66;
+  --success: #2fcc99;
+}

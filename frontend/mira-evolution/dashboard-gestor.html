@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7f9" />
+    <meta name="description" content="Mira Evolution — transforme dados em direção." />
+    <title>Dashboard — Mira Evolution</title>
+
+    <!-- Aplica o tema salvo antes de desenhar a tela (evita "piscar") -->
+    <script src="./js/comum/tema.js"></script>
+
+    <!-- Fontes do Figma: Inter (conteúdo) e Geist (menu lateral). Se não carregarem, usa a fonte do sistema. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Inter:wght@200;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link rel="icon" href="./assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./css/tokens.css" />
+    <link rel="stylesheet" href="./css/themes.css" />
+    <link rel="stylesheet" href="./css/base.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+    <link rel="stylesheet" href="./css/pages.css" />
+    <link rel="stylesheet" href="./css/responsive.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#page-root">Pular para o conteúdo</a>
+    <div class="app">
+      <!-- Menu lateral e barra do topo: preenchidos por js/comum/layout.js -->
+      <aside class="sidebar" id="sidebar" aria-label="Navegação principal"></aside>
+      <header class="topbar"></header>
+      <div class="scrim" data-action="close-menu"></div>
+
+      <main class="main" id="main">
+        <div id="page-root" tabindex="-1">
+          <div class="page dash">
+            <header class="page-header">
+              <div class="page-header__titles">
+                <h1 class="page-title" id="saudacao"></h1>
+                <p class="page-subtitle" id="subtitulo"></p>
+              </div>
+              <div class="page-header__actions">
+                <button type="button" class="filter-btn" id="botao-periodo" data-action="date-range" aria-haspopup="dialog" aria-expanded="false"><i data-icone="calendar" data-tamanho="16"></i><span data-range-label></span><i data-icone="chevron-down" data-tamanho="14"></i></button>
+                <button type="button" class="filter-btn" id="botao-filtros"><i data-icone="filter" data-tamanho="15"></i><span>Filtros</span></button>
+                <div class="header-tools" data-tools></div>
+              </div>
+            </header>
+
+            <!-- Quatro indicadores (preenchidos pelo JavaScript) -->
+            <section class="grid grid--4 dash-kpis" id="kpis" aria-label="Indicadores principais">
+              <div class="skeleton" style="height:137px"></div><div class="skeleton" style="height:137px"></div>
+              <div class="skeleton" style="height:137px"></div><div class="skeleton" style="height:137px"></div>
+            </section>
+
+            <div class="dash-row dash-row--chart">
+              <section class="card card--panel dash-chart" aria-labelledby="chart-title">
+                <div class="card__head">
+                  <h2 class="card__title" id="chart-title">Média diária de horas de desenvolvimento</h2>
+                  <label class="select select--sm"><span class="sr-only">Filtrar por setor</span>
+                    <select id="filtro-setor-grafico"><option value="todos">Todos</option></select>
+                    <i data-icone="chevron-down" data-tamanho="12"></i>
+                  </label>
+                </div>
+                <div class="dash-chart__plot" id="grafico-horas"></div>
+              </section>
+
+              <section class="card card--panel dash-sectors" aria-labelledby="sectors-title">
+                <div class="dash-sectors__body">
+                  <h2 class="card__title" id="sectors-title">Progresso por setor</h2>
+                  <div class="dash-sectors__list" id="lista-setores"></div>
+                </div>
+                <a class="card__footer" href="progresso-gestor.html">Ver progresso <i data-icone="arrow-right" data-tamanho="13"></i></a>
+              </section>
+            </div>
+
+            <div class="dash-row dash-row--tables">
+              <section class="card card--panel dash-table" aria-labelledby="running-title">
+                <div class="dash-table__body">
+                  <h2 class="card__title" id="running-title">Cursos em andamento</h2>
+                  <table class="mini-table">
+                    <thead><tr><th scope="col">Cursos</th><th scope="col">Porcentagem</th></tr></thead>
+                    <tbody id="tabela-cursos"></tbody>
+                  </table>
+                </div>
+                <a class="card__footer" href="cursos-gestor.html">Ver cursos <i data-icone="arrow-right" data-tamanho="13"></i></a>
+              </section>
+
+              <section class="card card--panel dash-table" aria-labelledby="dist-title">
+                <div class="dash-table__body">
+                  <h2 class="card__title" id="dist-title">Distribuição do progresso</h2>
+                  <table class="mini-table">
+                    <thead><tr><th scope="col">Tipo</th><th scope="col">Porcentagem</th></tr></thead>
+                    <tbody id="tabela-distribuicao"></tbody>
+                  </table>
+                </div>
+                <a class="card__footer" href="progresso-gestor.html">Ver progresso <i data-icone="arrow-right" data-tamanho="13"></i></a>
+              </section>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <noscript>Esta aplicação precisa de JavaScript habilitado.</noscript>
+
+    <script src="./js/lib/jquery-3.6.1.min.js"></script>
+    <script src="./js/comum/config.js"></script>
+    <script src="./js/comum/ferramentas.js"></script>
+    <script src="./js/comum/icones.js"></script>
+    <script src="./js/comum/ui.js"></script>
+    <script src="./js/comum/widgets.js"></script>
+    <script src="./js/comum/grafico.js"></script>
+    <script src="./js/comum/dados.js"></script>
+    <script src="./js/comum/sessao.js"></script>
+    <script src="./js/comum/layout.js"></script>
+    <script src="./js/paginas/dashboard-gestor.js"></script>
+  </body>
+</html>

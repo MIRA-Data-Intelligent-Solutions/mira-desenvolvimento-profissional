@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7f9" />
+    <meta name="description" content="Mira Evolution — transforme dados em direção." />
+    <title>Entrar — Mira Evolution</title>
+
+    <!-- Aplica o tema salvo antes de desenhar a tela (evita "piscar") -->
+    <script src="./js/comum/tema.js"></script>
+
+    <!-- Fontes do Figma: Inter (conteúdo) e Geist (menu lateral). Se não carregarem, usa a fonte do sistema. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Inter:wght@200;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link rel="icon" href="./assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./css/tokens.css" />
+    <link rel="stylesheet" href="./css/themes.css" />
+    <link rel="stylesheet" href="./css/base.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+    <link rel="stylesheet" href="./css/pages.css" />
+    <link rel="stylesheet" href="./css/responsive.css" />
+  </head>
+  <body>
+    <main class="login" data-theme="dark">
+      <div class="login__panel">
+        <div class="login__brand"><img class="login__logo" src="./assets/img/logo-login.png" alt="Mira Evolution — Transforme dados em direção" width="423" height="278"></div>
+
+        <form class="login__form" id="form-login" novalidate>
+          <p class="login__error" role="alert" hidden></p>
+
+          <div class="login__field">
+            <label class="sr-only" for="login-user">Usuário ou e-mail</label>
+            <span class="login__icon"><i data-icone="user" data-tamanho="22" data-traco="1.6"></i></span>
+            <input id="login-user" name="identifier" type="text" autocomplete="username" placeholder="Usuário ou e-mail" required>
+          </div>
+
+          <div class="login__field">
+            <label class="sr-only" for="login-pass">Senha</label>
+            <span class="login__icon"><i data-icone="lock" data-tamanho="22" data-traco="1.6"></i></span>
+            <input id="login-pass" name="password" type="password" autocomplete="current-password" placeholder="Senha" required>
+            <button type="button" class="login__eye" data-action="toggle-pass" aria-label="Mostrar senha" aria-pressed="false"><i data-icone="eye" data-tamanho="22" data-traco="1.6"></i></button>
+          </div>
+
+          <div class="login__row">
+            <label class="check"><input type="checkbox" name="remember" checked><span class="check__box"><i data-icone="check" data-tamanho="14" data-traco="3"></i></span>Lembrar de mim</label>
+            <button type="button" class="login__link" data-action="forgot">Esqueceu a senha?</button>
+          </div>
+
+          <button type="submit" class="login__submit">
+            <span>Entrar</span><i data-icone="arrow-right" data-tamanho="22" data-traco="1.8"></i>
+          </button>
+        </form>
+      </div>
+
+      <!-- Acessos de demonstração (os dados ficam em js/comum/config.js) -->
+      <details class="login__demo">
+        <summary>Acessos de demonstração</summary>
+        <ul>
+          <li><button type="button" data-demo="gestor"><strong>Gestor</strong><span>gestor@mira.demo</span></button></li>
+          <li><button type="button" data-demo="colaborador"><strong>Colaborador</strong><span>colaborador@mira.demo</span></button></li>
+        </ul>
+        <p>Senha: <code>Mira@123</code> · Autenticação apenas demonstrativa.</p>
+      </details>
+    </main>
+    <noscript>Esta aplicação precisa de JavaScript habilitado.</noscript>
+
+    <script src="./js/lib/jquery-3.6.1.min.js"></script>
+    <script src="./js/comum/config.js"></script>
+    <script src="./js/comum/ferramentas.js"></script>
+    <script src="./js/comum/icones.js"></script>
+    <script src="./js/comum/ui.js"></script>
+    <script src="./js/comum/widgets.js"></script>
+    <script src="./js/comum/dados.js"></script>
+    <script src="./js/comum/sessao.js"></script>
+    <script src="./js/comum/layout.js"></script>
+    <script src="./js/paginas/login.js"></script>
+  </body>
+</html>

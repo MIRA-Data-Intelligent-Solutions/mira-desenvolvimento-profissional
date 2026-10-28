@@ -1,0 +1,48 @@
+{
+  "gestor": [
+    {
+      "id": "n1",
+      "icon": "award",
+      "text": "Ana Costa concluiu o curso \"Estruturas de Dados Básicas\".",
+      "time": "há 2 h",
+      "unread": true
+    },
+    {
+      "id": "n2",
+      "icon": "trending-up",
+      "text": "O setor Tecnologia atingiu 84% de progresso médio.",
+      "time": "há 5 h",
+      "unread": true
+    },
+    {
+      "id": "n3",
+      "icon": "users",
+      "text": "3 novos colaboradores foram adicionados ao setor Comercial.",
+      "time": "ontem",
+      "unread": true
+    }
+  ],
+  "colaborador": [
+    {
+      "id": "n1",
+      "icon": "book-open",
+      "text": "O módulo 3 de \"Python para Dados\" já está disponível.",
+      "time": "há 1 h",
+      "unread": true
+    },
+    {
+      "id": "n2",
+      "icon": "clock",
+      "text": "O prazo de \"Prevenção Contra Incêndio\" termina em 15/06/2026.",
+      "time": "há 4 h",
+      "unread": true
+    },
+    {
+      "id": "n3",
+      "icon": "award",
+      "text": "Seu certificado de \"Estruturas de Dados Básicas\" está disponível.",
+      "time": "ontem",
+      "unread": true
+    }
+  ]
+}

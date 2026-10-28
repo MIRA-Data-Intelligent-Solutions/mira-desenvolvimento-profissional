@@ -1,0 +1,330 @@
+{
+  "u07": {
+    "kpis": {
+      "general": 84,
+      "inProgress": 6,
+      "platforms": 2,
+      "completed": 4
+    },
+    "items": [
+      {
+        "courseId": "c06",
+        "title": "Python para Dados",
+        "category": "Dados",
+        "cover": "Python",
+        "modules": 12,
+        "hours": 40,
+        "progress": 84,
+        "status": "Em andamento"
+      },
+      {
+        "courseId": "c07",
+        "title": "Power BI Avançado",
+        "category": "Dados",
+        "cover": "PowerBI",
+        "modules": 10,
+        "hours": 32,
+        "progress": 78,
+        "status": "Em andamento"
+      },
+      {
+        "courseId": "c08",
+        "title": "Consultas SQL",
+        "category": "Dados",
+        "cover": "SQL",
+        "modules": 8,
+        "hours": 24,
+        "progress": 72,
+        "status": "Em andamento"
+      },
+      {
+        "courseId": "c09",
+        "title": "Prevenção Contra Incêndio",
+        "category": "Segurança",
+        "cover": "Sip",
+        "modules": 4,
+        "hours": 8,
+        "progress": 67,
+        "status": "Em andamento"
+      },
+      {
+        "courseId": "c12",
+        "title": "Liderança Situacional",
+        "category": "Gestão",
+        "cover": "Lead",
+        "modules": 6,
+        "hours": 18,
+        "progress": 50,
+        "status": "Em andamento"
+      },
+      {
+        "courseId": "c13",
+        "title": "Comunicação Assertiva",
+        "category": "Soft Skills",
+        "cover": "Com",
+        "modules": 5,
+        "hours": 12,
+        "progress": 40,
+        "status": "Em andamento"
+      }
+    ],
+    "completed": [
+      {
+        "courseId": "c14",
+        "title": "Introdução ao Python e Sintaxe Básica",
+        "category": "Tecnologia",
+        "cover": "Py",
+        "modules": 6,
+        "hours": 16,
+        "progress": 100,
+        "status": "Concluído"
+      },
+      {
+        "courseId": "c15",
+        "title": "Estruturas de Dados Básicas",
+        "category": "Tecnologia",
+        "cover": "Dados",
+        "modules": 5,
+        "hours": 12,
+        "progress": 100,
+        "status": "Concluído"
+      }
+    ],
+    "details": {
+      "c06": {
+        "cover": "Python",
+        "area": "Dados",
+        "moduleCount": 12,
+        "hours": 40,
+        "doneHours": 34,
+        "progress": 84,
+        "instructor": "Dra. Clara Silveira",
+        "startDate": "20/05/2026",
+        "deadline": "20/07/2026",
+        "certificate": "Incluso",
+        "modules": [
+          {
+            "order": 1,
+            "title": "Introdução ao Python e Sintaxe Básica",
+            "hours": 8,
+            "status": "Concluído"
+          },
+          {
+            "order": 2,
+            "title": "Estruturas de Dados e Funções",
+            "hours": 10,
+            "status": "Concluído"
+          },
+          {
+            "order": 3,
+            "title": "Análise com Pandas e NumPy",
+            "hours": 12,
+            "status": "Em andamento"
+          },
+          {
+            "order": 4,
+            "title": "Visualização de Dados com Matplotlib",
+            "hours": 6,
+            "status": "Bloqueado"
+          },
+          {
+            "order": 5,
+            "title": "Projeto Final Prático",
+            "hours": 4,
+            "status": "Bloqueado"
+          }
+        ]
+      },
+      "c07": {
+        "cover": "PowerBI",
+        "area": "Dados",
+        "moduleCount": 10,
+        "hours": 32,
+        "doneHours": 25,
+        "progress": 78,
+        "instructor": "Prof. Henrique Duarte",
+        "startDate": "02/05/2026",
+        "deadline": "02/07/2026",
+        "certificate": "Incluso",
+        "modules": [
+          {
+            "order": 1,
+            "title": "Fundamentos de Business Intelligence",
+            "hours": 6,
+            "status": "Concluído"
+          },
+          {
+            "order": 2,
+            "title": "Modelagem de Dados no Power BI",
+            "hours": 8,
+            "status": "Concluído"
+          },
+          {
+            "order": 3,
+            "title": "DAX na Prática",
+            "hours": 10,
+            "status": "Em andamento"
+          },
+          {
+            "order": 4,
+            "title": "Dashboards Interativos",
+            "hours": 6,
+            "status": "Bloqueado"
+          },
+          {
+            "order": 5,
+            "title": "Projeto Final",
+            "hours": 2,
+            "status": "Bloqueado"
+          }
+        ]
+      },
+      "c08": {
+        "cover": "SQL",
+        "area": "Dados",
+        "moduleCount": 8,
+        "hours": 24,
+        "doneHours": 17,
+        "progress": 72,
+        "instructor": "Profa. Marina Teixeira",
+        "startDate": "10/05/2026",
+        "deadline": "10/07/2026",
+        "certificate": "Incluso",
+        "modules": [
+          {
+            "order": 1,
+            "title": "SELECT e Filtros",
+            "hours": 4,
+            "status": "Concluído"
+          },
+          {
+            "order": 2,
+            "title": "Joins e Subconsultas",
+            "hours": 8,
+            "status": "Concluído"
+          },
+          {
+            "order": 3,
+            "title": "Funções de Agregação",
+            "hours": 6,
+            "status": "Em andamento"
+          },
+          {
+            "order": 4,
+            "title": "Otimização de Consultas",
+            "hours": 6,
+            "status": "Bloqueado"
+          }
+        ]
+      },
+      "c09": {
+        "cover": "Sip",
+        "area": "Segurança",
+        "moduleCount": 4,
+        "hours": 8,
+        "doneHours": 5,
+        "progress": 67,
+        "instructor": "Cap. Roberto Almeida",
+        "startDate": "15/05/2026",
+        "deadline": "15/06/2026",
+        "certificate": "Incluso",
+        "modules": [
+          {
+            "order": 1,
+            "title": "Teoria do Fogo",
+            "hours": 2,
+            "status": "Concluído"
+          },
+          {
+            "order": 2,
+            "title": "Extintores e Equipamentos",
+            "hours": 2,
+            "status": "Concluído"
+          },
+          {
+            "order": 3,
+            "title": "Rotas de Fuga",
+            "hours": 2,
+            "status": "Em andamento"
+          },
+          {
+            "order": 4,
+            "title": "Simulado e Avaliação",
+            "hours": 2,
+            "status": "Bloqueado"
+          }
+        ]
+      },
+      "c12": {
+        "cover": "Lead",
+        "area": "Gestão",
+        "moduleCount": 6,
+        "hours": 18,
+        "doneHours": 9,
+        "progress": 50,
+        "instructor": "Dr. Paulo Mendes",
+        "startDate": "25/05/2026",
+        "deadline": "25/07/2026",
+        "certificate": "Incluso",
+        "modules": [
+          {
+            "order": 1,
+            "title": "Estilos de Liderança",
+            "hours": 4,
+            "status": "Concluído"
+          },
+          {
+            "order": 2,
+            "title": "Feedback Efetivo",
+            "hours": 5,
+            "status": "Em andamento"
+          },
+          {
+            "order": 3,
+            "title": "Gestão de Conflitos",
+            "hours": 5,
+            "status": "Bloqueado"
+          },
+          {
+            "order": 4,
+            "title": "Projeto Final",
+            "hours": 4,
+            "status": "Bloqueado"
+          }
+        ]
+      },
+      "c13": {
+        "cover": "Com",
+        "area": "Soft Skills",
+        "moduleCount": 5,
+        "hours": 12,
+        "doneHours": 5,
+        "progress": 40,
+        "instructor": "Profa. Júlia Ferraz",
+        "startDate": "01/06/2026",
+        "deadline": "01/08/2026",
+        "certificate": "Incluso",
+        "modules": [
+          {
+            "order": 1,
+            "title": "Escuta Ativa",
+            "hours": 3,
+            "status": "Concluído"
+          },
+          {
+            "order": 2,
+            "title": "Comunicação Assertiva no Dia a Dia",
+            "hours": 4,
+            "status": "Em andamento"
+          },
+          {
+            "order": 3,
+            "title": "Conversas Difíceis",
+            "hours": 5,
+            "status": "Bloqueado"
+          }
+        ]
+      }
+    }
+  }
+}

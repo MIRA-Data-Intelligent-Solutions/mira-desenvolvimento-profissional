@@ -1,0 +1,76 @@
+/* ==========================================================================
+   TOKENS DE DESIGN (independentes de tema) — extraídos do Figma Mira_Evolution
+   Cores dependentes de tema ficam em themes.css.
+   ========================================================================== */
+:root {
+  /* Tipografia */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-nav: 'Geist', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  --fs-2xs: 0.625rem; /* 10 */
+  --fs-xs: 0.6875rem; /* 11 */
+  --fs-sm: 0.75rem; /* 12 */
+  --fs-base: 0.8125rem; /* 13 */
+  --fs-md: 0.875rem; /* 14 */
+  --fs-lg: 1rem; /* 16 */
+  --fs-xl: 1.125rem; /* 18 */
+  --fs-2xl: 1.5rem; /* 24 */
+  --fs-3xl: 1.875rem; /* 30 */
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* Marca */
+  --navy: #000028; /* "Azul" da identidade visual */
+  --primary: #626eee; /* "Roxo" da identidade visual */
+  --primary-hover: #5360e6;
+  --primary-contrast: #fefefe;
+  --white: #ffffff;
+
+  /* Cores semânticas de dados (iguais nos dois temas) */
+  --c-blue: #2b7fff;
+  --c-purple: #6f78db;
+  --c-green: #00bc7d;
+  --c-red: #df4d48;
+  --c-amber: #f5a524;
+  --c-up: #2fcc99; /* variação positiva */
+
+  /* Espaçamento (escala de 4px) */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-10: 2.5rem;
+  --sp-12: 3rem;
+
+  /* Raios */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-input: 11px;
+  --radius-lg: 12px;
+  --radius-xl: 19px;
+  --radius-pill: 999px;
+
+  /* Layout */
+  --sidebar-w: 240px;
+  --page-pad: 40px;
+  --page-max: 1120px;
+  --touch-min: 44px;
+
+  /* Movimento */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur: 0.18s;
+
+  /* Camadas */
+  --z-topbar: 35;
+  --z-sidebar: 40;
+  --z-popover: 60;
+  --z-modal: 80;
+  --z-toast: 100;
+}

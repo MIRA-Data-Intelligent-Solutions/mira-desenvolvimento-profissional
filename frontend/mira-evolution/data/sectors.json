@@ -1,0 +1,94 @@
+{
+  "kpis": [
+    {
+      "label": "Setores Mapeados",
+      "value": "8",
+      "delta": "+14%",
+      "note": "vs. período anterior"
+    },
+    {
+      "label": "Colaboradores Totais",
+      "value": "321",
+      "delta": "+14%",
+      "note": "vs. período anterior"
+    },
+    {
+      "label": "Progresso Médio",
+      "value": "78%",
+      "delta": "+6%",
+      "note": "consolidado global"
+    },
+    {
+      "label": "Horas de Desenvolvimento",
+      "value": "1.347h",
+      "delta": "+22%",
+      "note": "geral do mês"
+    }
+  ],
+  "items": [
+    {
+      "id": "tecnologia",
+      "name": "Tecnologia",
+      "icon": "code",
+      "color": "#2b7fff",
+      "collaborators": 45,
+      "avgProgress": 84
+    },
+    {
+      "id": "rh",
+      "name": "RH",
+      "icon": "users",
+      "color": "#6f78db",
+      "collaborators": 12,
+      "avgProgress": 78
+    },
+    {
+      "id": "financeiro",
+      "name": "Financeiro",
+      "icon": "dollar-sign",
+      "color": "#00bc7d",
+      "collaborators": 8,
+      "avgProgress": 72
+    },
+    {
+      "id": "comercial",
+      "name": "Comercial",
+      "icon": "briefcase",
+      "color": "#df4d48",
+      "collaborators": 120,
+      "avgProgress": 67
+    },
+    {
+      "id": "atendimento",
+      "name": "Atendimento",
+      "icon": "phone",
+      "color": "#f5a524",
+      "collaborators": 60,
+      "avgProgress": 74
+    },
+    {
+      "id": "marketing",
+      "name": "Marketing",
+      "icon": "megaphone",
+      "color": "#e0529c",
+      "collaborators": 25,
+      "avgProgress": 81
+    },
+    {
+      "id": "logistica",
+      "name": "Logística",
+      "icon": "truck",
+      "color": "#14b8a6",
+      "collaborators": 35,
+      "avgProgress": 63
+    },
+    {
+      "id": "juridico",
+      "name": "Jurídico",
+      "icon": "shield",
+      "color": "#9b6bff",
+      "collaborators": 16,
+      "avgProgress": 90
+    }
+  ]
+}
