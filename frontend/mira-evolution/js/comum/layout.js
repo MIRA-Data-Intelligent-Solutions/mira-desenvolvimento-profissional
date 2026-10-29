@@ -104,6 +104,8 @@ $(window).on('mira:session-updated', function (e) {
 var _lidas = new Set(armazenamentoSessao.get('mira.notifications.read', []));
 var _notificacoes = [];
 
+/* Comentário Rafael: Ativar Futuramente (Tirar o style = display:none) */
+
 function montarFerramentasDoTopo(sessao) {
   var escuro = Tema.obter() === 'dark';
   var mostrarTema = $('[data-tools]').data('semTema') === undefined;   // Configurações usa data-sem-tema
