@@ -282,6 +282,8 @@ def me(usuario=Depends(usuario_atual)):
 
  #------- FRONT END: o front chama GET /total_setores (com o token) e recebe {"total_setores": 5}.
 # 403 (logado, mas não é gestor), 500 (erro interno). Só o GESTOR acessa.
+
+
 @app.get("/total_setores")
 def total_setores(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
     """Quantidade de setores cadastrados na empresa (contados pelo id_setor). Só para GESTOR."""

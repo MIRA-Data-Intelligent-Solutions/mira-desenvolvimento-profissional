@@ -86,7 +86,7 @@ class BancoDeDados:
             cursor.execute(
                 """SELECT U.id_usuario, U.id_empresa, U.nome, U.email, U.senha_hash, U.papel_acesso, U.funcao, S.nome FROM Usuario U
                 join Setor S on S.id_setor=U.id_setor
-                WHERE email = %s""",
+                WHERE U.email = %s""",
                 (email,),
             )
             return cursor.fetchone()
