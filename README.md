@@ -86,7 +86,7 @@ Essas funcionalidades não fazem parte da entrega principal neste momento.
 - Maria Eduarda Fonseca
 - Maria Luisa
 - Maria Eduarda Prudente
-- Rafael Franco
+- Rafael
 
 ## Status
 
