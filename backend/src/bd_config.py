@@ -16,7 +16,7 @@ DB_POOL_TAMANHO = 5                             # fixo: máximo de conexões abe
 PAPEL_GESTOR = "GESTOR"
 PAPEL_COLABORADOR = "COLABORADOR"
 
-class bd:
+class BancoDeDados:
     def __init__(self):
         self.pool = pooling.MySQLConnectionPool(
             pool_name=DB_POOL_NOME,
@@ -84,11 +84,27 @@ class bd:
         cursor = conexao.cursor(dictionary=True)
         try:
             cursor.execute(
-                """SELECT id_usuario, id_empresa, nome, email, senha_hash, papel_acesso
-                   FROM Usuario WHERE email = '%s' """,
+                """SELECT U.id_usuario, U.id_empresa, U.nome, U.email, U.senha_hash, U.papel_acesso, U.funcao, S.nome FROM Usuario U
+                join Setor S on S.id_setor=U.id_setor
+                WHERE email = %s""",
                 (email,),
             )
             return cursor.fetchone()
         finally:
             cursor.close()
             conexao.close()
+
+    def buscar_skill_usuario(self, id_usuario):
+            """Retorna um dict com os dados do usuário (incluindo senha_hash) ou None."""
+            conexao = self.pool.get_connection()
+            cursor = conexao.cursor(dictionary=True)
+            try:
+                cursor.execute(
+                    """SELECT id_habilidade, texto from Habilidades
+                    WHERE id_usuario = %s""",
+                    (id_usuario,),
+                )
+                return cursor.fetchone()
+            finally:
+                cursor.close()
+                conexao.close()

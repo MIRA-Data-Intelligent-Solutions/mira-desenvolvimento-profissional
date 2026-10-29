@@ -1,0 +1,9 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/me
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0muj}}"
+order: 3000

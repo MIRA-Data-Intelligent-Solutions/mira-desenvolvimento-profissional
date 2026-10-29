@@ -11,12 +11,12 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from mysql.connector import Error, IntegrityError, errorcode, pooling #
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
-from bd_config import bd
+from bd_config import BancoDeDados
 
 
 load_dotenv()
 
-
+print("Início da aplicação")
 # --- Empresa ---------------------------------------------------------------
 # Empresa atendida por esta instalação (não vem do front end)
 ID_EMPRESA = int(os.getenv("ID_EMPRESA", 1))    # vem do .env (padrão 1)
@@ -42,7 +42,11 @@ PAPEL_COLABORADOR = "COLABORADOR"
 
 #------- FRONT END: trocar pelos endereços reais do front (onde a tela vai rodar)
 # Se o endereço do front não estiver nesta lista, o navegador bloqueia as chamadas.
-CORS_ORIGENS = ["http://localhost:3000", "http://localhost:5173"]  # fixo
+CORS_ORIGENS = [
+    "https://mira-evolution.vercel.app",   # produção (Vercel)
+    "http://127.0.0.1:5500",               # Live Server (teste local)
+    "http://localhost:5500",               # o mesmo, escrito com localhost
+]  # fixo
 
 # Obs.: HASH_FALSO (usado no login) é calculado mais abaixo, junto da função
 # criptografar_senha, porque depende dela.
@@ -53,6 +57,7 @@ CORS_ORIGENS = ["http://localhost:3000", "http://localhost:5173"]  # fixo
 # Aplicação
 # ---------------------------------------------------------------------------
 app = FastAPI()
+bd = BancoDeDados()  # cria o objeto (e o pool de conexões) uma vez, ao subir o servidor
 
 app.add_middleware(
     CORSMiddleware,
@@ -91,6 +96,7 @@ def validar_credenciais(email: str, senha: str) -> dict:
     """GDP-128: valida e-mail e senha. Retorna o usuário ou levanta erro 401."""
     try:
         usuario = bd.buscar_usuario_por_email(email.lower())
+        usuario["habilidades"] = bd.buscar_skill_usuario(usuario["id_usuario"]) if usuario else None
     except Error as erro:
         print(f"Erro no MySQL: {erro}")
         raise HTTPException(status_code=500, detail="Erro interno ao fazer login")
@@ -163,6 +169,7 @@ def padronizar_info_cadastro(usuario: UsuarioCadastro):
 #------- FRONT END: o front chama POST /usuarios (endereço do servidor + "/usuarios").
 # Respostas que o front precisa tratar: 201 (ok), 422 (campo inválido), 409 (e-mail repetido),
 # 400 (setor/gestor inválido), 500 (erro interno).
+
 @app.post("/usuarios", status_code=201)
 def rota_cadastrar_usuario(usuario: UsuarioCadastro):
     nome, email = padronizar_info_cadastro(usuario)
@@ -211,10 +218,17 @@ def login(dados: LoginEntrada):
         "token_type": "bearer",
         "expira_em_minutos": TOKEN_MINUTOS,
         "usuario": {
-            "id_usuario": usuario["id_usuario"],
-            "nome": usuario["nome"],
+            "userId": usuario["id_usuario"],
+            "name": usuario["nome"],
+            "firstName": usuario["nome"].split()[0],
+            "title": usuario["funcao"],
             "email": usuario["email"],
-            "papel_acesso": usuario["papel_acesso"],
+            "papel_acesso": usuario["papel_acesso"],          # MAIÚSCULO, igual ao banco (GESTOR / COLABORADOR)
+            "role": usuario["papel_acesso"].lower(), 
+            "department": usuario["nome"],
+            "phone": "",
+            "bio": "",
+            "skills": usuario["habilidades"] # minúsculo, é o que o front usa (gestor / colaborador)
         },
     }
 
@@ -265,3 +279,49 @@ def exigir_papel(papel: str):
 def me(usuario=Depends(usuario_atual)):
     """Rota de teste: devolve quem está logado, segundo o token."""
     return usuario
+
+ #------- FRONT END: o front chama GET /total_setores (com o token) e recebe {"total_setores": 5}.
+# 403 (logado, mas não é gestor), 500 (erro interno). Só o GESTOR acessa.
+@app.get("/total_setores")
+def total_setores(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
+    """Quantidade de setores cadastrados na empresa (contados pelo id_setor). Só para GESTOR."""
+    conexao = bd.pool.get_connection()
+    cursor = conexao.cursor()
+    try:
+        cursor.execute(
+            "SELECT COUNT(id_setor) FROM Setor WHERE id_empresa = %s",
+            (ID_EMPRESA,),
+        )
+        total = cursor.fetchone()[0]
+    except Error as erro:
+        print(f"Erro no MySQL: {erro}")
+        raise HTTPException(status_code=500, detail="Erro interno ao contar setores")
+    finally:
+        cursor.close()
+        conexao.close()  # devolve a conexão ao pool
+
+    return {"total_setores": total}
+
+    #------- FRONT END: o front chama GET /total_colaboradores (com o token) e recebe {"total_colaboradores": 12}.
+# 403 (logado, mas não é gestor), 500 (erro interno). Só o GESTOR acessa.
+@app.get("/total_colaboradores")
+def total_colaboradores(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
+    """Quantidade de colaboradores da empresa (contados pelo id_usuario). Só para GESTOR."""
+    conexao = bd.pool.get_connection()
+    cursor = conexao.cursor()
+    try:
+        cursor.execute(
+            "SELECT COUNT(id_usuario) FROM Usuario WHERE id_empresa = %s AND papel_acesso = %s",
+            (ID_EMPRESA, PAPEL_COLABORADOR),
+        )
+        total = cursor.fetchone()[0]
+    except Error as erro:
+        print(f"Erro no MySQL: {erro}")
+        raise HTTPException(status_code=500, detail="Erro interno ao contar colaboradores")
+    finally:
+        cursor.close()
+        conexao.close()  # devolve a conexão ao pool
+
+    return {"total_colaboradores": total}
+
+print("fim")
