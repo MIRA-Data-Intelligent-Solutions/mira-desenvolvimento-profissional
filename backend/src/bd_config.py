@@ -84,7 +84,7 @@ class BancoDeDados:
         cursor = conexao.cursor(dictionary=True)
         try:
             cursor.execute(
-                """SELECT U.id_usuario, U.id_empresa, U.nome, U.email, U.senha_hash, U.papel_acesso, U.funcao, S.nome FROM Usuario U
+                """SELECT U.id_usuario, U.id_empresa, U.nome, U.email, U.senha_hash, U.papel_acesso, U.funcao, S.nome AS setor_nome FROM Usuario U
                 join Setor S on S.id_setor=U.id_setor
                 WHERE U.email = %s""",
                 (email,),

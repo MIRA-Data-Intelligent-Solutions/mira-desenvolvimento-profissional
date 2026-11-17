@@ -13,19 +13,60 @@ function lerSessao() {
  * Versão de demonstração: compara com USUARIOS_DEMO (config.js).
  * Com API real, troque o corpo por um fetch(POST) para o endpoint de login.
  */
-function entrar(identificador, senha, lembrar) {
+async function entrar(identificador, senha, lembrar) {
   var id = normalize(identificador).trim();
-  var usuario = USUARIOS_DEMO.filter(function (u) {
-    return normalize(u.email) === id || normalize(u.username) === id;
-  })[0];
-  if (!usuario || usuario.password !== senha) return { ok: false, error: 'Usuário ou senha inválidos.' };
 
+  var usuario = await fazerLogin(identificador, senha);
+
+  if (!usuario) return { ok: false, error: 'Usuário ou senha inválidos.' };
+  
   var sessao = $.extend({}, usuario, { token: 'demo-' + usuario.id, signedAt: Date.now() });
   delete sessao.password;
   armazenamentoSessao.remove(APP.chaveSessao);
   armazenamentoLocal.remove(APP.chaveSessao);
   (lembrar ? armazenamentoLocal : armazenamentoSessao).set(APP.chaveSessao, sessao);
   return { ok: true, sessao: sessao };
+}
+
+async function fazerLogin(email, senha) {
+    try {
+        // Envia a requisição para a API
+        const resposta = await fetch("https://mira-desenvolvimento-profissional.onrender.com/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                senha: senha
+            })
+        });
+
+        // Converte a resposta para JSON
+        const dados = await resposta.json();
+
+        // Verifica se o login foi realizado
+        if (dados.access_token) {
+
+          // Armazena o token de autenticação no Cache do navegador (localStorage)
+          localStorage.setItem("token", dados.access_token);
+
+           return {
+            collaboratorId: null,
+            email: dados.usuario.email,
+            firstName: dados.usuario.firstName,
+            id: String(dados.usuario.userId),
+            modeLabel: dados.usuario.title,
+            name: dados.usuario.name,
+            password: " ",
+            role: dados.usuario.role,
+            roleLabel: dados.usuario.papel_acesso,
+            username: dados.usuario.role
+          };
+        }
+    } catch (erro) {
+        console.error("Erro ao realizar login:", erro);
+    }
 }
 
 function sair() {

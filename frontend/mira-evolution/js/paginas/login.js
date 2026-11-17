@@ -54,7 +54,7 @@ $(function () {
     return paginaInicial(perfil);
   }
 
-  $form.on('submit', function (e) {
+  $form.on('submit', async function (e) {
     e.preventDefault();
     mostrarErro('');
     if (!$.trim($usuario.val()) || !$senha.val()) {
@@ -63,7 +63,7 @@ $(function () {
       return;
     }
     $enviar.prop('disabled', true).addClass('is-loading');
-    var resultado = entrar($usuario.val(), $senha.val(), $form.find('[name="remember"]').prop('checked'));
+    var resultado = await entrar($usuario.val(), $senha.val(), $form.find('[name="remember"]').prop('checked'));
     $enviar.prop('disabled', false).removeClass('is-loading');
     if (!resultado.ok) {
       mostrarErro(resultado.error);
