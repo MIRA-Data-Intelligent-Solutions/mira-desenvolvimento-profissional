@@ -30,7 +30,7 @@ update Usuario
 set telefone = '(19) 99999-0005',
     sobre_mim = 'Profissional da área de tecnologia.'
 where id_usuario = 5;
-
+git pull origin main
 update Usuario
 set telefone = '(19) 99999-0006',
     sobre_mim = 'Profissional da área de tecnologia.'
