@@ -100,11 +100,11 @@ class BancoDeDados:
             cursor = conexao.cursor(dictionary=True)
             try:
                 cursor.execute(
-                    """SELECT id_habilidade, texto from Habilidades
+                    """SELECT texto from Habilidades
                     WHERE id_usuario = %s""",
                     (id_usuario,),
                 )
-                return cursor.fetchone()
+                return cursor.fetchall()
             finally:
                 cursor.close()
                 conexao.close()

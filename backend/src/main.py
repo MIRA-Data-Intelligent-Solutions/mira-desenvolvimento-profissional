@@ -224,11 +224,11 @@ def login(dados: LoginEntrada):
             "title": usuario["funcao"],
             "email": usuario["email"],
             "papel_acesso": usuario["papel_acesso"],          # MAIÚSCULO, igual ao banco (GESTOR / COLABORADOR)
-            "role": usuario["papel_acesso"].lower(), 
+            "role": usuario["papel_acesso"].lower(),          # minúsculo, é o que o front usa (gestor / colaborador)
             "department": usuario["nome"],
             "phone": "",
             "bio": "",
-            "skills": usuario["habilidades"] # minúsculo, é o que o front usa (gestor / colaborador)
+            "skills": [habilidade["texto"] for habilidade in usuario["habilidades"]] 
         },
     }
 
