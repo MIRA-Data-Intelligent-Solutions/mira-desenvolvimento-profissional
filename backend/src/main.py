@@ -326,4 +326,28 @@ def total_colaboradores(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
 
     return {"total_colaboradores": total}
 
+@app.get("/total_cursos_concluidos")
+def total_cursos_concluidos(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
+    """Quantidade de cursos concluídos na empresa (contados pelo id_curso_usuario). Só para GESTOR."""
+    conexao = bd.pool.get_connection()
+    cursor = conexao.cursor()
+    try:
+        cursor.execute(
+            """SELECT COUNT(CU.id_curso_usuario)
+               FROM Curso_Usuario CU
+               JOIN Usuario U ON U.id_usuario = CU.id_usuario
+               WHERE U.id_empresa = %s AND CU.status = %s""",
+            (ID_EMPRESA, "CONCLUIDO"),
+        )
+        total = cursor.fetchone()[0]
+    except Error as erro:
+        print(f"Erro no MySQL: {erro}")
+        raise HTTPException(status_code=500, detail="Erro interno ao contar cursos concluídos")
+    finally:
+        cursor.close()
+        conexao.close()  # devolve a conexão ao pool
+
+    return {"total_cursos_concluidos": total}
+
+
 print("fim")
