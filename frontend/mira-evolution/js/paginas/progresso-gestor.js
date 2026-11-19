@@ -10,12 +10,26 @@ $(function () {
   var setores = [];         // data/sectors.json
   var grafico = null;
 
-  Promise.all([buscarDados('progress'), buscarDados('dashboard'), buscarDados('sectors')])
-    .then(function (r) {
-      progresso = r[0];
-      dashboard = r[1];
-      setores = r[2].items;
-      $('#filtro-setor').append(setores.map(function (s) { return '<option value="' + s.id + '">Setor: ' + esc(s.name) + '</option>'; }).join(''));
+    fetch('https://mira-desenvolvimento-profissional.onrender.com/progresso', {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    }
+  })
+    .then(function (resposta) {
+      if (!resposta.ok) {
+        throw new Error('Não foi possível carregar o progresso (HTTP ' + resposta.status + ').');
+      }
+      return resposta.json();
+    })
+    .then(function (dados) {
+      progresso = dados;
+      dashboard = dados;
+      setores = dados.sectors;
+
+      $('#filtro-setor').append(setores.map(function (s) {
+        return '<option value="' + s.id + '">Setor: ' + esc(s.name) + '</option>';
+      }).join(''));
+
       $('#kpis').html(progresso.kpis.map(kpiLeft).join(''));
       desenhar();
     })

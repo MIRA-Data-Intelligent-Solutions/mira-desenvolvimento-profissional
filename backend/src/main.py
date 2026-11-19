@@ -349,5 +349,120 @@ def total_cursos_concluidos(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
 
     return {"total_cursos_concluidos": total}
 
+@app.get("/progresso")
+def progresso(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
+    """Ranking atual e evolução diária das conclusões por setor."""
+    empresa = usuario["id_empresa"]
+    conexao = None
+    cursor = None
+
+    try:
+        conexao = bd.pool.get_connection()
+        cursor = conexao.cursor()
+
+        cursor.execute(
+            """SELECT S.id_setor, S.nome, S.cor, U.id_usuario, U.nome,
+                      COUNT(CU.id_curso_usuario),
+                      COALESCE(SUM(CU.percentual_atual), 0),
+                      SUM(CASE WHEN CU.status = 'CONCLUIDO' THEN 1 ELSE 0 END),
+                      SUM(CASE WHEN CU.status = 'CONCLUIDO' THEN C.carga_horaria ELSE 0 END)
+               FROM Setor S
+               LEFT JOIN Usuario U ON U.id_setor = S.id_setor
+                   AND U.id_empresa = S.id_empresa
+                   AND U.papel_acesso = %s AND U.ativo = 1
+               LEFT JOIN Curso_Usuario CU ON CU.id_usuario = U.id_usuario
+               LEFT JOIN Curso C ON C.id_curso = CU.id_curso
+               WHERE S.id_empresa = %s
+               GROUP BY S.id_setor, S.nome, S.cor, U.id_usuario, U.nome
+               ORDER BY COALESCE(AVG(CU.percentual_atual), 0) DESC, U.nome, U.id_usuario""",
+            (PAPEL_COLABORADOR, empresa),
+        )
+        linhas_ranking = cursor.fetchall()
+
+        cursor.execute(
+            """SELECT U.id_setor, CU.data_conclusao, SUM(C.carga_horaria)
+               FROM Curso_Usuario CU
+               JOIN Usuario U ON U.id_usuario = CU.id_usuario
+               JOIN Curso C ON C.id_curso = CU.id_curso
+               WHERE U.id_empresa = %s AND U.papel_acesso = %s AND U.ativo = 1
+                   AND CU.status = 'CONCLUIDO' AND CU.data_conclusao IS NOT NULL
+               GROUP BY U.id_setor, CU.data_conclusao""",
+            (empresa, PAPEL_COLABORADOR),
+        )
+        linhas_evolucao = cursor.fetchall()
+
+    except Error as erro:
+        print(f"Erro no MySQL: {erro}")
+        raise HTTPException(status_code=500, detail="Erro interno ao consultar o progresso")
+
+    finally:
+        try:
+            if cursor is not None:
+                cursor.close()
+        finally:
+            if conexao is not None:
+                conexao.close()
+
+    setores = {}
+    ranking = []
+    total_matriculas = total_percentual = total_concluidos = total_horas = 0
+
+    for id_setor, setor, cor, id_usuario, nome, matriculas, percentual, concluidos, horas in linhas_ranking:
+        setor_id = str(id_setor)
+        setores[setor_id] = {"id": setor_id, "name": setor, "color": cor or "#2b7fff"}
+
+        if id_usuario is None:
+            continue
+
+        total_matriculas += matriculas
+        total_percentual += percentual
+        total_concluidos += concluidos
+        total_horas += horas
+
+        ranking.append({
+            "position": len(ranking) + 1,
+            "collaboratorId": str(id_usuario),
+            "name": nome,
+            "sector": setor,
+            "progress": round(float(percentual / matriculas), 2) if matriculas else 0,
+            "hours": int(horas),
+            "completed": int(concluidos),
+        })
+
+    horas_por_dia = {
+        (str(id_setor), dia): int(horas)
+        for id_setor, dia, horas in linhas_evolucao
+    }
+    dias_com_conclusoes = [dia for _, dia, _ in linhas_evolucao]
+    hoje = datetime.now().date()
+    inicio = min(dias_com_conclusoes, default=hoje)
+    fim = max(dias_com_conclusoes, default=hoje)
+    dias = [
+        inicio + timedelta(days=i)
+        for i in range((fim - inicio).days + 1)
+    ] if dias_com_conclusoes else []
+
+    quantidade = len(ranking)
+    progresso_geral = total_percentual / total_matriculas if total_matriculas else 0
+    media_horas = total_horas / quantidade if quantidade else 0
+    taxa_conclusao = 100 * total_concluidos / total_matriculas if total_matriculas else 0
+
+    return {
+        "kpis": [
+            {"label": "Progresso Geral", "value": f"{progresso_geral:.0f}%", "note": "Média das matrículas"},
+            {"label": "Média de Horas", "value": f"{media_horas:.1f}h", "note": "Cursos concluídos por colaborador"},
+            {"label": "Taxa de Conclusão", "value": f"{taxa_conclusao:.0f}%", "note": "Proporção de matrículas concluídas"},
+            {"label": "Colaboradores Ativos", "value": str(quantidade), "note": "Total da empresa"},
+        ],
+        "ranking": ranking,
+        "sectors": list(setores.values()),
+        "legendSectors": list(setores),
+        "periodDefault": {"from": inicio.isoformat(), "to": fim.isoformat()},
+        "dates": [dia.isoformat() for dia in dias],
+        "dailyHours": {
+            setor_id: [horas_por_dia.get((setor_id, dia), 0) for dia in dias]
+            for setor_id in setores
+        },
+    }
 
 print("fim")
