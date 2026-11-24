@@ -1,0 +1,56 @@
+{
+  "id": "5",
+  "name": "Bruno Martins",
+  "email": "bruno.martins@empresa.com",
+  "sectorName": "Tecnologia",
+  "role": "Colaborador",
+  "status": "Ativo",
+  "progress": 77,
+  "hours": 30,
+  "courses": 3,
+  "completedCourses": 1,
+  "skills": [
+    "Power BI",
+    "Banco de Dados"
+  ],
+  "competencies": [
+    "Banco de Dados"
+  ],
+  "kpis": {
+    "hours": {
+      "value": 30,
+      "note": "cursos concluídos"
+    },
+    "progress": {
+      "value": 77,
+      "note": "média das matrículas"
+    },
+    "inProgress": {
+      "value": 2,
+      "note": "matrículas ativas"
+    },
+    "completed": {
+      "value": 1,
+      "note": "cursos finalizados"
+    }
+  },
+  "frequency": [],
+  "recentCourses": [
+    {
+      "title": "Python para Ciencia de Dados",
+      "status": "Em andamento",
+      "progress": 90
+    },
+    {
+      "title": "Python para Iniciantes",
+      "status": "Em andamento",
+      "progress": 40
+    },
+    {
+      "title": "MySQL Avancado",
+      "status": "Concluído",
+      "progress": 100
+    }
+  ],
+  "certificates": []
+}

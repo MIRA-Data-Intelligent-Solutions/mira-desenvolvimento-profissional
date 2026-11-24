@@ -1,16 +1,19 @@
-/** COLABORADORES (Figma: "Aba Colaboradores - Gestor"): lista com busca, filtros e cadastro. */
+/** COLABORADORES — GET /colaboradores e POST /usuarios (Figma: "Aba Colaboradores - Gestor"). */
 $(function () {
   var sessao = protegerPagina(['gestor']);
   if (!sessao) return;
   montarLayout(sessao, 'colaboradores');
 
+  /* ---------------------------------------------------------------- estado */
+
   var filtros = { busca: '', setor: parametroUrl('setor') || 'todos', status: 'Ativo' };
-  var banco = null;   // { items: [...colaboradores], sectorsFilter: [...] }
+  var banco = null;
+
+  /* ---------------------------------------------------------------- carga */
 
   buscarColaboradores()
     .then(function (db) {
       banco = db;
-      // opções do filtro de setor
       $('#filtro-setor').append(db.sectorsFilter.map(function (nome) {
         return '<option value="' + esc(nome) + '">Setor: ' + esc(nome) + '</option>';
       }).join(''));
@@ -19,7 +22,8 @@ $(function () {
     })
     .catch(mostrarErroDaPagina);
 
-  /** Aplica busca, setor e status sobre a lista completa. */
+  /* ---------------------------------------------------------------- desenho */
+
   function filtrar() {
     var q = normalize(filtros.busca);
     return banco.items.filter(function (c) {
@@ -62,10 +66,9 @@ $(function () {
   $('#filtro-setor').on('change', function () { filtros.setor = $(this).val(); desenharTabela(); });
   $('#filtro-status').on('change', function () { filtros.status = $(this).val(); desenharTabela(); });
 
-  // Botão "Adicionar colaborador": abre o modal com formulário
   $('#btn-adicionar').on('click', function () {
-    buscarDados('sectors').then(function (db) {
-      var opcoes = db.items.map(function (s) { return '<option value="' + s.id + '">' + esc(s.name) + '</option>'; }).join('');
+    buscarOpcoesSetores().then(function (lista) {
+      var opcoes = lista.map(function (s) { return '<option value="' + esc(s.id) + '">' + esc(s.name) + '</option>'; }).join('');
       openModal({
         title: 'Adicionar colaborador',
         description: 'O colaborador será criado ativo e sem cursos matriculados.',
@@ -87,10 +90,15 @@ $(function () {
             sector: form.elements.sector.value,
             role: $.trim(form.elements.role.value)
           }).then(function (novo) {
-            toast(novo.name + ' foi adicionado(a).', { type: 'success' });
+            toast(novo.nome + ' foi adicionado(a). Senha inicial: ' + novo.senha_inicial, { type: 'success' });
             filtros.status = 'Ativo';
             $('#filtro-status').val('Ativo');
-            return buscarColaboradores().then(function (db) { banco = db; desenharTabela(); });
+            return buscarColaboradores().then(function (db) { banco = db; desenharTabela(); })
+              .catch(function (erro) { toast(erro.message, { type: 'error' }); });
+          }).catch(function (erro) {
+            // erro da API (e-mail repetido, servidor fora...): avisa e mantém o modal aberto
+            toast(erro.message, { type: 'error' });
+            return false;
           });
         }
       });

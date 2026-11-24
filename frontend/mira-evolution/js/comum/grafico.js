@@ -1,10 +1,6 @@
-(function () {
 /**
- * Gráfico de área em SVG puro, no estilo do AreaChart do Tremor (Recharts):
- * linhas suaves, degradê sob a curva, grade horizontal discreta, tooltip e cursor ao passar o mouse.
- *
- * Observação: o Tremor é uma biblioteca React; como o projeto é JavaScript puro, este componente
- * reproduz o visual/comportamento do AreaChart com a mesma "API de dados": categories + series.
+ * GRÁFICO DE ÁREA em SVG puro, imitando o AreaChart do Tremor (que exige React): linhas suaves,
+ * degradê, grade discreta, tooltip, cursor e navegação pelas setas do teclado.
  *
  *   areaChart(el, {
  *     categories: ['2026-05-20', ...],
@@ -15,6 +11,7 @@
  *     formatY: (v) => `${v}h`,
  *   })
  */
+(function () {
 
 let uid = 0;
 const NS = 'http://www.w3.org/2000/svg';
@@ -71,6 +68,7 @@ function monotonePath(pts) {
   return d;
 }
 
+/** Desenha o gráfico em `container` e devolve { update(opcoes), destroy() }. */
 function areaChart(container, options) {
   const opts = {
     height: 240,
@@ -249,6 +247,7 @@ function legend(items) {
     .join('')}</ul>`;
 }
 
+  // funções usadas pelas páginas
   window.areaChart = areaChart;
   window.legend = legend;
 })();

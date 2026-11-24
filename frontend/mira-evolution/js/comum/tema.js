@@ -1,7 +1,6 @@
 /**
- * TEMA CLARO / ESCURO.
- * Este arquivo é carregado no <head> (antes do resto da página) para o tema certo aparecer
- * logo de início, sem "piscar". As cores de cada tema ficam em css/themes.css.
+ * TEMA CLARO / ESCURO. Carregado no <head>, antes do resto da página, para o tema certo aparecer
+ * sem "piscar". Sem escolha salva, segue o tema do sistema. As cores ficam em css/themes.css.
  */
 var Tema = (function () {
   var CHAVE = 'mira.theme';

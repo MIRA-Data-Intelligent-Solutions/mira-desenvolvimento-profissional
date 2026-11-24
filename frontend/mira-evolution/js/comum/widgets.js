@@ -1,5 +1,8 @@
-/** Blocos de interface reutilizáveis (retornam strings HTML). */
+/** WIDGETS: blocos de interface reutilizáveis. Todos devolvem uma string HTML. */
 
+/* ---------------------------------------------------------------- indicadores (KPIs) */
+
+/** Variação do indicador: "+14%" com seta, "-3%" em vermelho, "Estável"/"0" neutro. */
 function delta(text, { tint = false, tone } = {}) {
   const t = String(text);
   const neg = t.startsWith('-');
@@ -26,7 +29,9 @@ function kpiLeft({ label, value, delta: d, note = 'vs. período anterior' }) {
   </article>`;
 }
 
-/** Barra de progresso com valor ao lado. */
+/* ---------------------------------------------------------------- barras de progresso */
+
+/** Barra com o valor ao lado. */
 function progressInline(value, { color, thin = false, max, label } = {}) {
   const v = Math.max(0, Math.min(100, Math.round(value)));
   const style = [`--value:${v}%`, color && `--fill:${color}`, max && `--bar-max:${max}px`].filter(Boolean).join(';');
@@ -52,6 +57,8 @@ function meter({ name, value, color }) {
   </div>`;
 }
 
+/* ---------------------------------------------------------------- selos, listas e células */
+
 function userCell(name, sub, size = 36) {
   return `<div class="user-cell">${avatar(name, size)}<div><div class="user-cell__name">${esc(name)}</div>${sub ? `<div class="user-cell__sub">${esc(sub)}</div>` : ''}</div></div>`;
 }
@@ -71,7 +78,12 @@ function statusBadge(status) {
   return `<span class="badge badge--${map[status] || 'gray'}">${esc(status)}</span>`;
 }
 
-const CATEGORY_TONE = { Dados: 'blue', Gestão: 'purple', 'Soft Skills': 'amber', Tecnologia: 'primary', Segurança: 'red' };
+const CATEGORY_TONE = {
+  Dados: 'blue', Gestão: 'purple', 'Soft Skills': 'amber', Tecnologia: 'primary', Segurança: 'red',
+  // categorias do banco (com e sem acento), nas cores do design
+  Programação: 'primary', Programacao: 'primary', 'Banco de Dados': 'green', 'Cloud e DevOps': 'amber',
+  Seguranca: 'red', Gestao: 'purple'
+};
 function categoryBadge(cat) {
   return `<span class="badge badge--${CATEGORY_TONE[cat] || 'gray'}">${esc(cat)}</span>`;
 }
@@ -81,6 +93,8 @@ function tags(list, { addButton = false } = {}) {
     addButton ? `<li><button type="button" class="tag tag--add" data-action="add-skill">${icon('plus', { size: 13 })}Adicionar</button></li>` : ''
   }</ul>`;
 }
+
+/* ---------------------------------------------------------------- estados (vazio, erro, carregando) */
 
 function emptyState({ title = 'Nada por aqui', text = '', iconName = 'search' } = {}) {
   return `<div class="state" role="status">${icon(iconName, { size: 32 })}<p class="state__title">${esc(title)}</p>${text ? `<p>${esc(text)}</p>` : ''}</div>`;
@@ -92,7 +106,7 @@ function errorState(message, { retry = true } = {}) {
     ${retry ? `<button type="button" class="btn btn--outline btn--sm" data-action="retry">Tentar novamente</button>` : ''}</div>`;
 }
 
-/** Esqueleto de carregamento genérico (cabeçalho + cards). */
+/** Esqueleto de carregamento (cabeçalho + cards). */
 function pageSkeleton() {
   return `<div class="page" aria-busy="true" aria-live="polite"><span class="sr-only">Carregando…</span>
     <div class="skeleton" style="height:46px;width:min(320px,70%)"></div>

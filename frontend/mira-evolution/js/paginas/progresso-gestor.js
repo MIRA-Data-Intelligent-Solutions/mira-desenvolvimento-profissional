@@ -1,26 +1,20 @@
-/** PROGRESSO — visão do Gestor (Figma: "Progresso - Gestor"): evolução por setor e ranking. */
+/** PROGRESSO (GESTOR) — GET /progresso: evolução por setor e ranking (Figma: "Progresso - Gestor"). */
 $(function () {
   var sessao = protegerPagina(['gestor']);
   if (!sessao) return;
   montarLayout(sessao, 'progresso');
 
+  /* ---------------------------------------------------------------- estado */
+
   var filtros = { setor: 'todos', de: null, ate: null };
-  var progresso = null;     // data/progress.json
-  var dashboard = null;     // data/dashboard.json (tem as horas diárias de cada setor)
-  var setores = [];         // data/sectors.json
+  var progresso = null;     // indicadores e ranking
+  var dashboard = null;     // datas e horas diárias por setor (mesma resposta da API)
+  var setores = [];
   var grafico = null;
 
-    fetch('https://mira-desenvolvimento-profissional.onrender.com/progresso', {
-    headers: {
-      Authorization: 'Bearer ' + localStorage.getItem('token')
-    }
-  })
-    .then(function (resposta) {
-      if (!resposta.ok) {
-        throw new Error('Não foi possível carregar o progresso (HTTP ' + resposta.status + ').');
-      }
-      return resposta.json();
-    })
+  /* ---------------------------------------------------------------- carga */
+
+  buscarProgresso()
     .then(function (dados) {
       progresso = dados;
       dashboard = dados;
@@ -34,6 +28,8 @@ $(function () {
       desenhar();
     })
     .catch(mostrarErroDaPagina);
+
+  /* ---------------------------------------------------------------- desenho */
 
   function periodo() {
     return { de: filtros.de || dashboard.periodDefault.from, ate: filtros.ate || dashboard.periodDefault.to };
@@ -93,6 +89,8 @@ $(function () {
           '<td class="cell-right" data-label="Detalhes"><a class="btn btn--ghost btn--icon" href="detalhes-colaborador.html?id=' + encodeURIComponent(r.collaboratorId) + '" aria-label="Ver detalhes de ' + esc(r.name) + '">' + icon('eye', { size: 18 }) + '</a></td></tr>';
       }).join('') + '</tbody></table></div>');
   }
+
+  /* ---------------------------------------------------------------- interações */
 
   $('#filtro-setor').on('change', function () { filtros.setor = $(this).val(); desenhar(); });
 

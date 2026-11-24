@@ -1,136 +1,241 @@
 /**
- * DADOS — de onde vêm as informações das telas.
+ * DADOS — de onde vêm as informações das telas. Toda leitura e gravação passa por requisitarApi().
  *
- * MODO LOCAL (padrão): buscarDados('collaborators') lê o arquivo data/collaborators.json com fetch().
- * MODO API: troque FONTE.modo para 'api' e preencha apiBase. Cada recurso vira
- *           apiBase + '/' + recurso (ex.: https://sua-api.com/api/collaborators).
- *           Se os nomes dos endpoints forem diferentes, ajuste em ENDPOINTS_API.
+ * FONTE.modo escolhe a origem:
+ *   'api'   (padrão) chama o back-end: FONTE.apiBase + rota.
+ *   'local'          lê .json em FONTE.pastaLocal no MESMO formato da API (/setores -> data/setores.json).
+ *                    Para demonstrar sem back-end: o login aceita só CONTAS_TESTE (config.js) e as
+ *                    gravações mostram "indisponível". Arquivos gerados por backend/scripts/gerar_dados_locais.py.
  *
- * IMPORTANTE: o fetch só funciona com a página aberta por um servidor (por exemplo, a extensão
- * "Live Server" do VS Code). Abrindo o arquivo com duplo clique o navegador bloqueia a leitura.
+ * As páginas usam só as funções "buscar..."/"salvar..." no fim deste arquivo, nunca a rota direto.
+ * O fetch exige a página aberta por um servidor (ex.: Live Server); com duplo clique o navegador bloqueia.
  */
+
+/* ---------------------------------------------------------------- configuração */
+
 var FONTE = {
-  modo: 'local',                          // 'local' ou 'api'
-  pastaLocal: 'data/',                    // onde ficam os .json
-  apiBase: 'https://api.exemplo.com/v1'   // usado só no modo 'api'
+  modo: 'api',                            // 'api' (back-end) ou 'local' (arquivos .json)
+  pastaLocal: 'data/',
+  apiBase: 'https://mira-desenvolvimento-profissional.onrender.com'
 };
 
-/** (modo 'api') nome do recurso -> caminho na API. Se não estiver aqui, usa o próprio nome. */
+/** Catálogo de rotas da API. {id} é trocado pelo valor informado em rota(). */
 var ENDPOINTS_API = {
-  collaborators: '/collaborators',
-  sectors: '/sectors',
-  courses: '/courses',
-  enrollments: '/me/enrollments',
-  dashboard: '/dashboard',
-  progress: '/progress',
-  settings: '/settings',
-  profiles: '/me/profile',
-  notifications: '/me/notifications'
+  login: '/login',
+  dashboardGestor: '/dashboard/gestor',
+  dashboardColaborador: '/dashboard/colaborador',
+  setores: '/setores',
+  setoresOpcoes: '/setores/opcoes',
+  colaboradores: '/colaboradores',
+  colaborador: '/colaboradores/{id}',
+  cadastrarUsuario: '/usuarios',
+  progresso: '/progresso',
+  cursos: '/cursos',
+  meusCursos: '/me/cursos',
+  meuCurso: '/me/cursos/{id}',
+  perfil: '/me/perfil',
+  configuracoes: '/configuracoes'
 };
+
+/** Caminho de uma rota do catálogo. Ex.: rota('colaborador', { id: 4 }) -> '/colaboradores/4' */
+function rota(nome, parametros) {
+  return ENDPOINTS_API[nome].replace(/\{(\w+)\}/g, function (_, chave) {
+    return encodeURIComponent((parametros || {})[chave]);
+  });
+}
+
+/* ---------------------------------------------------------------- chamadas (API ou local) */
+
+var TEMPO_LIMITE_API = 60000;   // o plano gratuito do Render pode levar até ~1 minuto para "acordar"
+
+/**
+ * Busca ou grava dados e devolve uma Promise com o JSON da resposta.
+ *   requisitarApi(rota('setores'))
+ *   requisitarApi(rota('login'), { metodo: 'POST', corpo: {...}, semToken: true })
+ * Envia o token da sessão (exceto com semToken). Em 401 numa rota protegida, encerra a sessão.
+ * Em erro, rejeita com Error(mensagem para o usuário) e erro.status (0 = sem resposta do servidor).
+ */
+function requisitarApi(caminho, opcoes) {
+  opcoes = opcoes || {};
+  if (FONTE.modo === 'local') return requisitarLocal(caminho, opcoes);
+
+  var cabecalhos = { Accept: 'application/json' };
+  var temCorpo = opcoes.corpo !== undefined;
+  if (temCorpo) cabecalhos['Content-Type'] = 'application/json';
+  var sessao = opcoes.semToken ? null : lerSessao();
+  if (sessao) cabecalhos.Authorization = 'Bearer ' + sessao.token;
+
+  var controle = new AbortController();
+  var limite = setTimeout(function () { controle.abort(); }, opcoes.tempoLimite || TEMPO_LIMITE_API);
+
+  return fetch(FONTE.apiBase + caminho, {
+    method: opcoes.metodo || 'GET',
+    headers: cabecalhos,
+    body: temCorpo ? JSON.stringify(opcoes.corpo) : undefined,
+    signal: controle.signal
+  })
+    .catch(function (erro) {
+      throw erroDaApi(erro && erro.name === 'AbortError'
+        ? 'O servidor demorou para responder. Tente novamente em instantes.'
+        : 'Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.', 0);
+    })
+    .then(function (resposta) {
+      return resposta.json().catch(function () { return null; }).then(function (dados) {
+        if (resposta.ok) return dados;
+        if (resposta.status === 401 && !opcoes.semToken) encerrarSessaoExpirada();
+        throw erroDaApi(mensagemDeErroApi(resposta.status, dados), resposta.status);
+      });
+    })
+    .finally(function () { clearTimeout(limite); });
+}
+
+function erroDaApi(mensagem, status) {
+  var erro = new Error(mensagem);
+  erro.status = status;
+  return erro;
+}
+
+/** Texto para o usuário a partir do status HTTP e do "detail" que o FastAPI devolve. */
+function mensagemDeErroApi(status, dados) {
+  var detalhe = dados && dados.detail;
+  if (typeof detalhe === 'string' && detalhe) return detalhe;      // mensagens escritas no back-end
+  if (status === 422) return 'Dados inválidos. Confira os campos e tente novamente.';
+  if (status === 403) return 'Você não tem permissão para esta ação.';
+  if (status >= 500) return 'Erro no servidor. Tente novamente em instantes.';
+  return 'Não foi possível concluir a operação (HTTP ' + status + ').';
+}
+
+/* ---------------------------------------------------------------- modo local */
+
+var MSG_SOMENTE_LEITURA = 'Indisponível no modo demonstração (dados locais): nada é gravado.';
+
+/**
+ * Responde como a API, lendo FONTE.pastaLocal. Rotas "/me/..." dependem de quem está logado,
+ * então ficam numa pasta por perfil: /me/cursos (colaborador) -> data/colaborador/me/cursos.json
+ */
+function requisitarLocal(caminho, opcoes) {
+  var metodo = (opcoes.metodo || 'GET').toUpperCase();
+  if (caminho === rota('login') && metodo === 'POST') return entrarLocal(opcoes.corpo || {});
+  if (metodo !== 'GET') return Promise.reject(erroDaApi(MSG_SOMENTE_LEITURA, 0));
+
+  var sessao = lerSessao();
+  var pasta = /^\/me(\/|$)/.test(caminho) && sessao ? '/' + sessao.role : '';
+  return lerArquivoLocal((pasta + caminho).replace(/^\//, '') + '.json');
+}
+
+/** Login do modo local: só CONTAS_TESTE; a resposta vem de data/login/<perfil>.json. */
+function entrarLocal(corpo) {
+  var email = String(corpo.email || '').toLowerCase();
+  var conta = CONTAS_TESTE.filter(function (c) {
+    return c.email && c.email.toLowerCase() === email && c.senha === corpo.senha;
+  })[0];
+  if (!conta) return Promise.reject(erroDaApi('E-mail ou senha incorretos', 401));
+  return lerArquivoLocal('login/' + conta.perfil + '.json');
+}
+
+function lerArquivoLocal(arquivo) {
+  return fetch(FONTE.pastaLocal + arquivo)
+    .catch(function () {
+      throw erroDaApi(window.location.protocol === 'file:'
+        ? 'Abra o projeto pelo Live Server do VS Code (clique direito no arquivo > Open with Live Server). Abrir com duplo clique bloqueia a leitura dos dados.'
+        : 'Não foi possível ler os dados locais.', 0);
+    })
+    .then(function (resposta) {
+      if (!resposta.ok) {
+        throw erroDaApi(resposta.status === 404
+          ? 'Registro não encontrado nos dados locais.'
+          : 'Não foi possível ler os dados locais (HTTP ' + resposta.status + ').', resposta.status);
+      }
+      return resposta.json();
+    });
+}
+
+/* ---------------------------------------------------------------- dados fixos do front */
 
 var _cacheDados = {};
 
-/**
- * Busca um recurso e devolve uma Promise com o JSON.
- * Uso:  buscarDados('sectors').then(function (dados) { ... }).catch(function (erro) { ... });
- */
+/** Lê um .json fixo do front (sempre local, nos dois modos). Hoje só as notificações usam. */
 function buscarDados(recurso) {
   if (!_cacheDados[recurso]) {
-    var url = FONTE.modo === 'local'
-      ? FONTE.pastaLocal + recurso + '.json'
-      : FONTE.apiBase + (ENDPOINTS_API[recurso] || '/' + recurso);
-    _cacheDados[recurso] = fetch(url)
-      .then(function (resposta) {
-        if (!resposta.ok) throw new Error('Não foi possível carregar "' + recurso + '" (HTTP ' + resposta.status + ').');
-        return resposta.json();
-      })
-      .catch(function (erro) {
-        delete _cacheDados[recurso];
-        if (window.location.protocol === 'file:') {
-          throw new Error('Abra o projeto pelo Live Server do VS Code (clique direito no arquivo > Open with Live Server). Abrir com duplo clique bloqueia a leitura dos dados.');
-        }
-        throw erro;
-      });
+    _cacheDados[recurso] = lerArquivoLocal(recurso + '.json')
+      .catch(function (erro) { delete _cacheDados[recurso]; throw erro; });
   }
-  // devolve uma cópia, para a página poder alterar à vontade sem afetar o cache
+  // devolve uma cópia: a página pode alterar à vontade sem afetar o cache
   return _cacheDados[recurso].then(function (dados) { return JSON.parse(JSON.stringify(dados)); });
 }
 
-/* ---------------------------------------------------------------- gravações da demonstração */
-/*
- * Sem backend, o que o usuário altera (novo colaborador, perfil, configurações, avanço em curso)
- * é guardado no localStorage, "por cima" dos JSON originais. Os JSON nunca são alterados.
- * Com API, estas funções viram chamadas fetch POST/PUT.
- */
-function lerBancoDemo() { return armazenamentoLocal.get(APP.chaveBancoDemo, {}); }
-function salvarBancoDemo(mudancas) { armazenamentoLocal.set(APP.chaveBancoDemo, $.extend({}, lerBancoDemo(), mudancas)); }
-/** Apaga tudo o que foi salvo na demonstração (pode ser chamado pelo console: limparDadosDemo()). */
-function limparDadosDemo() { armazenamentoLocal.remove(APP.chaveBancoDemo); }
+/* ---------------------------------------------------------------- dashboards */
 
-/* ---------------------------------------------------------------- consultas usadas em várias telas */
-
-/** Recorta uma série diária pelo período [de, ate]. Devolve { categories: [datas], values: [valores] }. */
-function recortarPeriodo(datas, valores, de, ate) {
-  var saida = { categories: [], values: [] };
-  datas.forEach(function (d, i) {
-    if ((!de || d >= de) && (!ate || d <= ate)) {
-      saida.categories.push(d);
-      saida.values.push(valores[i]);
-    }
-  });
-  return saida;
+/** GET /dashboard/gestor -> { periodDefault, dates, dailyHours, sectors, gestor: { subtitle, kpis, sectorProgress, runningCourses, progressDistribution } } */
+function buscarDashboardGestor() {
+  return requisitarApi(rota('dashboardGestor'));
 }
 
-/** Todos os colaboradores (os do JSON + os cadastrados na demonstração). */
+/** GET /dashboard/colaborador -> { periodDefault, colaborador: { subtitle, kpis, goal, evolution } } */
+function buscarDashboardColaborador() {
+  return requisitarApi(rota('dashboardColaborador'));
+}
+
+/* ---------------------------------------------------------------- setores */
+
+/** GET /setores -> { kpis, items: [{ id, name, icon, color, collaborators, avgProgress }] } (setores da equipe) */
+function buscarSetores() {
+  return requisitarApi(rota('setores'));
+}
+
+/** GET /setores/opcoes -> [{ id, name }]: todos os setores da empresa (campo do cadastro). */
+function buscarOpcoesSetores() {
+  return requisitarApi(rota('setoresOpcoes'));
+}
+
+/* ---------------------------------------------------------------- colaboradores */
+
+/** GET /colaboradores -> { totalActive, sectorsFilter, items } (subordinados do gestor logado) */
 function buscarColaboradores() {
-  return buscarDados('collaborators').then(function (db) {
-    var adicionados = lerBancoDemo().collaboratorsAdded || [];
-    db.items = adicionados.concat(db.items);
-    return db;
-  });
+  return requisitarApi(rota('colaboradores'));
 }
 
+/** GET /colaboradores/{id}. Gestor vê só os subordinados; colaborador, só a si mesmo (fora disso: 404). */
 function buscarColaborador(id) {
-  return buscarColaboradores().then(function (db) {
-    var achado = db.items.filter(function (c) { return c.id === id; })[0];
-    if (!achado) throw new Error('Colaborador não encontrado.');
-    return achado;
+  if (!id) return Promise.reject(new Error('Colaborador não encontrado.'));
+  return requisitarApi(rota('colaborador', { id: id }));
+}
+
+/** POST /usuarios. dados: { name, email, sector (id), role } -> { id_usuario, nome, senha_inicial } */
+function criarColaborador(dados) {
+  return requisitarApi(rota('cadastrarUsuario'), {
+    metodo: 'POST',
+    corpo: { nome: dados.name, email: dados.email, id_setor: Number(dados.sector), funcao: dados.role || null }
   });
 }
 
-/** Cadastra um colaborador novo (demonstração: guarda no navegador). */
-function criarColaborador(dados) {
-  return buscarDados('sectors').then(function (db) {
-    var setor = db.items.filter(function (s) { return s.id === dados.sector; })[0] || db.items[0];
-    var item = {
-      id: 'u' + String(Date.now()).slice(-6), name: dados.name, email: dados.email,
-      sector: setor.id, sectorName: setor.name, role: dados.role || 'Colaborador', status: 'Ativo',
-      progress: 0, hours: 0, courses: 0, completedCourses: 0, skills: [], competencies: [],
-      kpis: {
-        hours: { value: 0, delta: '0%' }, progress: { value: 0, delta: '0%' },
-        inProgress: { value: 0, delta: 'Estável', note: 'matrículas ativas' },
-        completed: { value: 0, delta: '0', note: 'novas certificações' }
-      },
-      frequency: [], recentCourses: [], certificates: []
-    };
-    salvarBancoDemo({ collaboratorsAdded: [item].concat(lerBancoDemo().collaboratorsAdded || []) });
-    return item;
-  });
+/* ---------------------------------------------------------------- progresso */
+
+/** GET /progresso -> { kpis, ranking, sectors, legendSectors, periodDefault, dates, dailyHours } */
+function buscarProgresso() {
+  return requisitarApi(rota('progresso'));
 }
+
+/* ---------------------------------------------------------------- cursos */
+
+/** GET /cursos -> { totalCourses, categories, kpis, items } (catálogo com os números da equipe) */
+function buscarCatalogoCursos() {
+  return requisitarApi(rota('cursos'));
+}
+
+var _cacheMeusCursos = null;   // os filtros são aplicados aqui, sem buscar de novo a cada tecla
 
 /**
- * Cursos do colaborador. filtros: { categoria, status, busca }.
- * Devolve { kpis, items, categories }.
+ * Cursos do colaborador logado (GET /me/cursos), filtrados por { categoria, status, busca }.
+ * Devolve { kpis, items, categories }. O userId não é enviado: a API usa o usuário do token.
  */
 function buscarMatriculas(userId, filtros) {
   filtros = filtros || {};
-  return buscarDados('enrollments').then(function (todas) {
-    var db = todas[userId];
-    if (!db) return { kpis: { general: 0, inProgress: 0, platforms: 0, completed: 0 }, items: [], categories: [] };
-    var salvos = (lerBancoDemo().enrollments || {})[userId] || {};
-    var todos = db.items.concat(db.completed).map(function (c) {
-      return salvos[c.courseId] ? $.extend({}, c, { progress: salvos[c.courseId].progress }) : c;
-    });
+  if (!_cacheMeusCursos) {
+    _cacheMeusCursos = requisitarApi(rota('meusCursos')).catch(function (erro) { _cacheMeusCursos = null; throw erro; });
+  }
+  return _cacheMeusCursos.then(function (db) {
+    var todos = db.items;
     var q = normalize(filtros.busca || '');
     var categorias = [];
     todos.forEach(function (c) { if (categorias.indexOf(c.category) === -1) categorias.push(c.category); });
@@ -143,40 +248,48 @@ function buscarMatriculas(userId, filtros) {
   });
 }
 
-/** Detalhes de um curso do colaborador (módulos, prazo, instrutor...). */
+/** GET /me/cursos/{id}. Instrutor, início, prazo e módulos vêm como "Não informado" / lista vazia. */
 function buscarCurso(userId, courseId) {
-  return buscarDados('enrollments').then(function (todas) {
-    var db = todas[userId] || {};
-    var base = (db.details || {})[courseId];
-    var curso = (db.items || []).concat(db.completed || []).filter(function (c) { return c.courseId === courseId; })[0];
-    if (!base || !curso) throw new Error('Curso não encontrado.');
-    var salvo = ((lerBancoDemo().enrollments || {})[userId] || {})[courseId];
-    return $.extend({ courseId: courseId, title: curso.title }, base, salvo || {});
-  });
+  if (!courseId) return Promise.reject(new Error('Curso não encontrado.'));
+  return requisitarApi(rota('meuCurso', { id: courseId }));
 }
 
-/** "Continuar curso": conclui o módulo atual e avança o progresso (demonstração). */
-function avancarCurso(userId, courseId) {
-  return buscarCurso(userId, courseId).then(function (atual) {
-    var modulos = atual.modules.map(function (m) { return $.extend({}, m); });
-    var idx = -1;
-    modulos.forEach(function (m, i) { if (idx === -1 && m.status === 'Em andamento') idx = i; });
-    if (idx >= 0) {
-      modulos[idx].status = 'Concluído';
-      if (modulos[idx + 1]) modulos[idx + 1].status = 'Em andamento';
+// "Continuar curso" (avançar o progresso) está desativado: virá da integração com as plataformas.
+
+/* ---------------------------------------------------------------- perfil */
+
+/** GET /me/perfil -> { userId, name, firstName, title, email, phone, department, bio, skills } */
+function buscarPerfil() {
+  return requisitarApi(rota('perfil'));
+}
+
+/** PUT /me/perfil. dados: { nome, funcao, telefone, sobre_mim, habilidades } (e-mail e setor não mudam). */
+function salvarPerfil(dados) {
+  return requisitarApi(rota('perfil'), { metodo: 'PUT', corpo: dados });
+}
+
+/* ---------------------------------------------------------------- configurações */
+
+/** GET /configuracoes -> { general: { companyName, cnpj, dateFormat }, dateFormats, integrations } */
+function buscarConfiguracoes() {
+  return requisitarApi(rota('configuracoes'));
+}
+
+/** PUT /configuracoes. dados: { nome_empresa, cnpj, formato_data } */
+function salvarConfiguracoes(dados) {
+  return requisitarApi(rota('configuracoes'), { metodo: 'PUT', corpo: dados });
+}
+
+/* ---------------------------------------------------------------- apoio */
+
+/** Recorta uma série diária pelo período [de, ate]. Devolve { categories: [datas], values: [valores] }. */
+function recortarPeriodo(datas, valores, de, ate) {
+  var saida = { categories: [], values: [] };
+  datas.forEach(function (d, i) {
+    if ((!de || d >= de) && (!ate || d <= ate)) {
+      saida.categories.push(d);
+      saida.values.push(valores[i]);
     }
-    var progresso = Math.min(100, atual.progress + Math.max(4, Math.round(100 / modulos.length / 2)));
-    var terminou = progresso >= 100 || modulos.every(function (m) { return m.status === 'Concluído'; });
-    var novo = {
-      modules: terminou ? modulos.map(function (m) { return $.extend({}, m, { status: 'Concluído' }); }) : modulos,
-      progress: terminou ? 100 : progresso,
-      doneHours: Math.round((atual.hours * (terminou ? 100 : progresso)) / 100)
-    };
-    var todas = lerBancoDemo().enrollments || {};
-    var doUsuario = $.extend({}, todas[userId] || {});
-    doUsuario[courseId] = novo;
-    todas[userId] = doUsuario;
-    salvarBancoDemo({ enrollments: todas });
-    return $.extend({}, atual, novo);
   });
+  return saida;
 }

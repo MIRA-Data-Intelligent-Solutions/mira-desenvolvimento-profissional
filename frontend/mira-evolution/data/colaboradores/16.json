@@ -1,0 +1,51 @@
+{
+  "id": "16",
+  "name": "Amanda Freitas",
+  "email": "amanda.freitas@empresa.com",
+  "sectorName": "Financeiro",
+  "role": "Colaborador",
+  "status": "Ativo",
+  "progress": 33,
+  "hours": 0,
+  "courses": 3,
+  "completedCourses": 0,
+  "skills": [],
+  "competencies": [],
+  "kpis": {
+    "hours": {
+      "value": 0,
+      "note": "cursos concluídos"
+    },
+    "progress": {
+      "value": 33,
+      "note": "média das matrículas"
+    },
+    "inProgress": {
+      "value": 2,
+      "note": "matrículas ativas"
+    },
+    "completed": {
+      "value": 0,
+      "note": "cursos finalizados"
+    }
+  },
+  "frequency": [],
+  "recentCourses": [
+    {
+      "title": "Scrum e Metodos Ageis",
+      "status": "Em andamento",
+      "progress": 60
+    },
+    {
+      "title": "Lideranca de Equipes",
+      "status": "Em andamento",
+      "progress": 40
+    },
+    {
+      "title": "Power BI",
+      "status": "Não iniciado",
+      "progress": 0
+    }
+  ],
+  "certificates": []
+}

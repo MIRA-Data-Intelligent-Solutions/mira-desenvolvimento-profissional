@@ -1,0 +1,155 @@
+{
+  "totalCourses": 15,
+  "categories": [
+    "Banco de Dados",
+    "Cloud e DevOps",
+    "Dados",
+    "Gestao",
+    "Programacao",
+    "Seguranca"
+  ],
+  "kpis": [
+    {
+      "label": "Total de Cursos",
+      "value": "15",
+      "note": "ativos no catálogo"
+    },
+    {
+      "label": "Colaboradores Inscritos",
+      "value": "11",
+      "note": "da sua equipe"
+    },
+    {
+      "label": "Cursos Concluídos",
+      "value": "10",
+      "note": "pela sua equipe"
+    },
+    {
+      "label": "Taxa Média de Conclusão",
+      "value": "30%",
+      "note": "das matrículas da equipe"
+    }
+  ],
+  "items": [
+    {
+      "id": "7",
+      "title": "APIs REST com Flask",
+      "category": "Programacao",
+      "enrolled": 3,
+      "avgProgress": 52,
+      "status": "Ativo"
+    },
+    {
+      "id": "10",
+      "title": "Analise de Dados com Pandas",
+      "category": "Dados",
+      "enrolled": 1,
+      "avgProgress": 60,
+      "status": "Ativo"
+    },
+    {
+      "id": "12",
+      "title": "Docker",
+      "category": "Cloud e DevOps",
+      "enrolled": 3,
+      "avgProgress": 93,
+      "status": "Ativo"
+    },
+    {
+      "id": "6",
+      "title": "Excel para Analise de Dados",
+      "category": "Dados",
+      "enrolled": 1,
+      "avgProgress": 50,
+      "status": "Ativo"
+    },
+    {
+      "id": "11",
+      "title": "Fundamentos de Cloud",
+      "category": "Cloud e DevOps",
+      "enrolled": 3,
+      "avgProgress": 58,
+      "status": "Ativo"
+    },
+    {
+      "id": "8",
+      "title": "Git e GitHub",
+      "category": "Programacao",
+      "enrolled": 3,
+      "avgProgress": 100,
+      "status": "Ativo"
+    },
+    {
+      "id": "9",
+      "title": "JavaScript",
+      "category": "Programacao",
+      "enrolled": 4,
+      "avgProgress": 41,
+      "status": "Ativo"
+    },
+    {
+      "id": "15",
+      "title": "Lideranca de Equipes",
+      "category": "Gestao",
+      "enrolled": 2,
+      "avgProgress": 60,
+      "status": "Ativo"
+    },
+    {
+      "id": "4",
+      "title": "MySQL Avancado",
+      "category": "Banco de Dados",
+      "enrolled": 1,
+      "avgProgress": 100,
+      "status": "Ativo"
+    },
+    {
+      "id": "5",
+      "title": "Power BI",
+      "category": "Dados",
+      "enrolled": 1,
+      "avgProgress": 0,
+      "status": "Ativo"
+    },
+    {
+      "id": "2",
+      "title": "Python para Ciencia de Dados",
+      "category": "Dados",
+      "enrolled": 2,
+      "avgProgress": 80,
+      "status": "Ativo"
+    },
+    {
+      "id": "1",
+      "title": "Python para Iniciantes",
+      "category": "Programacao",
+      "enrolled": 2,
+      "avgProgress": 70,
+      "status": "Ativo"
+    },
+    {
+      "id": "3",
+      "title": "SQL e Banco de Dados",
+      "category": "Banco de Dados",
+      "enrolled": 0,
+      "avgProgress": 0,
+      "status": "Ativo"
+    },
+    {
+      "id": "14",
+      "title": "Scrum e Metodos Ageis",
+      "category": "Gestao",
+      "enrolled": 5,
+      "avgProgress": 67,
+      "status": "Ativo"
+    },
+    {
+      "id": "13",
+      "title": "Seguranca da Informacao",
+      "category": "Seguranca",
+      "enrolled": 2,
+      "avgProgress": 40,
+      "status": "Ativo"
+    }
+  ]
+}

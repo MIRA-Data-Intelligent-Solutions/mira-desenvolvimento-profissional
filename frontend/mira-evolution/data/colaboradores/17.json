@@ -1,0 +1,53 @@
+{
+  "id": "17",
+  "name": "Thiago Lopes",
+  "email": "thiago.lopes@empresa.com",
+  "sectorName": "Comercial",
+  "role": "Colaborador",
+  "status": "Ativo",
+  "progress": 87,
+  "hours": 12,
+  "courses": 3,
+  "completedCourses": 1,
+  "skills": [],
+  "competencies": [
+    "Lideranca"
+  ],
+  "kpis": {
+    "hours": {
+      "value": 12,
+      "note": "cursos concluídos"
+    },
+    "progress": {
+      "value": 87,
+      "note": "média das matrículas"
+    },
+    "inProgress": {
+      "value": 2,
+      "note": "matrículas ativas"
+    },
+    "completed": {
+      "value": 1,
+      "note": "cursos finalizados"
+    }
+  },
+  "frequency": [],
+  "recentCourses": [
+    {
+      "title": "JavaScript",
+      "status": "Em andamento",
+      "progress": 90
+    },
+    {
+      "title": "APIs REST com Flask",
+      "status": "Em andamento",
+      "progress": 70
+    },
+    {
+      "title": "Scrum e Metodos Ageis",
+      "status": "Concluído",
+      "progress": 100
+    }
+  ],
+  "certificates": []
+}

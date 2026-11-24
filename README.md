@@ -84,7 +84,7 @@ Essas funcionalidades não fazem parte da entrega principal neste momento.
 ## Equipe
 
 - Maria Eduarda Fonseca
-- Maria Luisa
+- Maria Luisa Bomfim
 - Maria Eduarda Prudente
 - Rafael Franco Lourençon
 

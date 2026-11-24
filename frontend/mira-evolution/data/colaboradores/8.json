@@ -1,0 +1,53 @@
+{
+  "id": "8",
+  "name": "Rafael Costa",
+  "email": "rafael.costa@empresa.com",
+  "sectorName": "Tecnologia",
+  "role": "Colaborador",
+  "status": "Ativo",
+  "progress": 73,
+  "hours": 20,
+  "courses": 3,
+  "completedCourses": 1,
+  "skills": [],
+  "competencies": [
+    "DevOps"
+  ],
+  "kpis": {
+    "hours": {
+      "value": 20,
+      "note": "cursos concluídos"
+    },
+    "progress": {
+      "value": 73,
+      "note": "média das matrículas"
+    },
+    "inProgress": {
+      "value": 2,
+      "note": "matrículas ativas"
+    },
+    "completed": {
+      "value": 1,
+      "note": "cursos finalizados"
+    }
+  },
+  "frequency": [],
+  "recentCourses": [
+    {
+      "title": "Docker",
+      "status": "Em andamento",
+      "progress": 80
+    },
+    {
+      "title": "Seguranca da Informacao",
+      "status": "Em andamento",
+      "progress": 40
+    },
+    {
+      "title": "Fundamentos de Cloud",
+      "status": "Concluído",
+      "progress": 100
+    }
+  ],
+  "certificates": []
+}

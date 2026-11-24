@@ -1,0 +1,22 @@
+{
+  "access_token": "modo-local",
+  "token_type": "bearer",
+  "expira_em_minutos": 480,
+  "usuario": {
+    "userId": 4,
+    "name": "Ana Souza",
+    "firstName": "Ana",
+    "title": null,
+    "email": "ana.souza@empresa.com",
+    "papel_acesso": "COLABORADOR",
+    "role": "colaborador",
+    "department": "Tecnologia",
+    "phone": "",
+    "bio": "",
+    "skills": [
+      "Python",
+      "SQL",
+      "Git"
+    ]
+  }
+}

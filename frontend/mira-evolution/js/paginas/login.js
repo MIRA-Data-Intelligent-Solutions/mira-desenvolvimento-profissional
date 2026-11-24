@@ -1,16 +1,15 @@
-/**
- * LOGIN (demonstração). Visual fixo no tema escuro, conforme o Figma.
- * Os usuários de teste ficam em js/comum/config.js.
- */
+/** LOGIN — POST /login. Visual fixo no tema escuro (Figma). Contas de teste: CONTAS_TESTE em config.js. */
 $(function () {
   preencherIcones();
 
-  // Já está logado? Vai direto para o dashboard.
+  // Já logado com token válido: vai direto para o dashboard
   var sessaoAtual = lerSessao();
   if (sessaoAtual) {
     window.location.replace(paginaInicial(sessaoAtual.role));
     return;
   }
+
+  /* ---------------------------------------------------------------- estado */
 
   var $form = $('#form-login');
   var $erro = $('.login__error');
@@ -20,11 +19,8 @@ $(function () {
 
   $usuario.trigger('focus');
 
-  function mostrarErro(mensagem) {
-    $erro.text(mensagem).prop('hidden', !mensagem);
-  }
+  /* ---------------------------------------------------------------- interações */
 
-  // Olho: mostrar / ocultar a senha
   $('[data-action="toggle-pass"]').on('click', function () {
     var mostrar = $senha.attr('type') === 'password';
     $senha.attr('type', mostrar ? 'text' : 'password');
@@ -33,32 +29,32 @@ $(function () {
       .attr('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
   });
 
+  if (parametroUrl('sessao') === 'expirada') mostrarErro('Sua sessão expirou. Entre novamente.');
+
   $('[data-action="forgot"]').on('click', function () {
-    mostrarErro('Recuperação de senha indisponível na versão demonstrativa. Use os acessos de demonstração abaixo.');
+    mostrarErro('Recuperação de senha indisponível no momento. Procure seu gestor.');
   });
 
-  // Botões "Acessos de demonstração": preenchem o formulário
-  $('[data-demo]').on('click', function () {
-    var nome = $(this).data('demo');
-    var usuario = USUARIOS_DEMO.filter(function (u) { return u.username === nome; })[0];
-    $usuario.val(usuario.email);
-    $senha.val(usuario.password);
+  // Quadro "Acessos de demonstração": um botão por conta de teste; sem contas, o quadro some
+  var contas = CONTAS_TESTE.filter(function (c) { return c.email; });
+  $('.login__demo').prop('hidden', !contas.length);
+  $('[data-contas-teste]').html(contas.map(function (c, i) {
+    return '<li><button type="button" data-demo="' + i + '"><strong>' + esc(c.rotulo) + '</strong><span>' + esc(c.email) + '</span></button></li>';
+  }).join(''));
+
+  $('[data-contas-teste]').on('click', '[data-demo]', function () {
+    var conta = contas[Number($(this).data('demo'))];
+    $usuario.val(conta.email);
+    $senha.val(conta.senha);
     mostrarErro('');
     $senha.trigger('focus');
   });
-
-  // Página para onde ir depois do login (?next=detalhes-colaborador.html?id=u01). Só aceita arquivos .html do projeto.
-  function destinoDepoisDoLogin(perfil) {
-    var proximo = parametroUrl('next');
-    if (/^[a-z0-9-]+\.html(\?[\w=&%.-]*)?$/i.test(proximo) && proximo.indexOf('login.html') !== 0) return proximo;
-    return paginaInicial(perfil);
-  }
 
   $form.on('submit', async function (e) {
     e.preventDefault();
     mostrarErro('');
     if (!$.trim($usuario.val()) || !$senha.val()) {
-      mostrarErro('Informe usuário e senha.');
+      mostrarErro('Informe e-mail e senha.');
       ($.trim($usuario.val()) ? $senha : $usuario).trigger('focus');
       return;
     }
@@ -72,4 +68,17 @@ $(function () {
     }
     window.location.href = destinoDepoisDoLogin(resultado.sessao.role);
   });
+
+  /* ---------------------------------------------------------------- apoio */
+
+  function mostrarErro(mensagem) {
+    $erro.text(mensagem).prop('hidden', !mensagem);
+  }
+
+  /** Página do ?next= (só arquivos .html do projeto, para evitar redirecionamento externo) ou o dashboard. */
+  function destinoDepoisDoLogin(perfil) {
+    var proximo = parametroUrl('next');
+    if (/^[a-z0-9-]+\.html(\?[\w=&%.-]*)?$/i.test(proximo) && proximo.indexOf('login.html') !== 0) return proximo;
+    return paginaInicial(perfil);
+  }
 });

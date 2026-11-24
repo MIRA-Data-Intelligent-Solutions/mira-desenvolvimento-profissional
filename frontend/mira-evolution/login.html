@@ -33,9 +33,9 @@
           <p class="login__error" role="alert" hidden></p>
 
           <div class="login__field">
-            <label class="sr-only" for="login-user">Usuário ou e-mail</label>
+            <label class="sr-only" for="login-user">E-mail</label>
             <span class="login__icon"><i data-icone="user" data-tamanho="22" data-traco="1.6"></i></span>
-            <input id="login-user" name="identifier" type="text" autocomplete="username" placeholder="Usuário ou e-mail" required>
+            <input id="login-user" name="identifier" type="text" inputmode="email" autocomplete="username" placeholder="E-mail" required>
           </div>
 
           <div class="login__field">
@@ -56,14 +56,11 @@
         </form>
       </div>
 
-      <!-- Acessos de demonstração (os dados ficam em js/comum/config.js) -->
-      <details class="login__demo">
+      <!-- Acessos de demonstração: contas de teste reais (lista em CONTAS_TESTE, js/comum/config.js) -->
+      <details class="login__demo" hidden>
         <summary>Acessos de demonstração</summary>
-        <ul>
-          <li><button type="button" data-demo="gestor"><strong>Gestor</strong><span>gestor@mira.demo</span></button></li>
-          <li><button type="button" data-demo="colaborador"><strong>Colaborador</strong><span>colaborador@mira.demo</span></button></li>
-        </ul>
-        <p>Senha: <code>Mira@123</code> · Autenticação apenas demonstrativa.</p>
+        <ul data-contas-teste></ul>
+        <p>Clique em uma conta para preencher o login.</p>
       </details>
     </main>
     <noscript>Esta aplicação precisa de JavaScript habilitado.</noscript>

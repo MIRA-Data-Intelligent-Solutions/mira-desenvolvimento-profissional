@@ -1,0 +1,16 @@
+{
+  "courseId": "9",
+  "title": "JavaScript",
+  "cover": "JavaScript",
+  "area": "Programacao",
+  "status": "Não iniciado",
+  "moduleCount": "Não informado",
+  "hours": 24,
+  "doneHours": 0,
+  "progress": 0,
+  "instructor": "Não informado",
+  "startDate": "Não informado",
+  "deadline": "Não informado",
+  "certificate": "Não informado",
+  "modules": []
+}

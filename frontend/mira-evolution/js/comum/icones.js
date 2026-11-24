@@ -1,9 +1,10 @@
-(function () {
 /**
- * Ícones Lucide (https://lucide.dev, licença ISC) embutidos como SVG inline.
- * Mantém o projeto funcionando offline e sem dependência de CDN.
- * Para usar um ícone novo: copie o conteúdo do SVG do Lucide para o mapa abaixo.
+ * ÍCONES Lucide (https://lucide.dev, licença ISC) embutidos como SVG, para funcionar offline e sem CDN.
+ * Ícone novo: copie o conteúdo do SVG do Lucide para o mapa ICONS.
+ * Alguns nomes vêm do banco (ícone dos setores) ou dos dados (notificações): confira antes de remover.
  */
+(function () {
+
 const P = (d) => `<path d="${d}"/>`;
 const C = (cx, cy, r) => `<circle cx="${cx}" cy="${cy}" r="${r}"/>`;
 const R = (x, y, w, h, rx = 0) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}"/>`;
@@ -62,7 +63,7 @@ const ICONS = {
   link: P('M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71') + P('M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'),
 };
 
-/** Retorna o SVG inline de um ícone. `size` em px. */
+/** SVG de um ícone (`size` em px). Nome desconhecido devolve '' e avisa no console. */
 function icon(name, { size = 18, cls = '', stroke = 2, label = '' } = {}) {
   const body = ICONS[name];
   if (!body) {
@@ -75,6 +76,7 @@ function icon(name, { size = 18, cls = '', stroke = 2, label = '' } = {}) {
 
 const hasIcon = (name) => Object.prototype.hasOwnProperty.call(ICONS, name);
 
+  // funções usadas pelas páginas
   window.icon = icon;
   window.hasIcon = hasIcon;
 })();

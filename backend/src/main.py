@@ -1,99 +1,99 @@
+"""API da plataforma MIRA Evolution.
+
+Organização: cada funcionalidade é um bloco (mesma ordem das seções do bd_config.py),
+sempre na sequência constantes -> modelos de entrada -> regras/montagem -> rotas.
+O SQL fica no BancoDeDados (bd_config.py); as rotas só validam, consultam e montam a resposta.
+"""
 import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
-  
+
 import bcrypt
 import jwt
-from dotenv import load_dotenv #
+from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from mysql.connector import Error, IntegrityError, errorcode, pooling #
+from mysql.connector import Error
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
-from bd_config import BancoDeDados
-
+from bd_config import PAPEL_COLABORADOR, PAPEL_GESTOR, BancoDeDados
 
 load_dotenv()
 
-print("Início da aplicação")
-# --- Empresa ---------------------------------------------------------------
-# Empresa atendida por esta instalação (não vem do front end)
-ID_EMPRESA = int(os.getenv("ID_EMPRESA", 1))    # vem do .env (padrão 1)
+# ------------------------------------------------------------------ configuração
 
-# --- Token de login (JWT) --------------------------------------------------
-SECRET_KEY = os.getenv("SECRET_KEY", "") 
+SECRET_KEY = os.getenv("SECRET_KEY", "")
 if len(SECRET_KEY) < 32:
     raise RuntimeError(
         "Defina SECRET_KEY no .env com pelo menos 32 caracteres. "
     )
-ALGORITMO = "HS256"                             # fixo: algoritmo de assinatura do token
-TOKEN_MINUTOS = int(os.getenv("TOKEN_MINUTOS", 60))  # vem do .env (padrão 60): validade do token
+ALGORITMO = "HS256"
+TOKEN_MINUTOS = int(os.getenv("TOKEN_MINUTOS", 60))
 
-# --- Regras da senha e do nome (fixas) -------------------------------------
-LIMITE_BYTES_SENHA = 72                         # fixo: limite REAL do bcrypt, não mexer
-SENHA_MIN_CARACTERES = 8                        # fixo: mínimo ao cadastrar senha
-NOME_MIN_CARACTERES = 2                         # fixo
-NOME_MAX_CARACTERES = 100                       # fixo (igual ao varchar(100) do banco)
+LIMITE_BYTES_SENHA = 72                           # limite real do bcrypt: não alterar
 
-# --- Papéis de acesso (fixos: iguais ao ENUM da coluna papel_acesso no SQL) -
-PAPEL_GESTOR = "GESTOR"
-PAPEL_COLABORADOR = "COLABORADOR"
+# Tamanhos iguais aos das colunas do banco
+NOME_MIN_CARACTERES = 2
+NOME_MAX_CARACTERES = 100
+FUNCAO_MAX_CARACTERES = 200
+TELEFONE_MAX_CARACTERES = 20
+SOBRE_MIM_MAX_CARACTERES = 500
+HABILIDADE_MAX_CARACTERES = 255
+EMPRESA_NOME_MAX_CARACTERES = 150
 
-#------- FRONT END: trocar pelos endereços reais do front (onde a tela vai rodar)
-# Se o endereço do front não estiver nesta lista, o navegador bloqueia as chamadas.
+# Endereços do front autorizados a chamar a API (o navegador bloqueia os demais)
 CORS_ORIGENS = [
     "https://mira-evolution.vercel.app",   # produção (Vercel)
-    "http://127.0.0.1:5500",               # Live Server (teste local)
-    "http://localhost:5500",               # o mesmo, escrito com localhost
-]  # fixo
+    "http://127.0.0.1:5500",               # Live Server
+    "http://localhost:5500",
+]
 
-# Obs.: HASH_FALSO (usado no login) é calculado mais abaixo, junto da função
-# criptografar_senha, porque depende dela.
-# ===========================================================================
+# ------------------------------------------------------------------ aplicação
 
-
-# ---------------------------------------------------------------------------
-# Aplicação
-# ---------------------------------------------------------------------------
 app = FastAPI()
-bd = BancoDeDados()  # cria o objeto (e o pool de conexões) uma vez, ao subir o servidor
+bd = BancoDeDados()   # o pool de conexões é criado uma vez, ao subir o servidor
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=CORS_ORIGENS,  # definido no bloco de configurações, no topo
+    allow_origins=CORS_ORIGENS,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# ------------------------------------------------------------------ autenticação
 
-# ---------------------------------------------------------------------------
-# Funções das tarefas de autenticação
-# ---------------------------------------------------------------------------
+
+class LoginEntrada(BaseModel):
+    email: EmailStr
+    senha: str = Field(min_length=1)
+
+
 def criptografar_senha(senha: str) -> str:
-    """GDP-129: transforma a senha em hash bcrypt (irreversível) para guardar no banco."""
+    """GDP-129: gera o hash bcrypt da senha."""
     senha_bytes = senha.encode("utf-8")
     return bcrypt.hashpw(senha_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
-# Hash falso usado quando o e-mail não existe, para o login levar o mesmo tempo
-# nos dois casos (evita descobrir quais e-mails estão cadastrados pelo tempo de resposta)
+# Usado quando o e-mail não existe: o login leva o mesmo tempo nos dois casos,
+# e o tempo de resposta não revela quais e-mails estão cadastrados.
 HASH_FALSO = criptografar_senha("senha-falsa")
 
 
 def verificar_senha(senha_digitada: str, hash_salvo: str) -> bool:
-    """GDP-130: confere a senha digitada contra o hash salvo.
-
-    Não existe "descriptografar": o bcrypt repete a conta e compara os resultados.
-    """
+    """GDP-130: confere a senha digitada contra o hash salvo."""
     senha_bytes = senha_digitada.encode("utf-8")
     if len(senha_bytes) > LIMITE_BYTES_SENHA:
-        return False  # acima do limite, a senha nunca pode ser a correta
-    return bcrypt.checkpw(senha_bytes, hash_salvo.encode("utf-8"))
+        return False
+    try:
+        return bcrypt.checkpw(senha_bytes, hash_salvo.encode("utf-8"))
+    except ValueError:
+        # hash salvo não é bcrypt (ex.: "hash_teste_1" dos dados de exemplo): senha errada, não erro 500
+        return False
 
 
 def validar_credenciais(email: str, senha: str) -> dict:
-    """GDP-128: valida e-mail e senha. Retorna o usuário ou levanta erro 401."""
+    """GDP-128: valida e-mail e senha. Retorna o usuário ou levanta 401/403."""
     try:
         usuario = bd.buscar_usuario_por_email(email.lower())
         usuario["habilidades"] = bd.buscar_skill_usuario(usuario["id_usuario"]) if usuario else None
@@ -101,17 +101,20 @@ def validar_credenciais(email: str, senha: str) -> dict:
         print(f"Erro no MySQL: {erro}")
         raise HTTPException(status_code=500, detail="Erro interno ao fazer login")
 
-    # Mesmo com e-mail inexistente, a conta do bcrypt é feita (contra o hash falso)
     hash_salvo = usuario["senha_hash"] if usuario else HASH_FALSO
     senha_ok = verificar_senha(senha, hash_salvo)
 
-    # Mesma mensagem para e-mail inexistente e senha errada (não revela qual deu errado)
+    # Mesma mensagem para e-mail inexistente e senha errada
     if usuario is None or not senha_ok:
         raise HTTPException(
             status_code=401,
             detail="E-mail ou senha incorretos",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    # Inativo só é avisado depois de acertar a senha, para não revelar quais e-mails existem
+    if not usuario["ativo"]:
+        raise HTTPException(status_code=403, detail="Usuário inativo. Procure seu gestor.")
     return usuario
 
 
@@ -131,115 +134,11 @@ def gerar_token(usuario: dict) -> str:
     )
 
 
-# ---------------------------------------------------------------------------
-# Cadastro de usuário (GDP-126)
-# ---------------------------------------------------------------------------
-#------- FRONT END: estes campos são o JSON que o front envia no cadastro.
-# Os nomes (id_setor, id_gestor, nome, email, senha) precisam ser IGUAIS aos do formulário.
-class UsuarioCadastro(BaseModel):
-    id_setor: int
-    id_gestor: Optional[int] = None
-    nome: str = Field(min_length=NOME_MIN_CARACTERES, max_length=NOME_MAX_CARACTERES)
-    email: EmailStr
-    senha: str = Field(min_length=SENHA_MIN_CARACTERES, max_length=LIMITE_BYTES_SENHA)
-
-    @field_validator("senha")
-    @classmethod
-    def senha_cabe_no_bcrypt(cls, senha: str) -> str:
-        # max_length conta caracteres; o bcrypt conta bytes (acentos ocupam mais de 1)
-        if len(senha.encode("utf-8")) > LIMITE_BYTES_SENHA:
-            raise ValueError(f"Senha muito longa (máximo de {LIMITE_BYTES_SENHA} bytes)")
-        return senha
-
-
-def padronizar_nome(nome: str) -> str:
-    minusculas = {"da", "de", "do", "das", "dos", "e"}
-    palavras = nome.lower().split()
-    return " ".join(
-        p if (i > 0 and p in minusculas) else p.capitalize()
-        for i, p in enumerate(palavras)
-    )
-
-
-def padronizar_info_cadastro(usuario: UsuarioCadastro):
-    """Arruma nome e e-mail antes de salvar."""
-    return padronizar_nome(usuario.nome), usuario.email.lower()
-
-
-#------- FRONT END: o front chama POST /usuarios (endereço do servidor + "/usuarios").
-# Respostas que o front precisa tratar: 201 (ok), 422 (campo inválido), 409 (e-mail repetido),
-# 400 (setor/gestor inválido), 500 (erro interno).
-
-@app.post("/usuarios", status_code=201)
-def rota_cadastrar_usuario(usuario: UsuarioCadastro):
-    nome, email = padronizar_info_cadastro(usuario)
-    senha_hash = criptografar_senha(usuario.senha)
-
-    resultado = bd.adicionar_usuario(
-        ID_EMPRESA, usuario.id_setor, usuario.id_gestor,
-        nome, email, senha_hash,
-    )
-
-    if resultado == "duplicado":
-        raise HTTPException(status_code=409, detail="E-mail já cadastrado")
-    if resultado == "referencia_invalida":
-        raise HTTPException(status_code=400, detail="Empresa ou setor inválido")
-    if resultado == "gestor_invalido":
-        raise HTTPException(
-            status_code=400,
-            detail="id_gestor deve ser de um usuário GESTOR da mesma empresa",
-        )
-    if resultado is None:
-        raise HTTPException(status_code=500, detail="Erro interno ao cadastrar")
-
-    return {"mensagem": "Usuário cadastrado!", "id_usuario": resultado}
-
-
-# ---------------------------------------------------------------------------
-# Login e proteção de rotas
-# ---------------------------------------------------------------------------
-#------- FRONT END: estes campos são o JSON que o front envia na tela de login.
-class LoginEntrada(BaseModel):
-    email: EmailStr
-    senha: str = Field(min_length=1)
-
-
-#------- FRONT END: o front chama POST /login e deve GUARDAR o "access_token" da resposta.
-# Respostas que o front precisa tratar: 200 (ok), 401 (e-mail ou senha incorretos),
-# 422 (formato inválido), 500 (erro interno).
-@app.post("/login")
-def login(dados: LoginEntrada):
-    usuario = validar_credenciais(dados.email, dados.senha)
-    token = gerar_token(usuario)
-
-    #------- FRONT END: este é o JSON que o front recebe (token + dados para mostrar na tela).
-    return {
-        "access_token": token,
-        "token_type": "bearer",
-        "expira_em_minutos": TOKEN_MINUTOS,
-        "usuario": {
-            "userId": usuario["id_usuario"],
-            "name": usuario["nome"],
-            "firstName": usuario["nome"].split()[0],
-            "title": usuario["funcao"],
-            "email": usuario["email"],
-            "papel_acesso": usuario["papel_acesso"],          # MAIÚSCULO, igual ao banco (GESTOR / COLABORADOR)
-            "role": usuario["papel_acesso"].lower(),          # minúsculo, é o que o front usa (gestor / colaborador)
-            "department": usuario["setor_nome"],
-            "phone": "",
-            "bio": "",
-            "skills": [habilidade["texto"] for habilidade in usuario["habilidades"]] 
-        },
-    }
-
-
 seguranca = HTTPBearer(auto_error=False)
 
 
 def usuario_atual(cred: HTTPAuthorizationCredentials = Depends(seguranca)):
-    """Dependência: use em qualquer rota que exija estar logado."""
-    #------- FRONT END: o front deve enviar em TODA rota protegida o cabeçalho
-    # Authorization: Bearer <access_token>. Se vier 401, apagar o token e voltar ao login.
+    """Dependência das rotas que exigem login (cabeçalho Authorization: Bearer <token>)."""
     nao_autenticado = {"WWW-Authenticate": "Bearer"}
     if cred is None:
         raise HTTPException(401, "Não autenticado", headers=nao_autenticado)
@@ -263,10 +162,7 @@ def usuario_atual(cred: HTTPAuthorizationCredentials = Depends(seguranca)):
 
 
 def exigir_papel(papel: str):
-    """Dependência: exige login E que o usuário tenha exatamente este papel (senão, 403).
-
-    Uso: Depends(exigir_papel(PAPEL_GESTOR))
-    """
+    """Dependência: exige login e exatamente este papel (senão, 403). Uso: Depends(exigir_papel(PAPEL_GESTOR))."""
     def verificador(usuario=Depends(usuario_atual)):
         if usuario["papel_acesso"] != papel:
             raise HTTPException(403, "Sem permissão para esta ação")
@@ -274,148 +170,275 @@ def exigir_papel(papel: str):
     return verificador
 
 
-#------- FRONT END: rota de teste. O front pode chamar GET /me (com o token) para saber quem está logado.
-@app.get("/me")
-def me(usuario=Depends(usuario_atual)):
-    """Rota de teste: devolve quem está logado, segundo o token."""
-    return usuario
+@app.post("/login")
+def login(dados: LoginEntrada):
+    """Login: devolve o token e os dados do usuário para a tela."""
+    usuario = validar_credenciais(dados.email, dados.senha)
+    token = gerar_token(usuario)
 
- #------- FRONT END: o front chama GET /total_setores (com o token) e recebe {"total_setores": 5}.
-# 403 (logado, mas não é gestor), 500 (erro interno). Só o GESTOR acessa.
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "expira_em_minutos": TOKEN_MINUTOS,
+        "usuario": {
+            "userId": usuario["id_usuario"],
+            "name": usuario["nome"],
+            "firstName": usuario["nome"].split()[0],
+            "title": usuario["funcao"],
+            "email": usuario["email"],
+            "papel_acesso": usuario["papel_acesso"],          # como no banco: GESTOR / COLABORADOR
+            "role": usuario["papel_acesso"].lower(),          # como o front usa: gestor / colaborador
+            "department": usuario["setor_nome"],
+            "phone": "",
+            "bio": "",
+            "skills": [habilidade["texto"] for habilidade in usuario["habilidades"]]
+        },
+    }
+
+# ------------------------------------------------------------------ usuários (cadastro)
+
+# Regra: só o GESTOR cadastra, e o novo usuário é sempre COLABORADOR subordinado a ele.
+# Senha inicial padrão (a troca obrigatória no primeiro acesso ainda não existe).
+SENHA_PADRAO_NOVO_USUARIO = "12345678"
 
 
-@app.get("/total_setores")
-def total_setores(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
-    """Quantidade de setores cadastrados na empresa (contados pelo id_setor). Só para GESTOR."""
-    conexao = bd.pool.get_connection()
-    cursor = conexao.cursor()
-    try:
-        cursor.execute(
-            "SELECT COUNT(id_setor) FROM Setor WHERE id_empresa = %s",
-            (ID_EMPRESA,),
+class UsuarioCadastro(BaseModel):
+    id_setor: int
+    nome: str = Field(min_length=NOME_MIN_CARACTERES, max_length=NOME_MAX_CARACTERES)
+    email: EmailStr
+    funcao: Optional[str] = Field(default=None, max_length=FUNCAO_MAX_CARACTERES)   # cargo
+
+
+def padronizar_info_cadastro(usuario: UsuarioCadastro):
+    """Arruma nome e e-mail antes de salvar."""
+    return padronizar_nome(usuario.nome), usuario.email.lower()
+
+
+@app.post("/usuarios", status_code=201)
+def rota_cadastrar_usuario(usuario: UsuarioCadastro, logado=Depends(exigir_papel(PAPEL_GESTOR))):
+    """GDP-126: cadastra um colaborador na equipe do gestor logado."""
+    nome, email = padronizar_info_cadastro(usuario)
+    funcao = (usuario.funcao or "").strip() or None
+    senha_hash = criptografar_senha(SENHA_PADRAO_NOVO_USUARIO)
+
+    resultado = bd.adicionar_usuario(
+        logado["id_empresa"], usuario.id_setor,
+        logado["id_usuario"],                        # gestor = quem está cadastrando
+        nome, email, senha_hash, funcao,
+    )
+
+    if resultado == "duplicado":
+        raise HTTPException(status_code=409, detail="E-mail já cadastrado")
+    if resultado == "referencia_invalida":
+        raise HTTPException(status_code=400, detail="Empresa ou setor inválido")
+    if resultado == "gestor_invalido":
+        raise HTTPException(
+            status_code=400,
+            detail="id_gestor deve ser de um usuário GESTOR da mesma empresa",
         )
-        total = cursor.fetchone()[0]
+    if resultado is None:
+        raise HTTPException(status_code=500, detail="Erro interno ao cadastrar")
+
+    return {
+        "mensagem": "Usuário cadastrado!",
+        "id_usuario": resultado,
+        "nome": nome,
+        "senha_inicial": SENHA_PADRAO_NOVO_USUARIO,   # o gestor repassa ao colaborador
+    }
+
+# ------------------------------------------------------------------ setores
+
+ICONE_SETOR_PADRAO = "folder"
+
+
+def montar_resumo_setores(linhas: list) -> dict:
+    """Tela Setores: indicadores + setores da equipe."""
+    itens = []
+    total_colaboradores = total_matriculas = total_horas = 0
+    total_percentual = 0.0
+
+    for linha in linhas:
+        total_colaboradores += linha["colaboradores"]
+        total_matriculas += linha["matriculas"]
+        total_percentual += float(linha["soma_percentual"])
+        total_horas += int(linha["horas"])
+        itens.append({
+            "id": str(linha["id_setor"]),
+            "name": linha["nome"],
+            "icon": linha["icone"] or ICONE_SETOR_PADRAO,
+            "color": linha["cor"] or COR_SETOR_PADRAO,
+            "collaborators": int(linha["colaboradores"]),
+            "avgProgress": percentual(linha["soma_percentual"], linha["matriculas"]),
+        })
+
+    return {
+        "kpis": [
+            {"label": "Setores Mapeados", "value": str(len(itens)), "note": "setores com a sua equipe"},
+            {"label": "Colaboradores Totais", "value": formatar_numero(total_colaboradores), "note": "ativos na sua equipe"},
+            {"label": "Progresso Médio", "value": f"{percentual(total_percentual, total_matriculas)}%", "note": "média das matrículas da equipe"},
+            {"label": "Horas de Desenvolvimento", "value": f"{formatar_numero(total_horas)}h", "note": "cursos concluídos pela equipe"},
+        ],
+        "items": itens,
+    }
+
+
+@app.get("/setores")
+def setores(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
+    """Setores onde o gestor tem equipe, com colaboradores e progresso dessa equipe."""
+    try:
+        linhas = bd.buscar_resumo_setores(usuario["id_empresa"], usuario["id_usuario"])
     except Error as erro:
         print(f"Erro no MySQL: {erro}")
-        raise HTTPException(status_code=500, detail="Erro interno ao contar setores")
-    finally:
-        cursor.close()
-        conexao.close()  # devolve a conexão ao pool
+        raise HTTPException(status_code=500, detail="Erro interno ao consultar os setores")
+    return montar_resumo_setores(linhas)
 
-    return {"total_setores": total}
 
-    #------- FRONT END: o front chama GET /total_colaboradores (com o token) e recebe {"total_colaboradores": 12}.
-# 403 (logado, mas não é gestor), 500 (erro interno). Só o GESTOR acessa.
-@app.get("/total_colaboradores")
-def total_colaboradores(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
-    """Quantidade de colaboradores da empresa (contados pelo id_usuario). Só para GESTOR."""
-    conexao = bd.pool.get_connection()
-    cursor = conexao.cursor()
+@app.get("/setores/opcoes")
+def setores_opcoes(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
+    """Todos os setores da empresa, para o campo "Setor" do cadastro de colaborador."""
     try:
-        cursor.execute(
-            "SELECT COUNT(id_usuario) FROM Usuario WHERE id_empresa = %s AND papel_acesso = %s",
-            (ID_EMPRESA, PAPEL_COLABORADOR),
-        )
-        total = cursor.fetchone()[0]
+        linhas = bd.listar_setores_empresa(usuario["id_empresa"])
     except Error as erro:
         print(f"Erro no MySQL: {erro}")
-        raise HTTPException(status_code=500, detail="Erro interno ao contar colaboradores")
-    finally:
-        cursor.close()
-        conexao.close()  # devolve a conexão ao pool
+        raise HTTPException(status_code=500, detail="Erro interno ao consultar os setores")
+    return [{"id": str(l["id_setor"]), "name": l["nome"]} for l in linhas]
 
-    return {"total_colaboradores": total}
+# ------------------------------------------------------------------ colaboradores
 
-@app.get("/total_cursos_concluidos")
-def total_cursos_concluidos(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
-    """Quantidade de cursos concluídos na empresa (contados pelo id_curso_usuario). Só para GESTOR."""
-    conexao = bd.pool.get_connection()
-    cursor = conexao.cursor()
+FUNCAO_PADRAO = "Colaborador"        # usuário sem função cadastrada
+CURSOS_RECENTES_LIMITE = 5
+
+
+def pode_ver_colaborador(logado: dict, colaborador: dict) -> bool:
+    """Regra de acesso: o colaborador vê só a si mesmo; o gestor, só os seus subordinados."""
+    if logado["papel_acesso"] == PAPEL_COLABORADOR:
+        return colaborador["id_usuario"] == logado["id_usuario"]
+    return colaborador["id_gestor"] == logado["id_usuario"]
+
+
+def montar_lista_colaboradores(linhas: list) -> dict:
+    """Tela Colaboradores: lista da equipe (sem os detalhes)."""
+    itens = [{
+        "id": str(l["id_usuario"]),
+        "name": l["nome"],
+        "email": l["email"],
+        "sector": str(l["id_setor"]),
+        "sectorName": l["setor_nome"],
+        "role": l["funcao"] or FUNCAO_PADRAO,
+        "status": status_usuario(l["ativo"]),
+        "progress": percentual(l["soma_percentual"], l["matriculas"]),
+        "hours": int(l["horas"]),
+        "courses": int(l["matriculas"]),
+        "completedCourses": int(l["concluidos"]),
+    } for l in linhas]
+    setores = sorted({i["sectorName"] for i in itens})
+    return {
+        "totalActive": sum(1 for i in itens if i["status"] == "Ativo"),
+        "sectorsFilter": setores,
+        "items": itens,
+    }
+
+
+def montar_detalhe_colaborador(colaborador, matriculas, habilidades, competencias, historico) -> dict:
+    """Tela Detalhes do colaborador (e "Meu progresso" do colaborador)."""
+    quantidade = len(matriculas)
+    soma = sum(float(m["percentual_atual"]) for m in matriculas)
+    concluidas = [m for m in matriculas if m["status"] == "CONCLUIDO"]
+    em_andamento = sum(1 for m in matriculas if m["status"] == "EM_ANDAMENTO")
+    horas = sum(int(m["carga_horaria"]) for m in concluidas)
+    progresso = percentual(soma, quantidade)
+
+    return {
+        "id": str(colaborador["id_usuario"]),
+        "name": colaborador["nome"],
+        "email": colaborador["email"],
+        "sectorName": colaborador["setor_nome"],
+        "role": colaborador["funcao"] or FUNCAO_PADRAO,
+        "status": status_usuario(colaborador["ativo"]),
+        "progress": progresso,
+        "hours": horas,
+        "courses": quantidade,
+        "completedCourses": len(concluidas),
+        "skills": [h["texto"] for h in habilidades if h["texto"]],
+        "competencies": [c["nome"] for c in competencias],
+        "kpis": {
+            "hours": {"value": horas, "note": "cursos concluídos"},
+            "progress": {"value": progresso, "note": "média das matrículas"},
+            "inProgress": {"value": em_andamento, "note": "matrículas ativas"},
+            "completed": {"value": len(concluidas), "note": "cursos finalizados"},
+        },
+        # gráfico de "frequência": histórico PROGRESSO_USUARIO de Registro_Progresso
+        "frequency": [
+            {"date": h["data_registro"].date().isoformat(), "value": float(h["valor"])}
+            for h in historico
+        ],
+        "recentCourses": [
+            {
+                "title": m["curso"],
+                "status": STATUS_MATRICULA.get(m["status"], m["status"]),
+                "progress": round(float(m["percentual_atual"])),
+            }
+            for m in matriculas[:CURSOS_RECENTES_LIMITE]
+        ],
+        # certificado = curso concluído com Curso_Usuario.certificado preenchido
+        "certificates": [
+            {
+                "title": m["curso"],
+                "issuedAt": m["data_conclusao"].strftime("%d/%m/%Y") if m["data_conclusao"] else "",
+                "url": m["certificado"],
+            }
+            for m in concluidas if m["certificado"]
+        ],
+    }
+
+
+@app.get("/colaboradores")
+def colaboradores(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
+    """Subordinados do gestor logado, ativos e inativos (a tela filtra pelo status)."""
     try:
-        cursor.execute(
-            """SELECT COUNT(CU.id_curso_usuario)
-               FROM Curso_Usuario CU
-               JOIN Usuario U ON U.id_usuario = CU.id_usuario
-               WHERE U.id_empresa = %s AND CU.status = %s""",
-            (ID_EMPRESA, "CONCLUIDO"),
-        )
-        total = cursor.fetchone()[0]
+        linhas = bd.listar_colaboradores_do_gestor(usuario["id_empresa"], usuario["id_usuario"])
     except Error as erro:
         print(f"Erro no MySQL: {erro}")
-        raise HTTPException(status_code=500, detail="Erro interno ao contar cursos concluídos")
-    finally:
-        cursor.close()
-        conexao.close()  # devolve a conexão ao pool
+        raise HTTPException(status_code=500, detail="Erro interno ao consultar os colaboradores")
+    return montar_lista_colaboradores(linhas)
 
-    return {"total_cursos_concluidos": total}
 
-@app.get("/progresso")
-def progresso(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
-    """Ranking atual e evolução diária das conclusões por setor."""
-    empresa = usuario["id_empresa"]
-    conexao = None
-    cursor = None
-
+@app.get("/colaboradores/{id_usuario}")
+def colaborador_detalhe(id_usuario: int, usuario=Depends(usuario_atual)):
+    """Detalhe de um colaborador. 404 também quando quem pede não pode vê-lo (não revela que existe)."""
+    nao_encontrado = HTTPException(status_code=404, detail="Colaborador não encontrado.")
     try:
-        conexao = bd.pool.get_connection()
-        cursor = conexao.cursor()
-
-        cursor.execute(
-            """SELECT S.id_setor, S.nome, S.cor, U.id_usuario, U.nome,
-                      COUNT(CU.id_curso_usuario),
-                      COALESCE(SUM(CU.percentual_atual), 0),
-                      SUM(CASE WHEN CU.status = 'CONCLUIDO' THEN 1 ELSE 0 END),
-                      SUM(CASE WHEN CU.status = 'CONCLUIDO' THEN C.carga_horaria ELSE 0 END)
-               FROM Setor S
-               LEFT JOIN Usuario U ON U.id_setor = S.id_setor
-                   AND U.id_empresa = S.id_empresa
-                   AND U.papel_acesso = %s AND U.ativo = 1
-               LEFT JOIN Curso_Usuario CU ON CU.id_usuario = U.id_usuario
-               LEFT JOIN Curso C ON C.id_curso = CU.id_curso
-               WHERE S.id_empresa = %s
-               GROUP BY S.id_setor, S.nome, S.cor, U.id_usuario, U.nome
-               ORDER BY COALESCE(AVG(CU.percentual_atual), 0) DESC, U.nome, U.id_usuario""",
-            (PAPEL_COLABORADOR, empresa),
+        colaborador = bd.buscar_colaborador(usuario["id_empresa"], id_usuario)
+        if colaborador is None or not pode_ver_colaborador(usuario, colaborador):
+            raise nao_encontrado
+        detalhe = montar_detalhe_colaborador(
+            colaborador,
+            bd.listar_matriculas_usuario(id_usuario),
+            bd.buscar_skill_usuario(id_usuario),
+            bd.listar_competencias_concluidas(id_usuario),
+            bd.listar_historico_progresso_usuario(id_usuario),
         )
-        linhas_ranking = cursor.fetchall()
-
-        cursor.execute(
-            """SELECT U.id_setor, CU.data_conclusao, SUM(C.carga_horaria)
-               FROM Curso_Usuario CU
-               JOIN Usuario U ON U.id_usuario = CU.id_usuario
-               JOIN Curso C ON C.id_curso = CU.id_curso
-               WHERE U.id_empresa = %s AND U.papel_acesso = %s AND U.ativo = 1
-                   AND CU.status = 'CONCLUIDO' AND CU.data_conclusao IS NOT NULL
-               GROUP BY U.id_setor, CU.data_conclusao""",
-            (empresa, PAPEL_COLABORADOR),
-        )
-        linhas_evolucao = cursor.fetchall()
-
     except Error as erro:
         print(f"Erro no MySQL: {erro}")
-        raise HTTPException(status_code=500, detail="Erro interno ao consultar o progresso")
+        raise HTTPException(status_code=500, detail="Erro interno ao consultar o colaborador")
+    return detalhe
 
-    finally:
-        try:
-            if cursor is not None:
-                cursor.close()
-        finally:
-            if conexao is not None:
-                conexao.close()
+# ------------------------------------------------------------------ progresso
 
+
+def montar_progresso(linhas_ranking: list, linhas_evolucao: list) -> dict:
+    """Tela Progresso: indicadores, ranking e horas por dia de cada setor da equipe."""
     setores = {}
     ranking = []
     total_matriculas = total_percentual = total_concluidos = total_horas = 0
 
-    for id_setor, setor, cor, id_usuario, nome, matriculas, percentual, concluidos, horas in linhas_ranking:
+    for id_setor, setor, cor, id_usuario, nome, matriculas, soma_percentual, concluidos, horas in linhas_ranking:
+        # Como na tela Setores: só entram os setores onde o gestor tem equipe
         setor_id = str(id_setor)
-        setores[setor_id] = {"id": setor_id, "name": setor, "color": cor or "#2b7fff"}
-
-        if id_usuario is None:
-            continue
+        setores[setor_id] = {"id": setor_id, "name": setor, "color": cor or COR_SETOR_PADRAO}
 
         total_matriculas += matriculas
-        total_percentual += percentual
+        total_percentual += soma_percentual
         total_concluidos += concluidos
         total_horas += horas
 
@@ -424,7 +447,7 @@ def progresso(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
             "collaboratorId": str(id_usuario),
             "name": nome,
             "sector": setor,
-            "progress": round(float(percentual / matriculas), 2) if matriculas else 0,
+            "progress": percentual(soma_percentual, matriculas),
             "hours": int(horas),
             "completed": int(concluidos),
         })
@@ -442,6 +465,9 @@ def progresso(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
         for i in range((fim - inicio).days + 1)
     ] if dias_com_conclusoes else []
 
+    # legenda e filtro na ordem dos setores (o ranking vem ordenado por progresso)
+    setores = dict(sorted(setores.items(), key=lambda item: int(item[0])))
+
     quantidade = len(ranking)
     progresso_geral = total_percentual / total_matriculas if total_matriculas else 0
     media_horas = total_horas / quantidade if quantidade else 0
@@ -452,7 +478,7 @@ def progresso(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
             {"label": "Progresso Geral", "value": f"{progresso_geral:.0f}%", "note": "Média das matrículas"},
             {"label": "Média de Horas", "value": f"{media_horas:.1f}h", "note": "Cursos concluídos por colaborador"},
             {"label": "Taxa de Conclusão", "value": f"{taxa_conclusao:.0f}%", "note": "Proporção de matrículas concluídas"},
-            {"label": "Colaboradores Ativos", "value": str(quantidade), "note": "Total da empresa"},
+            {"label": "Colaboradores Ativos", "value": str(quantidade), "note": "Na sua equipe"},
         ],
         "ranking": ranking,
         "sectors": list(setores.values()),
@@ -465,4 +491,465 @@ def progresso(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
         },
     }
 
-print("fim")
+
+@app.get("/progresso")
+def progresso(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
+    """Ranking e evolução diária das conclusões por setor (só a equipe do gestor logado)."""
+    try:
+        linhas_ranking = bd.buscar_ranking_progresso(usuario["id_empresa"], usuario["id_usuario"])
+        linhas_evolucao = bd.buscar_horas_concluidas_por_dia(usuario["id_empresa"], usuario["id_usuario"])
+    except Error as erro:
+        print(f"Erro no MySQL: {erro}")
+        raise HTTPException(status_code=500, detail="Erro interno ao consultar o progresso")
+    return montar_progresso(linhas_ranking, linhas_evolucao)
+
+# ------------------------------------------------------------------ cursos (catálogo do gestor)
+
+
+def montar_catalogo_cursos(linhas: list, inscritos_equipe: int) -> dict:
+    """Tela Cursos do gestor: catálogo com os números da equipe."""
+    itens = [{
+        "id": str(l["id_curso"]),
+        "title": l["nome"],
+        "category": l["categoria"] or CATEGORIA_PADRAO,
+        "enrolled": int(l["inscritos"]),
+        "avgProgress": percentual(l["soma_percentual"], l["inscritos"]),
+        "status": status_usuario(l["ativo"]),          # Curso.ativo -> "Ativo" / "Inativo"
+    } for l in linhas]
+
+    matriculas = sum(i["enrolled"] for i in itens)
+    concluidos = sum(int(l["concluidos"]) for l in linhas)
+    ativos = sum(1 for i in itens if i["status"] == "Ativo")
+    taxa = round(100 * concluidos / matriculas) if matriculas else 0
+
+    return {
+        "totalCourses": ativos,
+        "categories": sorted({i["category"] for i in itens}),
+        "kpis": [
+            {"label": "Total de Cursos", "value": formatar_numero(ativos), "note": "ativos no catálogo"},
+            {"label": "Colaboradores Inscritos", "value": formatar_numero(inscritos_equipe), "note": "da sua equipe"},
+            {"label": "Cursos Concluídos", "value": formatar_numero(concluidos), "note": "pela sua equipe"},
+            {"label": "Taxa Média de Conclusão", "value": f"{taxa}%", "note": "das matrículas da equipe"},
+        ],
+        "items": itens,
+    }
+
+
+@app.get("/cursos")
+def cursos(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
+    """Catálogo inteiro (Curso não tem empresa); inscritos e progresso contam só a equipe do gestor."""
+    try:
+        linhas = bd.listar_catalogo_cursos(usuario["id_empresa"], usuario["id_usuario"])
+        inscritos = bd.contar_inscritos_equipe(usuario["id_empresa"], usuario["id_usuario"])
+    except Error as erro:
+        print(f"Erro no MySQL: {erro}")
+        raise HTTPException(status_code=500, detail="Erro interno ao consultar os cursos")
+    return montar_catalogo_cursos(linhas, inscritos)
+
+# ------------------------------------------------------------------ meus cursos (colaborador)
+
+NAO_INFORMADO = "Não informado"      # instrutor, início, prazo... ainda não existem no banco
+PALAVRAS_IGNORADAS_CAPA = {"de", "da", "do", "das", "dos", "e", "para", "com", "a", "o"}
+CAPA_MAX_CARACTERES = 10             # cabe na capa de 96px do cartão
+
+
+def capa_curso(nome: str) -> str:
+    """Texto da capa: a primeira palavra (se couber) ou as iniciais. Ex.: 'Docker', 'FC'."""
+    palavras = [p for p in nome.split() if p.lower() not in PALAVRAS_IGNORADAS_CAPA] or nome.split()
+    if len(palavras[0]) <= CAPA_MAX_CARACTERES or len(palavras) == 1:
+        return palavras[0]
+    return "".join(p[0].upper() for p in palavras[:3])
+
+
+def montar_matricula(m: dict) -> dict:
+    """Um curso do colaborador, no formato do cartão de "Meus cursos"."""
+    return {
+        "courseId": str(m["id_curso"]),
+        "title": m["curso"],
+        "category": m["categoria"] or CATEGORIA_PADRAO,
+        "cover": capa_curso(m["curso"]),
+        "modules": None,                      # o banco ainda não tem módulos
+        "hours": int(m["carga_horaria"]),
+        "progress": round(float(m["percentual_atual"])),
+        "status": STATUS_MATRICULA.get(m["status"], m["status"]),
+    }
+
+
+def montar_meus_cursos(matriculas: list) -> dict:
+    """Tela Meus cursos: indicadores + lista."""
+    soma = sum(float(m["percentual_atual"]) for m in matriculas)
+    return {
+        "kpis": {
+            "general": percentual(soma, len(matriculas)),
+            "inProgress": sum(1 for m in matriculas if m["status"] == "EM_ANDAMENTO"),
+            "platforms": len({m["id_plataforma"] for m in matriculas}),
+            "completed": sum(1 for m in matriculas if m["status"] == "CONCLUIDO"),
+        },
+        "items": [montar_matricula(m) for m in matriculas],
+    }
+
+
+def montar_detalhe_curso(m: dict) -> dict:
+    """Tela Detalhe do curso. Campos sem dados no banco vão como "Não informado"."""
+    item = montar_matricula(m)
+    return {
+        "courseId": item["courseId"],
+        "title": item["title"],
+        "cover": item["cover"],
+        "area": item["category"],
+        "status": item["status"],
+        "moduleCount": NAO_INFORMADO,
+        "hours": item["hours"],
+        "doneHours": round(item["hours"] * float(m["percentual_atual"]) / 100),
+        "progress": item["progress"],
+        "instructor": NAO_INFORMADO,
+        "startDate": NAO_INFORMADO,
+        "deadline": NAO_INFORMADO,
+        "certificate": "Disponível" if m["certificado"] else NAO_INFORMADO,
+        "modules": [],
+    }
+
+
+@app.get("/me/cursos")
+def meus_cursos(usuario=Depends(exigir_papel(PAPEL_COLABORADOR))):
+    """Cursos do colaborador logado, com indicadores."""
+    try:
+        matriculas = bd.listar_matriculas_usuario(usuario["id_usuario"])
+    except Error as erro:
+        print(f"Erro no MySQL: {erro}")
+        raise HTTPException(status_code=500, detail="Erro interno ao consultar seus cursos")
+    return montar_meus_cursos(matriculas)
+
+
+@app.get("/me/cursos/{id_curso}")
+def meu_curso_detalhe(id_curso: int, usuario=Depends(exigir_papel(PAPEL_COLABORADOR))):
+    """Detalhe de um curso do colaborador logado (404 se ele não estiver matriculado)."""
+    try:
+        matriculas = bd.listar_matriculas_usuario(usuario["id_usuario"])
+    except Error as erro:
+        print(f"Erro no MySQL: {erro}")
+        raise HTTPException(status_code=500, detail="Erro interno ao consultar o curso")
+    matricula = next((m for m in matriculas if m["id_curso"] == id_curso), None)
+    if matricula is None:
+        raise HTTPException(status_code=404, detail="Curso não encontrado.")
+    return montar_detalhe_curso(matricula)
+
+# ------------------------------------------------------------------ dashboards
+
+# Ainda sem: deltas "vs. período anterior", meta do mês e faixas da distribuição do progresso
+# (dependem de regra e do job diário que vai alimentar Registro_Progresso).
+SERIE_MIN_DIAS = 7                   # o gráfico mostra pelo menos uma semana
+CURSOS_EM_ANDAMENTO_LIMITE = 5
+
+
+def dias_da_serie(datas: list) -> list:
+    """Todos os dias entre a primeira e a última data (mínimo de SERIE_MIN_DIAS, terminando na última)."""
+    if not datas:
+        return []
+    inicio, fim = min(datas), max(datas)
+    inicio = min(inicio, fim - timedelta(days=SERIE_MIN_DIAS - 1))
+    return [inicio + timedelta(days=i) for i in range((fim - inicio).days + 1)]
+
+
+def montar_dashboard_gestor(resumo_setores: list, horas_por_dia: list, cursos_andamento: list) -> dict:
+    """Dashboard do gestor (só a equipe dele)."""
+    setores = montar_resumo_setores(resumo_setores)["items"]
+    colaboradores = sum(s["collaborators"] for s in setores)
+    matriculas = sum(int(l["matriculas"]) for l in resumo_setores)
+    soma = sum(float(l["soma_percentual"]) for l in resumo_setores)
+    horas = sum(int(l["horas"]) for l in resumo_setores)
+    em_andamento = sum(int(c["quantidade"]) for c in cursos_andamento)
+
+    dias = dias_da_serie([dia for _, dia, _ in horas_por_dia])
+    horas_dia = {(str(id_setor), dia): int(h) for id_setor, dia, h in horas_por_dia}
+    daily = {s["id"]: [horas_dia.get((s["id"], d), 0) for d in dias] for s in setores}
+    daily["todos"] = [sum(serie[i] for serie in daily.values()) for i in range(len(dias))]
+
+    return {
+        "periodDefault": {"from": dias[0].isoformat(), "to": dias[-1].isoformat()} if dias
+                         else {"from": datetime.now().date().isoformat(), "to": datetime.now().date().isoformat()},
+        "dates": [d.isoformat() for d in dias],
+        "dailyHours": daily,
+        "sectors": [{"id": s["id"], "name": s["name"]} for s in setores],   # opções do filtro de setor
+        "gestor": {
+            "subtitle": "Aqui está o panorama do desenvolvimento da sua equipe.",
+            "kpis": [
+                {"label": "Colaboradores ativos", "value": formatar_numero(colaboradores), "note": "na sua equipe"},
+                {"label": "Horas de desenvolvimento", "value": f"{formatar_numero(horas)}h", "note": "cursos concluídos"},
+                {"label": "Progresso médio", "value": f"{percentual(soma, matriculas)}%", "note": "média das matrículas"},
+                {"label": "Cursos em andamento", "value": formatar_numero(em_andamento), "note": "matrículas ativas"},
+            ],
+            "sectorProgress": [
+                {"sector": s["id"], "name": s["name"], "value": s["avgProgress"], "color": s["color"]}
+                for s in setores
+            ],
+            "runningCourses": [
+                {"name": c["curso"], "value": percentual(c["soma_percentual"], c["quantidade"])}
+                for c in cursos_andamento[:CURSOS_EM_ANDAMENTO_LIMITE]
+            ],
+            "progressDistribution": [],      # faixas Alto / Em andamento / Baixo: regra não definida
+        },
+    }
+
+
+def montar_dashboard_colaborador(matriculas: list) -> dict:
+    """Dashboard do colaborador logado."""
+    concluidas = [m for m in matriculas if m["status"] == "CONCLUIDO"]
+    horas = sum(int(m["carga_horaria"]) for m in concluidas)
+    soma = sum(float(m["percentual_atual"]) for m in matriculas)
+
+    horas_dia = {}
+    for m in concluidas:
+        if m["data_conclusao"]:
+            horas_dia[m["data_conclusao"]] = horas_dia.get(m["data_conclusao"], 0) + int(m["carga_horaria"])
+    dias = dias_da_serie(list(horas_dia))
+    hoje = datetime.now().date().isoformat()
+
+    return {
+        "periodDefault": {"from": dias[0].isoformat(), "to": dias[-1].isoformat()} if dias
+                         else {"from": hoje, "to": hoje},
+        "colaborador": {
+            "subtitle": "Aqui está o panorama do seu desenvolvimento.",
+            "kpis": [
+                {"label": "Horas de Desenvolvimento", "value": f"{formatar_numero(horas)}h", "note": "cursos concluídos"},
+                {"label": "Progresso Geral", "value": f"{percentual(soma, len(matriculas))}%", "note": "média das matrículas"},
+                {"label": "Cursos em Andamento", "value": str(sum(1 for m in matriculas if m["status"] == "EM_ANDAMENTO")), "note": "matrículas ativas"},
+                {"label": "Cursos Concluídos", "value": str(len(concluidas)), "note": "cursos finalizados"},
+            ],
+            "goal": None,                    # meta do mês: regra não definida
+            "evolution": [{"date": d.isoformat(), "value": horas_dia.get(d, 0)} for d in dias],
+        },
+    }
+
+
+@app.get("/dashboard/gestor")
+def dashboard_gestor(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
+    """Dashboard do gestor (só a equipe dele)."""
+    empresa, gestor = usuario["id_empresa"], usuario["id_usuario"]
+    try:
+        resumo = bd.buscar_resumo_setores(empresa, gestor)
+        horas = bd.buscar_horas_concluidas_por_dia(empresa, gestor)
+        cursos_andamento = bd.listar_cursos_em_andamento_equipe(empresa, gestor)
+    except Error as erro:
+        print(f"Erro no MySQL: {erro}")
+        raise HTTPException(status_code=500, detail="Erro interno ao consultar o dashboard")
+    return montar_dashboard_gestor(resumo, horas, cursos_andamento)
+
+
+@app.get("/dashboard/colaborador")
+def dashboard_colaborador(usuario=Depends(exigir_papel(PAPEL_COLABORADOR))):
+    """Dashboard do colaborador logado."""
+    try:
+        matriculas = bd.listar_matriculas_usuario(usuario["id_usuario"])
+    except Error as erro:
+        print(f"Erro no MySQL: {erro}")
+        raise HTTPException(status_code=500, detail="Erro interno ao consultar o dashboard")
+    return montar_dashboard_colaborador(matriculas)
+
+# ------------------------------------------------------------------ perfil
+
+# Regra: o próprio usuário não altera o e-mail (é o login) nem o setor (definido pelo gestor).
+HABILIDADES_MAX = 30
+
+
+class PerfilAtualizacao(BaseModel):
+    nome: str = Field(min_length=NOME_MIN_CARACTERES, max_length=NOME_MAX_CARACTERES)
+    funcao: Optional[str] = Field(default=None, max_length=FUNCAO_MAX_CARACTERES)
+    telefone: Optional[str] = Field(default=None, max_length=TELEFONE_MAX_CARACTERES)
+    sobre_mim: Optional[str] = Field(default=None, max_length=SOBRE_MIM_MAX_CARACTERES)
+    habilidades: list[str] = Field(default_factory=list, max_length=HABILIDADES_MAX)
+
+    @field_validator("habilidades")
+    @classmethod
+    def habilidades_validas(cls, lista: list[str]) -> list[str]:
+        if any(len(h.strip()) > HABILIDADE_MAX_CARACTERES for h in lista):
+            raise ValueError(f"Cada habilidade pode ter no máximo {HABILIDADE_MAX_CARACTERES} caracteres")
+        return lista
+
+
+def limpar_habilidades(lista: list[str]) -> list[str]:
+    """Tira espaços, vazias e repetidas (sem diferenciar maiúsculas), mantendo a ordem."""
+    vistas, saida = set(), []
+    for texto in (h.strip() for h in lista):
+        if texto and texto.lower() not in vistas:
+            vistas.add(texto.lower())
+            saida.append(texto)
+    return saida
+
+
+def montar_perfil(perfil: dict, habilidades: list) -> dict:
+    """Tela Meu perfil."""
+    return {
+        "userId": str(perfil["id_usuario"]),
+        "name": perfil["nome"],
+        "firstName": perfil["nome"].split()[0],
+        "title": perfil["funcao"] or "",
+        "email": perfil["email"],
+        "phone": perfil["telefone"] or "",
+        "department": perfil["setor_nome"],
+        "bio": perfil["sobre_mim"] or "",
+        "skills": [h["texto"] for h in habilidades if h["texto"]],
+    }
+
+
+def carregar_perfil(id_usuario: int) -> dict:
+    try:
+        perfil = bd.buscar_perfil(id_usuario)
+        habilidades = bd.buscar_skill_usuario(id_usuario) if perfil else []
+    except Error as erro:
+        print(f"Erro no MySQL: {erro}")
+        raise HTTPException(status_code=500, detail="Erro interno ao consultar o perfil")
+    if perfil is None:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+    return montar_perfil(perfil, habilidades)
+
+
+@app.get("/me/perfil")
+def meu_perfil(usuario=Depends(usuario_atual)):
+    """Perfil do usuário logado (gestor ou colaborador)."""
+    return carregar_perfil(usuario["id_usuario"])
+
+
+@app.put("/me/perfil")
+def atualizar_meu_perfil(dados: PerfilAtualizacao, usuario=Depends(usuario_atual)):
+    """Salva o perfil do usuário logado e devolve o perfil atualizado."""
+    nome = padronizar_nome(dados.nome)
+    if len(nome) < NOME_MIN_CARACTERES:          # ex.: nome só com espaços
+        raise HTTPException(status_code=422, detail="Informe seu nome.")
+    ok = bd.atualizar_perfil(
+        usuario["id_usuario"],
+        nome,
+        texto_ou_nulo(dados.funcao),
+        texto_ou_nulo(dados.telefone),
+        texto_ou_nulo(dados.sobre_mim),
+        limpar_habilidades(dados.habilidades),
+    )
+    if not ok:
+        raise HTTPException(status_code=500, detail="Erro interno ao salvar o perfil")
+    return carregar_perfil(usuario["id_usuario"])
+
+# ------------------------------------------------------------------ configurações
+
+# Sem o bloco Segurança (2FA e renovação de senha estão fora do sistema por enquanto).
+# Formato de data: a tela usa YYYY; o banco guarda em português (AAAA), como no script de criação.
+FORMATOS_DATA = {"DD/MM/YYYY": "DD/MM/AAAA", "MM/DD/YYYY": "MM/DD/AAAA", "YYYY-MM-DD": "AAAA-MM-DD"}
+FORMATO_DATA_PADRAO = "DD/MM/YYYY"
+RENOVACAO_SENHA_PADRAO = 90          # coluna obrigatória em Configuracoes, sem uso no sistema
+
+
+class ConfiguracoesAtualizacao(BaseModel):
+    nome_empresa: str = Field(min_length=1, max_length=EMPRESA_NOME_MAX_CARACTERES)
+    cnpj: str = Field(min_length=14, max_length=18)
+    formato_data: str
+
+
+def formato_para_tela(formato_banco: Optional[str]) -> str:
+    for tela, banco in FORMATOS_DATA.items():
+        if banco == formato_banco:
+            return tela
+    return FORMATO_DATA_PADRAO
+
+
+def formatar_cnpj(cnpj: str) -> Optional[str]:
+    """Aceita com ou sem pontuação e devolve 00.000.000/0000-00 (None se não tiver 14 dígitos)."""
+    d = "".join(c for c in cnpj if c.isdigit())
+    if len(d) != 14:
+        return None
+    return f"{d[:2]}.{d[2:5]}.{d[5:8]}/{d[8:12]}-{d[12:]}"
+
+
+def montar_configuracoes(config: dict, plataformas: list) -> dict:
+    """Tela Configurações."""
+    return {
+        "general": {
+            "companyName": config["nome"],
+            "cnpj": config["cnpj"],
+            "dateFormat": formato_para_tela(config["formato_data"]),
+        },
+        "dateFormats": list(FORMATOS_DATA),
+        # só leitura: a seção Integrações está desativada na tela
+        "integrations": [
+            {"id": str(p["id_plataforma"]), "name": p["nome"],
+             "status": "Conectado" if p["conectada"] else "Pendente"}
+            for p in plataformas
+        ],
+    }
+
+
+def carregar_configuracoes(id_empresa: int) -> dict:
+    try:
+        config = bd.buscar_configuracoes(id_empresa)
+        plataformas = bd.listar_plataformas_empresa(id_empresa) if config else []
+    except Error as erro:
+        print(f"Erro no MySQL: {erro}")
+        raise HTTPException(status_code=500, detail="Erro interno ao consultar as configurações")
+    if config is None:
+        raise HTTPException(status_code=404, detail="Empresa não encontrada.")
+    return montar_configuracoes(config, plataformas)
+
+
+@app.get("/configuracoes")
+def configuracoes(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
+    """Nome e CNPJ da empresa, formato de data e integrações."""
+    return carregar_configuracoes(usuario["id_empresa"])
+
+
+@app.put("/configuracoes")
+def atualizar_configuracoes(dados: ConfiguracoesAtualizacao, usuario=Depends(exigir_papel(PAPEL_GESTOR))):
+    """Salva nome, CNPJ e formato de data e devolve as configurações atualizadas."""
+    nome = dados.nome_empresa.strip()
+    cnpj = formatar_cnpj(dados.cnpj)
+    if not nome:
+        raise HTTPException(status_code=422, detail="Informe o nome da empresa.")
+    if cnpj is None:
+        raise HTTPException(status_code=422, detail="Informe um CNPJ válido (00.000.000/0000-00).")
+    if dados.formato_data not in FORMATOS_DATA:
+        raise HTTPException(status_code=422, detail="Formato de data inválido.")
+
+    resultado = bd.salvar_configuracoes(
+        usuario["id_empresa"], nome, cnpj, FORMATOS_DATA[dados.formato_data], RENOVACAO_SENHA_PADRAO,
+    )
+    if resultado == "cnpj_duplicado":
+        raise HTTPException(status_code=409, detail="Este CNPJ já está cadastrado para outra empresa.")
+    if resultado != "ok":
+        raise HTTPException(status_code=500, detail="Erro interno ao salvar as configurações")
+    return carregar_configuracoes(usuario["id_empresa"])
+
+# ------------------------------------------------------------------ apoio
+
+COR_SETOR_PADRAO = "#2b7fff"         # setor sem cor no banco
+CATEGORIA_PADRAO = "Sem categoria"   # curso sem id_categoria
+STATUS_MATRICULA = {                 # ENUM do banco -> texto da tela
+    "NAO_INICIADO": "Não iniciado",
+    "EM_ANDAMENTO": "Em andamento",
+    "CONCLUIDO": "Concluído",
+}
+
+
+def padronizar_nome(nome: str) -> str:
+    """'ana  DA souza' -> 'Ana da Souza'."""
+    minusculas = {"da", "de", "do", "das", "dos", "e"}
+    palavras = nome.lower().split()
+    return " ".join(
+        p if (i > 0 and p in minusculas) else p.capitalize()
+        for i, p in enumerate(palavras)
+    )
+
+
+def texto_ou_nulo(valor: Optional[str]) -> Optional[str]:
+    """Tira espaços das pontas; texto vazio vira NULL no banco."""
+    return (valor or "").strip() or None
+
+
+def formatar_numero(valor) -> str:
+    """1347 -> '1.347' (milhar brasileiro)."""
+    return f"{int(valor):,}".replace(",", ".")
+
+
+def percentual(soma, quantidade) -> int:
+    """Média de percentual_atual das matrículas, arredondada (0 se não houver matrículas)."""
+    return round(float(soma) / quantidade) if quantidade else 0
+
+
+def status_usuario(ativo) -> str:
+    return "Ativo" if ativo else "Inativo"

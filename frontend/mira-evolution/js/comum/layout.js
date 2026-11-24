@@ -1,16 +1,12 @@
 /**
- * LAYOUT COMPARTILHADO: menu lateral, barra do topo (celular), botões de notificação e tema,
- * e o filtro de período. Está num só arquivo para que o menu seja editado em um único lugar
- * (a lista de itens fica em config.js).
- *
- * Cada página interna tem, no HTML:  <aside class="sidebar" id="sidebar"></aside>
- * e este arquivo preenche o conteúdo.
+ * LAYOUT COMPARTILHADO: menu lateral, barra do topo (celular), notificações, tema e filtro de período.
+ * Cada página interna tem <aside class="sidebar" id="sidebar"></aside> e este arquivo preenche o conteúdo.
+ * Os itens do menu ficam em config.js.
  */
 
-/**
- * No HTML das páginas, ícones são escritos assim:  <i data-icone="calendar" data-tamanho="16"></i>
- * Esta função troca cada <i> pelo SVG do ícone (veja a lista em icones.js).
- */
+/* ---------------------------------------------------------------- montagem da página */
+
+/** Troca cada <i data-icone="calendar" data-tamanho="16"></i> do HTML pelo SVG do ícone (icones.js). */
 function preencherIcones() {
   $('i[data-icone]').each(function () {
     var $i = $(this);
@@ -22,7 +18,7 @@ function preencherIcones() {
   });
 }
 
-/** Mostra uma mensagem de erro no lugar do conteúdo (ex.: falha ao carregar os dados). */
+/** Mostra o erro no lugar do conteúdo da página (ex.: falha ao carregar os dados). */
 function mostrarErroDaPagina(erro) {
   $('#page-root').html('<div class="page card">' + errorState(erro && erro.message) + '</div>');
   $('#page-root [data-action="retry"]').on('click', function () { window.location.reload(); });
@@ -32,7 +28,6 @@ function mostrarErroDaPagina(erro) {
 function montarLayout(sessao, chaveMenu) {
   preencherIcones();
 
-  // --- Menu lateral
   var itens = MENU_POR_PERFIL[sessao.role].map(function (chave) {
     var item = MENU[chave];
     return '<li><a class="nav-link" href="' + paginaDoMenu(chave, sessao.role) + '" data-nav="' + chave + '"' +
@@ -48,7 +43,7 @@ function montarLayout(sessao, chaveMenu) {
     '<div class="sidebar__profile" data-user>' + blocoUsuario(sessao) + '</div>'
   );
 
-  // --- Barra do topo (aparece só em tablet/celular)
+  // Barra do topo: só aparece em tablet/celular
   $('.topbar').html(
     '<button type="button" class="icon-btn" data-action="open-menu" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">' + icon('menu', { size: 22 }) + '</button>' +
     '<a href="' + inicio + '" aria-label="Mira Evolution">' +
@@ -57,10 +52,9 @@ function montarLayout(sessao, chaveMenu) {
     '</a>'
   );
 
-  // --- Botões de notificação e tema (cada página tem um <div class="header-tools" data-tools>)
   montarFerramentasDoTopo(sessao);
 
-  // --- Aviso se veio de uma página sem permissão
+  // Veio redirecionado de uma página sem permissão (protegerPagina)
   if (parametroUrl('acesso') === 'negado') {
     toast('Você não tem acesso a essa página.', { type: 'error' });
     window.history.replaceState(null, '', window.location.pathname);
@@ -94,7 +88,7 @@ if (window.matchMedia) {
 
 $(document).on('click', '[data-action="logout"]', function () { sair(); });
 
-// Quando o nome muda em "Meu perfil", atualiza o rodapé do menu
+// Disparado pelo "Meu perfil" ao salvar o nome
 $(window).on('mira:session-updated', function (e) {
   $('[data-user]').html(blocoUsuario(e.originalEvent.detail));
 });
@@ -104,11 +98,12 @@ $(window).on('mira:session-updated', function (e) {
 var _lidas = new Set(armazenamentoSessao.get('mira.notifications.read', []));
 var _notificacoes = [];
 
-/* Comentário Rafael: Ativar Futuramente (Tirar o style = display:none) */
-
+/** Botões do topo de cada página (<div data-tools>): notificações e tema. */
 function montarFerramentasDoTopo(sessao) {
   var escuro = Tema.obter() === 'dark';
   var mostrarTema = $('[data-tools]').data('semTema') === undefined;   // Configurações usa data-sem-tema
+  // Sino de notificações escondido (style="display:none") até a funcionalidade ser ativada
+
   $('[data-tools]').html(
     '<button type="button" style="display:none" class="icon-btn" data-action="notifications" aria-haspopup="dialog" aria-expanded="false" aria-label="Notificações">' +
       icon('bell', { size: 22 }) + '<span class="icon-btn__count" data-notif-count hidden>0</span></button>' +
@@ -174,21 +169,18 @@ function addDays(iso, delta) {
   return toISO(d);
 }
 
-/** Limites do calendário: os dados cobrem os últimos 90 dias. */
+/** O calendário permite escolher só os últimos 90 dias. */
 function limitesDoPeriodo() {
   return { min: addDays(APP.hoje, -89), max: APP.hoje };
 }
 
-/** Texto do botão de período (pode ser usado na primeira montagem da página). */
+/** HTML do botão de período. */
 function botaoPeriodo(de, ate) {
   return '<button type="button" class="filter-btn" data-action="date-range" aria-haspopup="dialog" aria-expanded="false" aria-label="Período: ' + formatDate(de) + ' a ' + formatDate(ate) + '">' +
     icon('calendar', { size: 16 }) + '<span data-range-label>' + formatDate(de) + ' - ' + formatDate(ate) + '</span>' + icon('chevron-down', { size: 14 }) + '</button>';
 }
 
-/**
- * Abre o popover de período. Ao escolher, chama aoAplicar({ from, to }).
- * Como usar:  $('#periodo').on('click', function () { abrirPeriodo(this, de, ate, function (r) {...}); });
- */
+/** Abre o popover de período; ao escolher, chama aoAplicar({ from, to }). */
 function abrirPeriodo(botao, de, ate, aoAplicar) {
   var lim = limitesDoPeriodo();
   showPopover(botao, {

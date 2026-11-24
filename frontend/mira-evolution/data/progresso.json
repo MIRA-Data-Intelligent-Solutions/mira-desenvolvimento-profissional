@@ -1,0 +1,249 @@
+{
+  "kpis": [
+    {
+      "label": "Progresso Geral",
+      "value": "64%",
+      "note": "Média das matrículas"
+    },
+    {
+      "label": "Média de Horas",
+      "value": "14.7h",
+      "note": "Cursos concluídos por colaborador"
+    },
+    {
+      "label": "Taxa de Conclusão",
+      "value": "30%",
+      "note": "Proporção de matrículas concluídas"
+    },
+    {
+      "label": "Colaboradores Ativos",
+      "value": "11",
+      "note": "Na sua equipe"
+    }
+  ],
+  "ranking": [
+    {
+      "position": 1,
+      "collaboratorId": "17",
+      "name": "Thiago Lopes",
+      "sector": "Comercial",
+      "progress": 87,
+      "hours": 12,
+      "completed": 1
+    },
+    {
+      "position": 2,
+      "collaboratorId": "5",
+      "name": "Bruno Martins",
+      "sector": "Tecnologia",
+      "progress": 77,
+      "hours": 30,
+      "completed": 1
+    },
+    {
+      "position": 3,
+      "collaboratorId": "15",
+      "name": "Renata Barros",
+      "sector": "Financeiro",
+      "progress": 77,
+      "hours": 12,
+      "completed": 1
+    },
+    {
+      "position": 4,
+      "collaboratorId": "7",
+      "name": "Beatriz Almeida",
+      "sector": "Tecnologia",
+      "progress": 73,
+      "hours": 12,
+      "completed": 1
+    },
+    {
+      "position": 5,
+      "collaboratorId": "8",
+      "name": "Rafael Costa",
+      "sector": "Tecnologia",
+      "progress": 73,
+      "hours": 20,
+      "completed": 1
+    },
+    {
+      "position": 6,
+      "collaboratorId": "19",
+      "name": "Pedro Ribeiro",
+      "sector": "Comercial",
+      "progress": 67,
+      "hours": 16,
+      "completed": 1
+    },
+    {
+      "position": 7,
+      "collaboratorId": "9",
+      "name": "Felipe Nunes",
+      "sector": "Tecnologia",
+      "progress": 62,
+      "hours": 12,
+      "completed": 1
+    },
+    {
+      "position": 8,
+      "collaboratorId": "6",
+      "name": "Lucas Santos",
+      "sector": "Tecnologia",
+      "progress": 62,
+      "hours": 20,
+      "completed": 1
+    },
+    {
+      "position": 9,
+      "collaboratorId": "18",
+      "name": "Larissa Gomes",
+      "sector": "Comercial",
+      "progress": 58,
+      "hours": 12,
+      "completed": 1
+    },
+    {
+      "position": 10,
+      "collaboratorId": "4",
+      "name": "Ana Souza",
+      "sector": "Tecnologia",
+      "progress": 38,
+      "hours": 16,
+      "completed": 1
+    },
+    {
+      "position": 11,
+      "collaboratorId": "16",
+      "name": "Amanda Freitas",
+      "sector": "Financeiro",
+      "progress": 33,
+      "hours": 0,
+      "completed": 0
+    }
+  ],
+  "sectors": [
+    {
+      "id": "1",
+      "name": "Tecnologia",
+      "color": "#2b7fff"
+    },
+    {
+      "id": "3",
+      "name": "Financeiro",
+      "color": "#00bc7d"
+    },
+    {
+      "id": "4",
+      "name": "Comercial",
+      "color": "#df4d48"
+    }
+  ],
+  "legendSectors": [
+    "1",
+    "3",
+    "4"
+  ],
+  "periodDefault": {
+    "from": "2026-09-01",
+    "to": "2026-09-22"
+  },
+  "dates": [
+    "2026-09-01",
+    "2026-09-02",
+    "2026-09-03",
+    "2026-09-04",
+    "2026-09-05",
+    "2026-09-06",
+    "2026-09-07",
+    "2026-09-08",
+    "2026-09-09",
+    "2026-09-10",
+    "2026-09-11",
+    "2026-09-12",
+    "2026-09-13",
+    "2026-09-14",
+    "2026-09-15",
+    "2026-09-16",
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-19",
+    "2026-09-20",
+    "2026-09-21",
+    "2026-09-22"
+  ],
+  "dailyHours": {
+    "1": [
+      30,
+      0,
+      12,
+      0,
+      20,
+      0,
+      0,
+      12,
+      0,
+      0,
+      0,
+      20,
+      0,
+      16,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "3": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      12,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "4": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      12,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      12,
+      0,
+      0,
+      0,
+      0,
+      16
+    ]
+  }
+}

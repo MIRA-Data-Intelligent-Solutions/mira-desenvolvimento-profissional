@@ -1,20 +1,24 @@
-/** DASHBOARD DO GESTOR (Figma: "Dashboard - Gestor Light/Dark"). */
+/** DASHBOARD DO GESTOR — GET /dashboard/gestor (Figma: "Dashboard - Gestor"). */
 $(function () {
   var sessao = protegerPagina(['gestor']);
   if (!sessao) return;
   montarLayout(sessao, 'dashboard');
 
+  /* ---------------------------------------------------------------- estado */
+
   var filtros = { setor: 'todos', de: null, ate: null };
-  var dashboard = null;     // conteúdo de data/dashboard.json
-  var setores = [];         // conteúdo de data/sectors.json
+  var dashboard = null;
+  var setores = [];         // setores da equipe (filtro do gráfico)
   var grafico = null;
+
+  /* ---------------------------------------------------------------- carga */
 
   $('#saudacao').text('Olá, ' + firstName(sessao.name) + '!');
 
-  Promise.all([buscarDados('dashboard'), buscarDados('sectors')])
+  buscarDashboardGestor()
     .then(function (resultado) {
-      dashboard = resultado[0];
-      setores = resultado[1].items;
+      dashboard = resultado;
+      setores = resultado.sectors;
       $('#filtro-setor-grafico').append(setores.map(function (s) {
         return '<option value="' + s.id + '">' + esc(s.name) + '</option>';
       }).join(''));
@@ -22,12 +26,13 @@ $(function () {
     })
     .catch(mostrarErroDaPagina);
 
-  /** Período usado agora (o escolhido pelo usuário ou o padrão dos dados). */
+  /* ---------------------------------------------------------------- desenho */
+
+  /** Período escolhido pelo usuário ou, sem escolha, o padrão dos dados. */
   function periodo() {
     return { de: filtros.de || dashboard.periodDefault.from, ate: filtros.ate || dashboard.periodDefault.to };
   }
 
-  /** Preenche a tela com os dados e os filtros atuais. */
   function desenhar() {
     var gestor = dashboard.gestor;
     var p = periodo();
@@ -36,10 +41,8 @@ $(function () {
     $('#botao-periodo').attr('aria-label', 'Período: ' + formatDate(p.de) + ' a ' + formatDate(p.ate));
     $('#botao-periodo [data-range-label]').text(formatDate(p.de) + ' - ' + formatDate(p.ate));
 
-    // Indicadores
     $('#kpis').html(gestor.kpis.map(kpiCenter).join(''));
 
-    // Progresso por setor (respeita o filtro de setor)
     var progressoSetores = gestor.sectorProgress.filter(function (s) {
       return filtros.setor === 'todos' || s.sector === filtros.setor;
     });
@@ -47,14 +50,14 @@ $(function () {
       ? progressoSetores.map(meter).join('')
       : emptyState({ title: 'Nenhum setor selecionado' }));
 
-    // Tabelas pequenas
-    $('#tabela-cursos').html(linhasPorcentagem(gestor.runningCourses));
-    $('#tabela-distribuicao').html(linhasPorcentagem(gestor.progressDistribution));
+    $('#tabela-cursos').html(linhasPorcentagem(gestor.runningCourses, 'Nenhum curso em andamento'));
+    $('#tabela-distribuicao').html(linhasPorcentagem(gestor.progressDistribution, 'Indicador em definição'));
 
     desenharGrafico(p);
   }
 
-  function linhasPorcentagem(lista) {
+  function linhasPorcentagem(lista, textoVazio) {
+    if (!lista.length) return '<tr><td colspan="2">' + esc(textoVazio) + '</td></tr>';
     return lista.map(function (r) { return '<tr><td>' + esc(r.name) + '</td><td>' + Math.round(r.value) + '%</td></tr>'; }).join('');
   }
 

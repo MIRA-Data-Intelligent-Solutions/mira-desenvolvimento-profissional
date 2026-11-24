@@ -1,26 +1,35 @@
-/** MEU PERFIL — página compartilhada (Figma: "Meu Perfil"). */
+/** MEU PERFIL — GET/PUT /me/perfil. Página compartilhada pelos dois perfis (Figma: "Meu Perfil"). */
 $(function () {
   var sessao = protegerPagina(['gestor', 'colaborador']);
   if (!sessao) return;
   montarLayout(sessao, 'perfil');
 
+  /* ---------------------------------------------------------------- estado */
+
   var perfil = null;
-  var habilidades = [];
+  var habilidades = [];     // lista em edição (só vai para a API ao salvar)
   var $form = $('#form-perfil');
+
+  // Regra: e-mail (login) e departamento (setor definido pelo gestor) não são alterados aqui
+  $form.find('[name="email"], [name="department"]').prop('readOnly', true)
+    .attr('title', 'Este campo não pode ser alterado por aqui.');
+
+  /* ---------------------------------------------------------------- carga */
 
   carregar();
 
-  /** Lê o perfil do JSON e aplica o que o usuário já salvou antes. */
   function carregar() {
-    return buscarDados('profiles')
-      .then(function (db) {
-        var base = db[sessao.role];
-        var salvo = (lerBancoDemo().profiles || {})[sessao.id];
-        perfil = salvo ? $.extend({}, base, salvo) : base;
-        habilidades = perfil.skills.slice();
-        desenhar();
-      })
+    return buscarPerfil()
+      .then(mostrarPerfil)
       .catch(mostrarErroDaPagina);
+  }
+
+  /* ---------------------------------------------------------------- desenho */
+
+  function mostrarPerfil(dados) {
+    perfil = dados;
+    habilidades = perfil.skills.slice();
+    desenhar();
   }
 
   function desenharHabilidades() {
@@ -42,7 +51,8 @@ $(function () {
     f.bio.value = perfil.bio;
   }
 
-  // Máscara de telefone enquanto digita
+  /* ---------------------------------------------------------------- interações */
+
   $form.on('input', '[name="phone"]', function () { this.value = maskPhone(this.value); });
 
   $('#btn-cancelar').on('click', function () {
@@ -50,7 +60,6 @@ $(function () {
     desenhar();
   });
 
-  // "+ Adicionar" habilidade
   $('#cartao-perfil').on('click', '[data-action="add-skill"]', function () {
     openModal({
       title: 'Adicionar habilidade',
@@ -71,27 +80,26 @@ $(function () {
     var valido = validateForm($form[0], {
       name: rules.required('Informe seu nome.'),
       title: rules.required('Informe seu cargo.'),
-      email: function (v) { return rules.required('Informe o e-mail.')(v) || rules.email()(v); },
       phone: function (v) { return v.replace(/\D/g, '').length >= 10 ? '' : 'Informe um telefone com DDD.'; }
     });
     if (!valido) return;
 
-    var dados = {
-      name: $.trim(f.name.value), title: $.trim(f.title.value), email: $.trim(f.email.value),
-      phone: $.trim(f.phone.value), department: $.trim(f.department.value), bio: $.trim(f.bio.value),
-      skills: habilidades
-    };
-    dados.firstName = dados.name.split(' ')[0];
-
-    // Demonstração: guarda no navegador. Com API, aqui entraria um fetch PUT.
-    var todos = lerBancoDemo().profiles || {};
-    todos[sessao.id] = dados;
-    salvarBancoDemo({ profiles: todos });
-
-    // Atualiza o nome no menu lateral
-    var nova = atualizarSessao({ name: dados.name });
-    window.dispatchEvent(new CustomEvent('mira:session-updated', { detail: nova }));
-    toast('Perfil atualizado.', { type: 'success' });
-    carregar();
+    var $salvar = $form.find('[type="submit"]').prop('disabled', true);
+    salvarPerfil({
+      nome: $.trim(f.name.value),
+      funcao: $.trim(f.title.value),
+      telefone: $.trim(f.phone.value),
+      sobre_mim: $.trim(f.bio.value),
+      habilidades: habilidades
+    })
+      .then(function (atualizado) {
+        mostrarPerfil(atualizado);
+        // Atualiza o nome no rodapé do menu lateral
+        var nova = atualizarSessao({ name: atualizado.name, firstName: atualizado.firstName, title: atualizado.title });
+        window.dispatchEvent(new CustomEvent('mira:session-updated', { detail: nova }));
+        toast('Perfil atualizado.', { type: 'success' });
+      })
+      .catch(function (erro) { toast(erro.message, { type: 'error' }); })
+      .finally(function () { $salvar.prop('disabled', false); });
   });
 });

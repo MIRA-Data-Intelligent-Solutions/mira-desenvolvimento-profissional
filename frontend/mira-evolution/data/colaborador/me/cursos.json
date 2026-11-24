@@ -1,0 +1,40 @@
+{
+  "kpis": {
+    "general": 38,
+    "inProgress": 1,
+    "platforms": 1,
+    "completed": 1
+  },
+  "items": [
+    {
+      "courseId": "11",
+      "title": "Fundamentos de Cloud",
+      "category": "Cloud e DevOps",
+      "cover": "FC",
+      "modules": null,
+      "hours": 20,
+      "progress": 15,
+      "status": "Em andamento"
+    },
+    {
+      "courseId": "12",
+      "title": "Docker",
+      "category": "Cloud e DevOps",
+      "cover": "Docker",
+      "modules": null,
+      "hours": 16,
+      "progress": 100,
+      "status": "Concluído"
+    },
+    {
+      "courseId": "9",
+      "title": "JavaScript",
+      "category": "Programacao",
+      "cover": "JavaScript",
+      "modules": null,
+      "hours": 24,
+      "progress": 0,
+      "status": "Não iniciado"
+    }
+  ]
+}

@@ -38,7 +38,7 @@
             <header class="page-header">
               <div class="page-header__titles">
                 <h1 class="page-title">Configurações</h1>
-                <p class="page-subtitle">Gerencie preferências da empresa, aparência, integrações e segurança.</p>
+                <p class="page-subtitle">Gerencie preferências da empresa e aparência.</p>
               </div>
               <div class="page-header__actions">
                 <!-- data-sem-tema: nesta página o tema é trocado em "Aparência", então só mostra as notificações -->
@@ -70,16 +70,6 @@
                 <h2 class="card__title card__title--lg" id="integ-title">Integrações</h2>
                 <ul class="integration-list" id="lista-integracoes"></ul>
               </section> -->
-
-              <section class="card card__pad settings__section" aria-labelledby="seg-title">
-                <h2 class="card__title card__title--lg" id="seg-title">Segurança</h2>
-                <div class="settings__grid">
-                  <label class="field"><span class="field__label">Renovação de senha</span><span class="select select--field"><select name="renewal"></select><i data-icone="chevron-down" data-tamanho="14"></i></span>
-                    <span class="field__hint" id="ultima-renovacao"></span></label>
-                  <div class="field"><span class="field__label" id="2fa-label">Autenticação em dois fatores (2FA)</span>
-                    <div class="switch-row"><button type="button" role="switch" class="switch" id="twoFactor" aria-checked="false" aria-labelledby="2fa-label"></button><span id="texto-2fa">Desativada</span></div></div>
-                </div>
-              </section>
 
               <div class="save-bar"><button type="button" class="btn btn--outline" id="btn-descartar">Descartar alterações</button><button type="submit" class="btn btn--primary">Salvar alterações</button></div>
             </form>

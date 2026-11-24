@@ -1,0 +1,210 @@
+{
+  "periodDefault": {
+    "from": "2026-09-01",
+    "to": "2026-09-22"
+  },
+  "dates": [
+    "2026-09-01",
+    "2026-09-02",
+    "2026-09-03",
+    "2026-09-04",
+    "2026-09-05",
+    "2026-09-06",
+    "2026-09-07",
+    "2026-09-08",
+    "2026-09-09",
+    "2026-09-10",
+    "2026-09-11",
+    "2026-09-12",
+    "2026-09-13",
+    "2026-09-14",
+    "2026-09-15",
+    "2026-09-16",
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-19",
+    "2026-09-20",
+    "2026-09-21",
+    "2026-09-22"
+  ],
+  "dailyHours": {
+    "1": [
+      30,
+      0,
+      12,
+      0,
+      20,
+      0,
+      0,
+      12,
+      0,
+      0,
+      0,
+      20,
+      0,
+      16,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "3": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      12,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "4": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      12,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      12,
+      0,
+      0,
+      0,
+      0,
+      16
+    ],
+    "todos": [
+      30,
+      0,
+      12,
+      0,
+      20,
+      0,
+      0,
+      12,
+      0,
+      12,
+      12,
+      20,
+      0,
+      16,
+      0,
+      0,
+      12,
+      0,
+      0,
+      0,
+      0,
+      16
+    ]
+  },
+  "sectors": [
+    {
+      "id": "1",
+      "name": "Tecnologia"
+    },
+    {
+      "id": "3",
+      "name": "Financeiro"
+    },
+    {
+      "id": "4",
+      "name": "Comercial"
+    }
+  ],
+  "gestor": {
+    "subtitle": "Aqui está o panorama do desenvolvimento da sua equipe.",
+    "kpis": [
+      {
+        "label": "Colaboradores ativos",
+        "value": "11",
+        "note": "na sua equipe"
+      },
+      {
+        "label": "Horas de desenvolvimento",
+        "value": "162h",
+        "note": "cursos concluídos"
+      },
+      {
+        "label": "Progresso médio",
+        "value": "64%",
+        "note": "média das matrículas"
+      },
+      {
+        "label": "Cursos em andamento",
+        "value": "21",
+        "note": "matrículas ativas"
+      }
+    ],
+    "sectorProgress": [
+      {
+        "sector": "1",
+        "name": "Tecnologia",
+        "value": 64,
+        "color": "#2b7fff"
+      },
+      {
+        "sector": "3",
+        "name": "Financeiro",
+        "value": 55,
+        "color": "#00bc7d"
+      },
+      {
+        "sector": "4",
+        "name": "Comercial",
+        "value": 71,
+        "color": "#df4d48"
+      }
+    ],
+    "runningCourses": [
+      {
+        "name": "APIs REST com Flask",
+        "value": 52
+      },
+      {
+        "name": "JavaScript",
+        "value": 55
+      },
+      {
+        "name": "Scrum e Metodos Ageis",
+        "value": 45
+      },
+      {
+        "name": "Fundamentos de Cloud",
+        "value": 38
+      },
+      {
+        "name": "Lideranca de Equipes",
+        "value": 60
+      }
+    ],
+    "progressDistribution": []
+  }
+}

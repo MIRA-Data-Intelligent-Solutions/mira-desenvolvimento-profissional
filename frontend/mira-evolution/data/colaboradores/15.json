@@ -1,0 +1,53 @@
+{
+  "id": "15",
+  "name": "Renata Barros",
+  "email": "renata.barros@empresa.com",
+  "sectorName": "Financeiro",
+  "role": "Colaborador",
+  "status": "Ativo",
+  "progress": 77,
+  "hours": 12,
+  "courses": 3,
+  "completedCourses": 1,
+  "skills": [],
+  "competencies": [
+    "Lideranca"
+  ],
+  "kpis": {
+    "hours": {
+      "value": 12,
+      "note": "cursos concluídos"
+    },
+    "progress": {
+      "value": 77,
+      "note": "média das matrículas"
+    },
+    "inProgress": {
+      "value": 2,
+      "note": "matrículas ativas"
+    },
+    "completed": {
+      "value": 1,
+      "note": "cursos finalizados"
+    }
+  },
+  "frequency": [],
+  "recentCourses": [
+    {
+      "title": "Lideranca de Equipes",
+      "status": "Em andamento",
+      "progress": 80
+    },
+    {
+      "title": "Excel para Analise de Dados",
+      "status": "Em andamento",
+      "progress": 50
+    },
+    {
+      "title": "Scrum e Metodos Ageis",
+      "status": "Concluído",
+      "progress": 100
+    }
+  ],
+  "certificates": []
+}

@@ -1,32 +1,40 @@
-/**
- * CONFIGURAÇÃO GERAL: usuários de demonstração, menu e permissões.
- * Quer mudar quem acessa o quê? É só aqui.
- */
+/** CONFIGURAÇÃO GERAL: dados do app, contas de teste, menu e permissões por perfil. */
+
+/* ---------------------------------------------------------------- aplicação */
 
 var APP = {
   nome: 'Mira Evolution',
   chaveSessao: 'mira.session',
   chaveTema: 'mira.theme',
   chaveBancoDemo: 'mira.demo.db',
-  hoje: '2026-06-20'   // "data de hoje" dos dados fictícios (os JSON terminam em 20/06/2026)
+  // "hoje" (AAAA-MM-DD): limite do filtro de período
+  hoje: (function () {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  })()
+};
+
+/* ---------------------------------------------------------------- login */
+
+/** Textos do rodapé do menu lateral para cada perfil (iguais ao design). */
+var ROTULOS_PERFIL = {
+  gestor:      { roleLabel: 'Gestor',      modeLabel: 'Admin Mode' },
+  colaborador: { roleLabel: 'Colaborador', modeLabel: 'Colaborador' }
 };
 
 /**
- * USUÁRIOS DE DEMONSTRAÇÃO — só para apresentar o front-end.
- * NÃO é autenticação segura: as senhas ficam visíveis no navegador.
- * Em produção, o login deve ser feito por uma API (veja entrar() em sessao.js).
+ * Contas do quadro "Acessos de demonstração" do login (e as únicas aceitas no modo local).
+ * São contas reais do banco e a senha fica visível no navegador: use só contas de teste.
+ * E-mail vazio esconde a conta; sem nenhuma, o quadro some.
  */
-var USUARIOS_DEMO = [
-  { id: 'g01', role: 'gestor', username: 'gestor', email: 'gestor@mira.demo', password: 'Mira@123',
-    name: 'Madu Oliveira', firstName: 'Madu', roleLabel: 'Gestora', modeLabel: 'Admin Mode', collaboratorId: null },
-  { id: 'u07', role: 'colaborador', username: 'colaborador', email: 'colaborador@mira.demo', password: 'Mira@123',
-    name: 'Rafael Marques', firstName: 'Rafael', roleLabel: 'Colaborador', modeLabel: 'Colaborador', collaboratorId: 'u07' }
+var CONTAS_TESTE = [
+  { perfil: 'gestor',      rotulo: 'Gestor',      email: 'carlos.lima@empresa.com',  senha: '12345678' },
+  { perfil: 'colaborador', rotulo: 'Colaborador', email: 'ana.souza@empresa.com',    senha: '12345678' }
 ];
 
-/**
- * Itens do menu lateral. Para cada perfil, a página de destino:
- * (algumas telas são diferentes para Gestor e Colaborador; outras são a mesma)
- */
+/* ---------------------------------------------------------------- menu e permissões */
+
+/** Itens do menu lateral e a página de cada um por perfil (algumas telas são diferentes para cada perfil). */
 var MENU = {
   dashboard:     { label: 'Dashboard',     icon: 'layout-grid', pagina: { gestor: 'dashboard-gestor.html', colaborador: 'dashboard-colaborador.html' } },
   colaboradores: { label: 'Colaboradores', icon: 'users',       pagina: { gestor: 'colaboradores.html' } },
@@ -37,18 +45,16 @@ var MENU = {
   perfil:        { label: 'Meu perfil',    icon: 'user',        pagina: { gestor: 'perfil.html', colaborador: 'perfil.html' } }
 };
 
-/** Ordem dos itens do menu em cada perfil. */
 var MENU_POR_PERFIL = {
   gestor: ['dashboard', 'colaboradores', 'setores', 'cursos', 'progresso', 'configuracoes', 'perfil'],
   colaborador: ['dashboard', 'cursos', 'progresso', 'perfil']
 };
 
-/** Perfis que podem usar ações específicas dentro das telas. */
+/** Ações dentro das telas e os perfis que podem usá-las. */
 var ACOES = {
-  voltarParaLista: ['gestor']      // botão "Voltar para Colaboradores" nos detalhes
+  voltarParaLista: ['gestor']      // link "Voltar para Colaboradores" nos detalhes
 };
 
-/** Endereço (arquivo .html) de um item do menu para o perfil indicado. */
 function paginaDoMenu(chave, perfil) {
   return (MENU[chave].pagina[perfil]) || 'login.html';
 }

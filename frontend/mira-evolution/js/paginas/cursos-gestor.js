@@ -1,13 +1,17 @@
-/** CURSOS — visão do Gestor (Figma: "Cursos - Gestor"): catálogo com filtros. */
+/** CURSOS (GESTOR) — GET /cursos: catálogo com busca e categorias (Figma: "Cursos - Gestor"). */
 $(function () {
   var sessao = protegerPagina(['gestor']);
   if (!sessao) return;
   montarLayout(sessao, 'cursos');
 
+  /* ---------------------------------------------------------------- estado */
+
   var filtros = { categoria: 'Todos', busca: '' };
   var db = null;
 
-  buscarDados('courses')
+  /* ---------------------------------------------------------------- carga */
+
+  buscarCatalogoCursos()
     .then(function (dados) {
       db = dados;
       $('#kpis').html(db.kpis.map(kpiLeft).join(''));
@@ -17,6 +21,8 @@ $(function () {
       desenharTabela();
     })
     .catch(mostrarErroDaPagina);
+
+  /* ---------------------------------------------------------------- desenho */
 
   function desenharTabela() {
     var q = normalize(filtros.busca);
@@ -38,6 +44,8 @@ $(function () {
           '<td data-label="Status">' + statusBadge(c.status) + '</td></tr>';
       }).join('') + '</tbody></table></div>');
   }
+
+  /* ---------------------------------------------------------------- interações */
 
   $('#busca').on('input', debounce(function () {
     filtros.busca = $('#busca').val();

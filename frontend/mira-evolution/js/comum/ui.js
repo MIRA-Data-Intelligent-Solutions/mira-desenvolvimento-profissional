@@ -1,7 +1,7 @@
+/** UI: aviso (toast), modal, validação de formulário e popover, acessíveis (foco, ESC, clique fora). */
 (function () {
-/** Toast, modal e popover acessíveis (foco, ESC, clique fora). */
 
-/* ------------------------------------------------------------------ Toast */
+/* ---------------------------------------------------------------- aviso (toast) */
 function toast(message, { type = 'info', duration = 3600 } = {}) {
   let host = document.querySelector('.toasts');
   if (!host) {
@@ -23,12 +23,13 @@ function toast(message, { type = 'info', duration = 3600 } = {}) {
   }, duration);
 }
 
-/* ------------------------------------------------------------------ Modal */
+/* ---------------------------------------------------------------- modal */
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /**
- * openModal({ title, description, body, confirmLabel, cancelLabel, onSubmit })
- * `body` é HTML (formulário). `onSubmit(form, modal)` pode retornar false para manter o modal aberto.
+ * openModal({ title, description, body, confirmLabel, cancelLabel, onSubmit, wide })
+ * `body` é HTML (formulário). `onSubmit(form, { close })` pode devolver false (ou uma Promise de false)
+ * para manter o modal aberto.
  */
 function openModal({ title, description = '', body = '', confirmLabel = 'Salvar', cancelLabel = 'Cancelar', onSubmit, wide = false }) {
   const opener = document.activeElement;
@@ -97,7 +98,9 @@ function openModal({ title, description = '', body = '', confirmLabel = 'Salvar'
   return { close, form };
 }
 
-/** Validação simples de formulário: marca campos inválidos e devolve true/false. */
+/* ---------------------------------------------------------------- validação de formulário */
+
+/** rules: { nomeDoCampo: função(valor) -> mensagem de erro ou '' }. Marca os inválidos e devolve true/false. */
 function validateForm(form, rules) {
   let ok = true;
   let firstInvalid = null;
@@ -128,7 +131,7 @@ const rules = {
   minLen: (n, msg) => (v) => (v.length >= n ? '' : msg || `Informe ao menos ${n} caracteres.`),
 };
 
-/* ------------------------------------------------------------------ Popover */
+/* ---------------------------------------------------------------- popover */
 let openPopover = null;
 
 function closePopover() {
@@ -140,10 +143,7 @@ function closePopover() {
   openPopover = null;
 }
 
-/**
- * Abre um popover ancorado ao `trigger`.
- * `render(close)` devolve o HTML interno; `bind(el, close)` registra eventos.
- */
+/** Abre um popover ancorado ao `trigger` com o HTML `html`; `bind(el, close)` registra os eventos. */
 function showPopover(trigger, { html, bind, align = 'right', label = '' }) {
   if (openPopover?.trigger === trigger) return closePopover();
   closePopover();
@@ -190,6 +190,7 @@ function showPopover(trigger, { html, bind, align = 'right', label = '' }) {
   return el;
 }
 
+  // funções usadas pelas páginas
   window.toast = toast;
   window.openModal = openModal;
   window.validateForm = validateForm;

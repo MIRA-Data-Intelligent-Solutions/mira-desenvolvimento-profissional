@@ -1,21 +1,21 @@
-/** SETORES (Figma: "Setores - Gestor Light/Dark"). */
+/** SETORES — GET /setores (Figma: "Setores - Gestor"). */
 $(function () {
   var sessao = protegerPagina(['gestor']);
   if (!sessao) return;
   montarLayout(sessao, 'setores');
 
-  var periodo = { de: '2026-05-20', ate: APP.hoje };
+  /* ---------------------------------------------------------------- estado */
 
-  function mostrarPeriodo() {
-    $('#botao-periodo').attr('aria-label', 'Período: ' + formatDate(periodo.de) + ' a ' + formatDate(periodo.ate));
-    $('#botao-periodo [data-range-label]').text(formatDate(periodo.de) + ' - ' + formatDate(periodo.ate));
-  }
+  // O período só muda o texto do botão: nesta tela ele não filtra os números
+  var periodo = { de: addDays(APP.hoje, -29), ate: APP.hoje };
   mostrarPeriodo();
 
-  buscarDados('sectors')
+  /* ---------------------------------------------------------------- carga */
+
+  buscarSetores()
     .then(function (db) {
       $('#kpis').html(db.kpis.map(kpiLeft).join(''));
-      // Cada cartão leva para a lista de colaboradores já filtrada pelo setor
+      // Cada cartão leva à lista de colaboradores já filtrada pelo setor
       $('#lista-setores').html(db.items.map(function (s) {
         return '<li><a class="card sector-card" href="colaboradores.html?setor=' + encodeURIComponent(s.name) + '" aria-label="' + esc(s.name) + ': ' + s.collaborators + ' colaboradores, progresso médio ' + s.avgProgress + '%. Ver colaboradores do setor.">' +
           '<div class="sector-card__top">' +
@@ -29,6 +29,15 @@ $(function () {
       }).join(''));
     })
     .catch(mostrarErroDaPagina);
+
+  /* ---------------------------------------------------------------- desenho */
+
+  function mostrarPeriodo() {
+    $('#botao-periodo').attr('aria-label', 'Período: ' + formatDate(periodo.de) + ' a ' + formatDate(periodo.ate));
+    $('#botao-periodo [data-range-label]').text(formatDate(periodo.de) + ' - ' + formatDate(periodo.ate));
+  }
+
+  /* ---------------------------------------------------------------- interações */
 
   $('#botao-periodo').on('click', function () {
     abrirPeriodo(this, periodo.de, periodo.ate, function (novo) {

@@ -1,0 +1,53 @@
+{
+  "id": "9",
+  "name": "Felipe Nunes",
+  "email": "felipe.nunes@empresa.com",
+  "sectorName": "Tecnologia",
+  "role": "Colaborador",
+  "status": "Ativo",
+  "progress": 62,
+  "hours": 12,
+  "courses": 3,
+  "completedCourses": 1,
+  "skills": [],
+  "competencies": [
+    "Programacao"
+  ],
+  "kpis": {
+    "hours": {
+      "value": 12,
+      "note": "cursos concluídos"
+    },
+    "progress": {
+      "value": 62,
+      "note": "média das matrículas"
+    },
+    "inProgress": {
+      "value": 2,
+      "note": "matrículas ativas"
+    },
+    "completed": {
+      "value": 1,
+      "note": "cursos finalizados"
+    }
+  },
+  "frequency": [],
+  "recentCourses": [
+    {
+      "title": "APIs REST com Flask",
+      "status": "Em andamento",
+      "progress": 60
+    },
+    {
+      "title": "Scrum e Metodos Ageis",
+      "status": "Em andamento",
+      "progress": 25
+    },
+    {
+      "title": "Git e GitHub",
+      "status": "Concluído",
+      "progress": 100
+    }
+  ],
+  "certificates": []
+}

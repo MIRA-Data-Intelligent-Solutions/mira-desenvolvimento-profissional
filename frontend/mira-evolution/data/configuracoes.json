@@ -1,0 +1,19 @@
+{
+  "general": {
+    "companyName": "Mira Desencolvimento Profissional",
+    "cnpj": "12.345.678/900-01",
+    "dateFormat": "DD/MM/YYYY"
+  },
+  "dateFormats": [
+    "DD/MM/YYYY",
+    "MM/DD/YYYY",
+    "YYYY-MM-DD"
+  ],
+  "integrations": [
+    {
+      "id": "1",
+      "name": "Alura",
+      "status": "Conectado"
+    }
+  ]
+}

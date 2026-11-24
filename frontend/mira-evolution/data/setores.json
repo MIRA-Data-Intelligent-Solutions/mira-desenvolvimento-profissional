@@ -1,0 +1,50 @@
+{
+  "kpis": [
+    {
+      "label": "Setores Mapeados",
+      "value": "3",
+      "note": "setores com a sua equipe"
+    },
+    {
+      "label": "Colaboradores Totais",
+      "value": "11",
+      "note": "ativos na sua equipe"
+    },
+    {
+      "label": "Progresso Médio",
+      "value": "64%",
+      "note": "média das matrículas da equipe"
+    },
+    {
+      "label": "Horas de Desenvolvimento",
+      "value": "162h",
+      "note": "cursos concluídos pela equipe"
+    }
+  ],
+  "items": [
+    {
+      "id": "1",
+      "name": "Tecnologia",
+      "icon": "code",
+      "color": "#2b7fff",
+      "collaborators": 6,
+      "avgProgress": 64
+    },
+    {
+      "id": "3",
+      "name": "Financeiro",
+      "icon": "dollar-sign",
+      "color": "#00bc7d",
+      "collaborators": 2,
+      "avgProgress": 55
+    },
+    {
+      "id": "4",
+      "name": "Comercial",
+      "icon": "briefcase",
+      "color": "#df4d48",
+      "collaborators": 3,
+      "avgProgress": 71
+    }
+  ]
+}

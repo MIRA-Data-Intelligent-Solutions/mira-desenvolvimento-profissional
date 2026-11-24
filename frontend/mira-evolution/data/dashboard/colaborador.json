@@ -1,0 +1,62 @@
+{
+  "periodDefault": {
+    "from": "2026-09-08",
+    "to": "2026-09-14"
+  },
+  "colaborador": {
+    "subtitle": "Aqui está o panorama do seu desenvolvimento.",
+    "kpis": [
+      {
+        "label": "Horas de Desenvolvimento",
+        "value": "16h",
+        "note": "cursos concluídos"
+      },
+      {
+        "label": "Progresso Geral",
+        "value": "38%",
+        "note": "média das matrículas"
+      },
+      {
+        "label": "Cursos em Andamento",
+        "value": "1",
+        "note": "matrículas ativas"
+      },
+      {
+        "label": "Cursos Concluídos",
+        "value": "1",
+        "note": "cursos finalizados"
+      }
+    ],
+    "goal": null,
+    "evolution": [
+      {
+        "date": "2026-09-08",
+        "value": 0
+      },
+      {
+        "date": "2026-09-09",
+        "value": 0
+      },
+      {
+        "date": "2026-09-10",
+        "value": 0
+      },
+      {
+        "date": "2026-09-11",
+        "value": 0
+      },
+      {
+        "date": "2026-09-12",
+        "value": 0
+      },
+      {
+        "date": "2026-09-13",
+        "value": 0
+      },
+      {
+        "date": "2026-09-14",
+        "value": 16
+      }
+    ]
+  }
+}

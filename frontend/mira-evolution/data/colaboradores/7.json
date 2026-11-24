@@ -1,0 +1,53 @@
+{
+  "id": "7",
+  "name": "Beatriz Almeida",
+  "email": "beatriz.almeida@empresa.com",
+  "sectorName": "Tecnologia",
+  "role": "Colaborador",
+  "status": "Ativo",
+  "progress": 73,
+  "hours": 12,
+  "courses": 3,
+  "completedCourses": 1,
+  "skills": [],
+  "competencies": [
+    "Programacao"
+  ],
+  "kpis": {
+    "hours": {
+      "value": 12,
+      "note": "cursos concluídos"
+    },
+    "progress": {
+      "value": 73,
+      "note": "média das matrículas"
+    },
+    "inProgress": {
+      "value": 2,
+      "note": "matrículas ativas"
+    },
+    "completed": {
+      "value": 1,
+      "note": "cursos finalizados"
+    }
+  },
+  "frequency": [],
+  "recentCourses": [
+    {
+      "title": "Python para Ciencia de Dados",
+      "status": "Em andamento",
+      "progress": 70
+    },
+    {
+      "title": "JavaScript",
+      "status": "Em andamento",
+      "progress": 50
+    },
+    {
+      "title": "Git e GitHub",
+      "status": "Concluído",
+      "progress": 100
+    }
+  ],
+  "certificates": []
+}

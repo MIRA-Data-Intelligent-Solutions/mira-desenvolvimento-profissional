@@ -1,0 +1,34 @@
+[
+  {
+    "id": "5",
+    "name": "Atendimento"
+  },
+  {
+    "id": "4",
+    "name": "Comercial"
+  },
+  {
+    "id": "3",
+    "name": "Financeiro"
+  },
+  {
+    "id": "8",
+    "name": "Jurídico"
+  },
+  {
+    "id": "7",
+    "name": "Logística"
+  },
+  {
+    "id": "6",
+    "name": "Marketing"
+  },
+  {
+    "id": "2",
+    "name": "RH"
+  },
+  {
+    "id": "1",
+    "name": "Tecnologia"
+  }
+]

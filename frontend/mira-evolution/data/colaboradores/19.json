@@ -1,0 +1,53 @@
+{
+  "id": "19",
+  "name": "Pedro Ribeiro",
+  "email": "pedro.ribeiro@empresa.com",
+  "sectorName": "Comercial",
+  "role": "Colaborador",
+  "status": "Ativo",
+  "progress": 67,
+  "hours": 16,
+  "courses": 3,
+  "completedCourses": 1,
+  "skills": [],
+  "competencies": [
+    "DevOps"
+  ],
+  "kpis": {
+    "hours": {
+      "value": 16,
+      "note": "cursos concluídos"
+    },
+    "progress": {
+      "value": 67,
+      "note": "média das matrículas"
+    },
+    "inProgress": {
+      "value": 2,
+      "note": "matrículas ativas"
+    },
+    "completed": {
+      "value": 1,
+      "note": "cursos finalizados"
+    }
+  },
+  "frequency": [],
+  "recentCourses": [
+    {
+      "title": "Fundamentos de Cloud",
+      "status": "Em andamento",
+      "progress": 60
+    },
+    {
+      "title": "Seguranca da Informacao",
+      "status": "Em andamento",
+      "progress": 40
+    },
+    {
+      "title": "Docker",
+      "status": "Concluído",
+      "progress": 100
+    }
+  ],
+  "certificates": []
+}

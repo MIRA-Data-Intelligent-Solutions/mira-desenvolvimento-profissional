@@ -1,23 +1,29 @@
-/** DASHBOARD DO COLABORADOR (Figma: "Dashboard - Colaborador Light/Dark"). */
+/** DASHBOARD DO COLABORADOR — GET /dashboard/colaborador + GET /me/cursos (Figma: "Dashboard - Colaborador"). */
 $(function () {
   var sessao = protegerPagina(['colaborador']);
   if (!sessao) return;
   montarLayout(sessao, 'dashboard');
 
+  /* ---------------------------------------------------------------- estado */
+
   var filtros = { categoria: 'Todos', de: null, ate: null };
-  var dados = null;       // data/dashboard.json
-  var matriculas = null;  // cursos do colaborador
+  var dados = null;
+  var matriculas = null;
   var grafico = null;
+
+  /* ---------------------------------------------------------------- carga */
 
   $('#saudacao').text('Olá, ' + firstName(sessao.name) + '!');
 
-  Promise.all([buscarDados('dashboard'), buscarMatriculas(sessao.id)])
+  Promise.all([buscarDashboardColaborador(), buscarMatriculas(sessao.id)])
     .then(function (r) {
       dados = r[0];
       matriculas = r[1];
       desenhar();
     })
     .catch(mostrarErroDaPagina);
+
+  /* ---------------------------------------------------------------- desenho */
 
   function periodo() {
     return { de: filtros.de || dados.periodDefault.from, ate: filtros.ate || dados.periodDefault.to };
@@ -33,16 +39,22 @@ $(function () {
 
     $('#kpis').html(visao.kpis.map(kpiCenter).join(''));
 
-    // Meta do mês
     var meta = visao.goal;
-    var pct = Math.round((meta.doneHours / meta.planHours) * 100);
-    $('#goal-title').text(meta.title);
-    $('#meta-texto').text(meta.text);
-    $('#meta-progresso').html(
-      '<div class="goal__labels"><strong>' + pct + '% Concluído</strong><span>' + meta.doneHours + 'h / ' + meta.planHours + 'h</span></div>' +
-      progressBar(pct, { height: 8, label: 'Meta do mês: ' + pct + '%' }));
+    if (meta) {
+      var pct = Math.round((meta.doneHours / meta.planHours) * 100);
+      $('#goal-title').text(meta.title);
+      $('#meta-texto').text(meta.text);
+      $('#meta-progresso').html(
+        '<div class="goal__labels"><strong>' + pct + '% Concluído</strong><span>' + meta.doneHours + 'h / ' + meta.planHours + 'h</span></div>' +
+        progressBar(pct, { height: 8, label: 'Meta do mês: ' + pct + '%' }));
+    } else {
+      // regra da meta mensal ainda não definida
+      $('#goal-title').text('Meu Desenvolvimento do Mês');
+      $('#meta-texto').text('A meta mensal de horas ainda não foi definida.');
+      $('#meta-progresso').empty();
+    }
 
-    // Cursos em andamento (da categoria escolhida), no máximo 4
+    // Cursos em andamento da categoria escolhida, no máximo 4
     var emAndamento = matriculas.items.filter(function (c) { return c.status === 'Em andamento'; });
     var lista = emAndamento.filter(function (c) { return filtros.categoria === 'Todos' || c.category === filtros.categoria; }).slice(0, 4);
     $('#lista-cursos').html(lista.length
@@ -75,6 +87,8 @@ $(function () {
       ariaLabel: 'Evolução do desenvolvimento em horas por dia'
     });
   }
+
+  /* ---------------------------------------------------------------- interações */
 
   $('#botao-periodo').on('click', function () {
     var p = periodo();

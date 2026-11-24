@@ -1,0 +1,18 @@
+{
+  "access_token": "modo-local",
+  "token_type": "bearer",
+  "expira_em_minutos": 480,
+  "usuario": {
+    "userId": 2,
+    "name": "Carlos Lima",
+    "firstName": "Carlos",
+    "title": null,
+    "email": "carlos.lima@empresa.com",
+    "papel_acesso": "GESTOR",
+    "role": "gestor",
+    "department": "Tecnologia",
+    "phone": "",
+    "bio": "",
+    "skills": []
+  }
+}
