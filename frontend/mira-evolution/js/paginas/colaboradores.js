@@ -67,7 +67,10 @@ $(function () {
   $('#filtro-status').on('change', function () { filtros.status = $(this).val(); desenharTabela(); });
 
   $('#btn-adicionar').on('click', function () {
-    buscarOpcoesSetores().then(function (lista) {
+    var $botao = $(this);
+    if ($botao.hasClass('is-loading')) return;
+    carregandoBotao($botao, true);       // busca os setores antes de abrir o modal
+    buscarOpcoesSetores().finally(function () { carregandoBotao($botao, false); }).then(function (lista) {
       var opcoes = lista.map(function (s) { return '<option value="' + esc(s.id) + '">' + esc(s.name) + '</option>'; }).join('');
       openModal({
         title: 'Adicionar colaborador',

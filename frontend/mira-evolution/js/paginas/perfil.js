@@ -19,8 +19,12 @@ $(function () {
   carregar();
 
   function carregar() {
+    carregandoFormulario($form, true);     // campos em skeleton até os dados chegarem
     return buscarPerfil()
-      .then(mostrarPerfil)
+      .then(function (dados) {
+        carregandoFormulario($form, false);
+        mostrarPerfil(dados);
+      })
       .catch(mostrarErroDaPagina);
   }
 
@@ -37,7 +41,7 @@ $(function () {
   }
 
   function desenhar() {
-    $('#cartao-perfil').html(
+    $('#cartao-perfil').removeAttr('aria-busy').html(
       avatar(perfil.name, 96) +
       '<h2>' + esc(perfil.name) + '</h2>' +
       '<p class="profile__title">' + esc(perfil.title) + '</p>' +
@@ -84,7 +88,9 @@ $(function () {
     });
     if (!valido) return;
 
-    var $salvar = $form.find('[type="submit"]').prop('disabled', true);
+    var $salvar = $form.find('[type="submit"]');
+    if ($salvar.hasClass('is-loading')) return;
+    carregandoBotao($salvar, true);
     salvarPerfil({
       nome: $.trim(f.name.value),
       funcao: $.trim(f.title.value),
@@ -100,6 +106,6 @@ $(function () {
         toast('Perfil atualizado.', { type: 'success' });
       })
       .catch(function (erro) { toast(erro.message, { type: 'error' }); })
-      .finally(function () { $salvar.prop('disabled', false); });
+      .finally(function () { carregandoBotao($salvar, false); });
   });
 });

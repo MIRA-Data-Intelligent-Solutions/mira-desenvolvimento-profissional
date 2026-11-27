@@ -40,11 +40,11 @@ $(function () {
     $('#botao-periodo').attr('aria-label', 'Período: ' + formatDate(p.de) + ' a ' + formatDate(p.ate));
     $('#botao-periodo [data-range-label]').text(formatDate(p.de) + ' - ' + formatDate(p.ate));
 
-    // Uma linha no gráfico por setor (ou só a do setor escolhido)
+    // Uma área no gráfico por setor (ou só a do setor escolhido): progresso médio dos colaboradores por dia
     var ids = filtros.setor === 'todos' ? progresso.legendSectors : [filtros.setor];
     var series = ids.map(function (id) {
       var s = setores.filter(function (x) { return x.id === id; })[0];
-      var corte = recortarPeriodo(dashboard.dates, dashboard.dailyHours[id], p.de, p.ate);
+      var corte = recortarPeriodo(dashboard.dates, dashboard.dailyProgress[id], p.de, p.ate);
       return { name: s.name, color: s.color, data: corte.values, categories: corte.categories };
     });
     desenharGrafico(series);
@@ -66,8 +66,8 @@ $(function () {
       height: 280,
       formatX: function (c) { return formatDate(c, 'DD/MM'); },
       formatTitle: function (c) { return formatDate(c); },
-      formatY: function (v) { return Number(v.toFixed(1)) + 'h'; },
-      ariaLabel: 'Evolução do desenvolvimento por setor'
+      formatY: function (v) { return Number(v.toFixed(1)) + '%'; },
+      ariaLabel: 'Evolução do progresso médio por setor'
     });
   }
 

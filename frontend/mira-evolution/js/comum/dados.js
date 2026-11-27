@@ -47,6 +47,7 @@ function rota(nome, parametros) {
 /* ---------------------------------------------------------------- chamadas (API ou local) */
 
 var TEMPO_LIMITE_API = 60000;   // o plano gratuito do Render pode levar até ~1 minuto para "acordar"
+var TEMPO_AVISO_LENTO = 5000;   // depois disso, avisa que o servidor está demorando (ui.js)
 
 /**
  * Busca ou grava dados e devolve uma Promise com o JSON da resposta.
@@ -68,6 +69,14 @@ function requisitarApi(caminho, opcoes) {
   var controle = new AbortController();
   var limite = setTimeout(function () { controle.abort(); }, opcoes.tempoLimite || TEMPO_LIMITE_API);
 
+  // Resposta demorando (servidor "acordando"): mostra o aviso até esta chamada terminar
+  var avisou = false;
+  var lento = setTimeout(function () {
+    if (typeof avisoServidorLento !== 'function') return;
+    avisou = true;
+    avisoServidorLento(true);
+  }, TEMPO_AVISO_LENTO);
+
   return fetch(FONTE.apiBase + caminho, {
     method: opcoes.metodo || 'GET',
     headers: cabecalhos,
@@ -86,7 +95,11 @@ function requisitarApi(caminho, opcoes) {
         throw erroDaApi(mensagemDeErroApi(resposta.status, dados), resposta.status);
       });
     })
-    .finally(function () { clearTimeout(limite); });
+    .finally(function () {
+      clearTimeout(limite);
+      clearTimeout(lento);
+      if (avisou) avisoServidorLento(false);
+    });
 }
 
 function erroDaApi(mensagem, status) {
@@ -166,7 +179,7 @@ function buscarDados(recurso) {
 
 /* ---------------------------------------------------------------- dashboards */
 
-/** GET /dashboard/gestor -> { periodDefault, dates, dailyHours, sectors, gestor: { subtitle, kpis, sectorProgress, runningCourses, progressDistribution } } */
+/** GET /dashboard/gestor -> { periodDefault, dates, dailyProgress, sectors, gestor: { subtitle, kpis, sectorProgress, runningCourses } } */
 function buscarDashboardGestor() {
   return requisitarApi(rota('dashboardGestor'));
 }
@@ -211,7 +224,7 @@ function criarColaborador(dados) {
 
 /* ---------------------------------------------------------------- progresso */
 
-/** GET /progresso -> { kpis, ranking, sectors, legendSectors, periodDefault, dates, dailyHours } */
+/** GET /progresso -> { kpis, ranking, sectors, legendSectors, periodDefault, dates, dailyProgress } */
 function buscarProgresso() {
   return requisitarApi(rota('progresso'));
 }
@@ -282,14 +295,28 @@ function salvarConfiguracoes(dados) {
 
 /* ---------------------------------------------------------------- apoio */
 
-/** Recorta uma série diária pelo período [de, ate]. Devolve { categories: [datas], values: [valores] }. */
+/**
+ * Recorta uma série diária pelo período [de, ate] (YYYY-MM-DD), com um ponto por dia:
+ * dias sem registro entram com valor 0. Devolve { categories: [datas], values: [valores] }.
+ */
 function recortarPeriodo(datas, valores, de, ate) {
+  datas = datas || [];
+  valores = valores || [];
+  var porDia = {};
+  datas.forEach(function (d, i) { porDia[d] = Number(valores[i]) || 0; });
+
+  de = de || datas[0];
+  ate = ate || datas[datas.length - 1];
   var saida = { categories: [], values: [] };
-  datas.forEach(function (d, i) {
-    if ((!de || d >= de) && (!ate || d <= ate)) {
-      saida.categories.push(d);
-      saida.values.push(valores[i]);
-    }
-  });
+  var dia = new Date(de + 'T00:00:00Z');
+  var fim = new Date(ate + 'T00:00:00Z');
+  if (isNaN(dia) || isNaN(fim) || dia > fim) return saida;
+
+  while (dia <= fim) {
+    var chave = dia.toISOString().slice(0, 10);
+    saida.categories.push(chave);
+    saida.values.push(porDia[chave] || 0);
+    dia.setUTCDate(dia.getUTCDate() + 1);
+  }
   return saida;
 }

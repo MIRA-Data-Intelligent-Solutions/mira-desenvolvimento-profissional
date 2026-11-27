@@ -44,8 +44,9 @@ desenvolvimento profissional dos colaboradores e transformá-las em informaçõe
 
 ### Back-end
 - Python
-- Flask
-- SQLAlchemy
+- FastAPI
+- mysql-connector-python (SQL com pool de conexões)
+- JWT (PyJWT) e bcrypt para autenticação
 
 ### Banco de dados
 - MySQL
@@ -62,6 +63,12 @@ desenvolvimento profissional dos colaboradores e transformá-las em informaçõe
 
 O sistema será desenvolvido utilizando arquitetura em camadas, separando
 apresentação, controle/API, regras de negócio, persistência e dados.
+
+| Parte | Pasta | Documentação |
+|---|---|---|
+| Front-end (telas) | `frontend/mira-evolution/` | [README do front-end](frontend/mira-evolution/README.md): como rodar, login e chamadas à API |
+| Back-end (API) | `backend/` | [README do back-end](backend/README.md): como rodar, variáveis de ambiente, regras de negócio e rotas |
+| Banco de dados | `database/` | [README do banco](database/README.md): ordem dos scripts e usuários de teste |
 
 ## Metodologia
 

@@ -206,7 +206,7 @@
   min-height: 330px;
 }
 .dash-row--tables {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   margin-top: 17px;
 }
 .dash-row--split {

@@ -11,8 +11,10 @@ $(function () {
 
   /* ---------------------------------------------------------------- carga */
 
+  carregandoFormulario($form, true);       // campos em skeleton até os dados chegarem
   buscarConfiguracoes()
     .then(function (dados) {
+      carregandoFormulario($form, false);
       config = dados;
       preencherFormulario();
     })
@@ -64,7 +66,9 @@ $(function () {
     });
     if (!valido) return;
 
-    var $salvar = $form.find('[type="submit"]').prop('disabled', true);
+    var $salvar = $form.find('[type="submit"]');
+    if ($salvar.hasClass('is-loading')) return;
+    carregandoBotao($salvar, true);
     salvarConfiguracoes({
       nome_empresa: $.trim(f.companyName.value),
       cnpj: $.trim(f.cnpj.value),
@@ -76,6 +80,6 @@ $(function () {
         toast('Configurações salvas.', { type: 'success' });
       })
       .catch(function (erro) { toast(erro.message, { type: 'error' }); })
-      .finally(function () { $salvar.prop('disabled', false); });
+      .finally(function () { carregandoBotao($salvar, false); });
   });
 });

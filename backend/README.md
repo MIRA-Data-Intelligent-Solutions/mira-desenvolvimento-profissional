@@ -76,7 +76,7 @@ Respostas de erro seguem o padrão do FastAPI: `{ "detail": "mensagem" }` (no 42
 - **O gestor vê só os próprios subordinados** (`Usuario.id_gestor`). As telas Setores e Progresso mostram só os setores onde ele tem equipe.
 - **O colaborador vê só os próprios dados.**
 - **Cadastro:** só o gestor cadastra, e o novo usuário é sempre um `COLABORADOR` subordinado a quem cadastrou, com a **senha inicial `12345678`**. A troca obrigatória no primeiro acesso ainda não existe.
-- **Horas de desenvolvimento** (aproximação): carga horária dos cursos **concluídos**, contada na data de conclusão.
+- **Horas de desenvolvimento** (aproximação): carga horária inteira dos cursos **concluídos** + a fração já feita dos cursos **em andamento** (`carga × percentual / 100`). Vale para todos os totais (Detalhes do colaborador, Colaboradores, Setores, Progresso e dashboards). Os **gráficos de horas por dia** continuam usando só os concluídos, contados na data de conclusão, porque o progresso parcial não tem data por curso.
 - **Progresso médio:** média do `percentual_atual` das matrículas.
 - **Competências:** as dos cursos já concluídos (`Curso_Competencia`).
 - **Certificados:** cursos concluídos com `Curso_Usuario.certificado` preenchido.

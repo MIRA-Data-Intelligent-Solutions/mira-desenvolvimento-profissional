@@ -120,7 +120,7 @@ class BancoDeDados:
         """Setores onde o gestor tem equipe, com os números dessa equipe (só colaboradores ATIVOS).
 
         Cada linha: id_setor, nome, icone, cor, colaboradores, matriculas, soma_percentual
-        e horas (carga horária dos cursos concluídos).
+        e horas (carga dos concluídos + fração feita dos em andamento).
         """
         conexao = self.pool.get_connection()
         cursor = conexao.cursor(dictionary=True)
@@ -130,8 +130,10 @@ class BancoDeDados:
                           COUNT(DISTINCT U.id_usuario) AS colaboradores,
                           COUNT(CU.id_curso_usuario) AS matriculas,
                           COALESCE(SUM(CU.percentual_atual), 0) AS soma_percentual,
-                          COALESCE(SUM(CASE WHEN CU.status = 'CONCLUIDO'
-                                            THEN C.carga_horaria ELSE 0 END), 0) AS horas
+                          COALESCE(SUM(CASE WHEN CU.status = 'CONCLUIDO' THEN C.carga_horaria
+                                            WHEN CU.status = 'EM_ANDAMENTO'
+                                            THEN C.carga_horaria * CU.percentual_atual / 100
+                                            ELSE 0 END), 0) AS horas
                    FROM Setor S
                    LEFT JOIN Usuario U ON U.id_setor = S.id_setor
                        AND U.id_empresa = S.id_empresa
@@ -166,8 +168,11 @@ class BancoDeDados:
                       S.id_setor, S.nome AS setor_nome,
                       COUNT(CU.id_curso_usuario) AS matriculas,
                       COALESCE(SUM(CU.percentual_atual), 0) AS soma_percentual,
-                      COALESCE(SUM(CASE WHEN CU.status = 'CONCLUIDO'
-                                        THEN C.carga_horaria ELSE 0 END), 0) AS horas,
+                      -- horas: concluídos contam a carga inteira; em andamento, a fração já feita
+                      COALESCE(SUM(CASE WHEN CU.status = 'CONCLUIDO' THEN C.carga_horaria
+                                        WHEN CU.status = 'EM_ANDAMENTO'
+                                        THEN C.carga_horaria * CU.percentual_atual / 100
+                                        ELSE 0 END), 0) AS horas,
                       COALESCE(SUM(CASE WHEN CU.status = 'CONCLUIDO' THEN 1 ELSE 0 END), 0) AS concluidos
                FROM Usuario U
                JOIN Setor S ON S.id_setor = U.id_setor
@@ -244,7 +249,10 @@ class BancoDeDados:
                       COUNT(CU.id_curso_usuario),
                       COALESCE(SUM(CU.percentual_atual), 0),
                       COALESCE(SUM(CASE WHEN CU.status = 'CONCLUIDO' THEN 1 ELSE 0 END), 0),
-                      COALESCE(SUM(CASE WHEN CU.status = 'CONCLUIDO' THEN C.carga_horaria ELSE 0 END), 0)
+                      COALESCE(SUM(CASE WHEN CU.status = 'CONCLUIDO' THEN C.carga_horaria
+                                        WHEN CU.status = 'EM_ANDAMENTO'
+                                        THEN C.carga_horaria * CU.percentual_atual / 100
+                                        ELSE 0 END), 0)
                FROM Usuario U
                JOIN Setor S ON S.id_setor = U.id_setor AND S.id_empresa = U.id_empresa
                LEFT JOIN Curso_Usuario CU ON CU.id_usuario = U.id_usuario
@@ -257,20 +265,19 @@ class BancoDeDados:
             como_dict=False,
         )
 
-    def buscar_horas_concluidas_por_dia(self, id_empresa, id_gestor):
-        """Horas concluídas pela equipe (ATIVOS) por setor e dia: carga horária do curso na data de conclusão.
+    def buscar_historico_progresso_equipe(self, id_empresa, id_gestor):
+        """Registros PROGRESSO_USUARIO (tabela Registro_Progresso) da equipe (ATIVOS), do mais antigo ao mais novo.
 
-        Cada linha (tupla): id_setor, data_conclusao, horas.
+        Cada linha (tupla): id_usuario, data do registro (date), valor (percentual).
         """
         return self._consultar(
-            """SELECT U.id_setor, CU.data_conclusao, SUM(C.carga_horaria)
-               FROM Curso_Usuario CU
-               JOIN Usuario U ON U.id_usuario = CU.id_usuario
-               JOIN Curso C ON C.id_curso = CU.id_curso
-               WHERE U.id_empresa = %s AND U.id_gestor = %s
+            """SELECT U.id_usuario, DATE(R.data_registro), R.valor
+               FROM Registro_Progresso R
+               JOIN Usuario U ON U.id_usuario = R.id_registro
+               WHERE R.nome_tabela = 'Usuario' AND R.tipo = 'PROGRESSO_USUARIO'
+                 AND U.id_empresa = %s AND U.id_gestor = %s
                  AND U.papel_acesso = %s AND U.ativo = 1
-                 AND CU.status = 'CONCLUIDO' AND CU.data_conclusao IS NOT NULL
-               GROUP BY U.id_setor, CU.data_conclusao""",
+               ORDER BY R.data_registro, R.id""",
             (id_empresa, id_gestor, PAPEL_COLABORADOR),
             como_dict=False,
         )

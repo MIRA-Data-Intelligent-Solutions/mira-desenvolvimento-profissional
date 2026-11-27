@@ -69,22 +69,19 @@ $(function () {
 
   function desenharGrafico(visao, p) {
     if (grafico) { grafico.destroy(); grafico = null; }
-    var datas = visao.evolution.map(function (x) { return x.date; });
-    var valores = visao.evolution.map(function (x) { return x.value; });
-    var serie = recortarPeriodo(datas, valores, p.de, p.ate);
-    if (!serie.categories.length) {
-      $('#grafico-evolucao').html(emptyState({ title: 'Sem dados no período', iconName: 'calendar' }));
-      return;
-    }
+    var serie = recortarPeriodo(
+      visao.evolution.map(function (x) { return x.date; }),
+      visao.evolution.map(function (x) { return x.value; }),
+      p.de, p.ate);
     $('#grafico-evolucao').empty();
     grafico = areaChart(document.getElementById('grafico-evolucao'), {
       categories: serie.categories,
-      series: [{ name: 'Horas por dia', color: 'var(--chart-line)', data: serie.values }],
+      series: [{ name: 'Progresso', color: 'var(--chart-line)', data: serie.values }],
       height: 210,
       formatX: function (c) { return formatDate(c, 'DD/MM'); },
       formatTitle: function (c) { return formatDate(c); },
-      formatY: function (v) { return Number(v.toFixed(1)) + 'h'; },
-      ariaLabel: 'Evolução do desenvolvimento em horas por dia'
+      formatY: function (v) { return Number(v.toFixed(1)) + '%'; },
+      ariaLabel: 'Evolução do meu progresso por dia'
     });
   }
 

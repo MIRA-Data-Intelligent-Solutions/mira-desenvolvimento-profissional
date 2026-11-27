@@ -4,12 +4,6 @@ $(function () {
   if (!sessao) return;
   montarLayout(sessao, 'setores');
 
-  /* ---------------------------------------------------------------- estado */
-
-  // O período só muda o texto do botão: nesta tela ele não filtra os números
-  var periodo = { de: addDays(APP.hoje, -29), ate: APP.hoje };
-  mostrarPeriodo();
-
   /* ---------------------------------------------------------------- carga */
 
   buscarSetores()
@@ -29,20 +23,4 @@ $(function () {
       }).join(''));
     })
     .catch(mostrarErroDaPagina);
-
-  /* ---------------------------------------------------------------- desenho */
-
-  function mostrarPeriodo() {
-    $('#botao-periodo').attr('aria-label', 'Período: ' + formatDate(periodo.de) + ' a ' + formatDate(periodo.ate));
-    $('#botao-periodo [data-range-label]').text(formatDate(periodo.de) + ' - ' + formatDate(periodo.ate));
-  }
-
-  /* ---------------------------------------------------------------- interações */
-
-  $('#botao-periodo').on('click', function () {
-    abrirPeriodo(this, periodo.de, periodo.ate, function (novo) {
-      periodo = { de: novo.from, ate: novo.to };
-      mostrarPeriodo();
-    });
-  });
 });

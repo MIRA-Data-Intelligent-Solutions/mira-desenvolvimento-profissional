@@ -51,8 +51,6 @@ $(function () {
       : emptyState({ title: 'Nenhum setor selecionado' }));
 
     $('#tabela-cursos').html(linhasPorcentagem(gestor.runningCourses, 'Nenhum curso em andamento'));
-    $('#tabela-distribuicao').html(linhasPorcentagem(gestor.progressDistribution, 'Indicador em definição'));
-
     desenharGrafico(p);
   }
 
@@ -63,8 +61,10 @@ $(function () {
 
   function desenharGrafico(p) {
     if (grafico) { grafico.destroy(); grafico = null; }
-    var chave = dashboard.dailyHours[filtros.setor] ? filtros.setor : 'todos';
-    var serie = recortarPeriodo(dashboard.dates, dashboard.dailyHours[chave], p.de, p.ate);
+    // Progresso médio diário do setor escolhido (ou da equipe inteira, em "todos")
+    var porSetor = dashboard.dailyProgress || {};
+    var chave = porSetor[filtros.setor] ? filtros.setor : 'todos';
+    var serie = recortarPeriodo(dashboard.dates, porSetor[chave], p.de, p.ate);
     if (!serie.categories.length) {
       $('#grafico-horas').html(emptyState({ title: 'Sem dados no período', text: 'Escolha outro intervalo de datas.', iconName: 'calendar' }));
       return;
@@ -72,12 +72,12 @@ $(function () {
     $('#grafico-horas').empty();
     grafico = areaChart(document.getElementById('grafico-horas'), {
       categories: serie.categories,
-      series: [{ name: 'Horas por dia', color: 'var(--chart-line)', data: serie.values }],
+      series: [{ name: 'Progresso médio', color: 'var(--chart-line)', data: serie.values }],
       height: 250,
       formatX: function (c) { return formatDate(c, 'DD/MM'); },
       formatTitle: function (c) { return formatDate(c); },
-      formatY: function (v) { return Number(v.toFixed(1)) + 'h'; },
-      ariaLabel: 'Média diária de horas de desenvolvimento'
+      formatY: function (v) { return Number(v.toFixed(1)) + '%'; },
+      ariaLabel: 'Evolução do progresso médio da equipe'
     });
   }
 

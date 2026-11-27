@@ -261,7 +261,7 @@ def montar_resumo_setores(linhas: list) -> dict:
         total_colaboradores += linha["colaboradores"]
         total_matriculas += linha["matriculas"]
         total_percentual += float(linha["soma_percentual"])
-        total_horas += int(linha["horas"])
+        total_horas += float(linha["horas"])
         itens.append({
             "id": str(linha["id_setor"]),
             "name": linha["nome"],
@@ -276,7 +276,7 @@ def montar_resumo_setores(linhas: list) -> dict:
             {"label": "Setores Mapeados", "value": str(len(itens)), "note": "setores com a sua equipe"},
             {"label": "Colaboradores Totais", "value": formatar_numero(total_colaboradores), "note": "ativos na sua equipe"},
             {"label": "Progresso Médio", "value": f"{percentual(total_percentual, total_matriculas)}%", "note": "média das matrículas da equipe"},
-            {"label": "Horas de Desenvolvimento", "value": f"{formatar_numero(total_horas)}h", "note": "cursos concluídos pela equipe"},
+            {"label": "Horas de Desenvolvimento", "value": f"{formatar_numero(round(total_horas))}h", "note": "concluídos + progresso em andamento da equipe"},
         ],
         "items": itens,
     }
@@ -327,7 +327,7 @@ def montar_lista_colaboradores(linhas: list) -> dict:
         "role": l["funcao"] or FUNCAO_PADRAO,
         "status": status_usuario(l["ativo"]),
         "progress": percentual(l["soma_percentual"], l["matriculas"]),
-        "hours": int(l["horas"]),
+        "hours": round(float(l["horas"])),
         "courses": int(l["matriculas"]),
         "completedCourses": int(l["concluidos"]),
     } for l in linhas]
@@ -339,13 +339,28 @@ def montar_lista_colaboradores(linhas: list) -> dict:
     }
 
 
+def horas_estudadas(matriculas: list) -> int:
+    """Horas de desenvolvimento: carga inteira dos concluídos + fração feita dos em andamento.
+
+    Ex.: concluído de 16h + em andamento de 100h com 15% -> 16 + 15 = 31h.
+    """
+    total = 0.0
+    for m in matriculas:
+        carga = float(m["carga_horaria"])
+        if m["status"] == "CONCLUIDO":
+            total += carga
+        elif m["status"] == "EM_ANDAMENTO":
+            total += carga * float(m["percentual_atual"]) / 100
+    return round(total)
+
+
 def montar_detalhe_colaborador(colaborador, matriculas, habilidades, competencias, historico) -> dict:
     """Tela Detalhes do colaborador (e "Meu progresso" do colaborador)."""
     quantidade = len(matriculas)
     soma = sum(float(m["percentual_atual"]) for m in matriculas)
     concluidas = [m for m in matriculas if m["status"] == "CONCLUIDO"]
     em_andamento = sum(1 for m in matriculas if m["status"] == "EM_ANDAMENTO")
-    horas = sum(int(m["carga_horaria"]) for m in concluidas)
+    horas = horas_estudadas(matriculas)
     progresso = percentual(soma, quantidade)
 
     return {
@@ -362,7 +377,7 @@ def montar_detalhe_colaborador(colaborador, matriculas, habilidades, competencia
         "skills": [h["texto"] for h in habilidades if h["texto"]],
         "competencies": [c["nome"] for c in competencias],
         "kpis": {
-            "hours": {"value": horas, "note": "cursos concluídos"},
+            "hours": {"value": horas, "note": "concluídos + progresso em andamento"},
             "progress": {"value": progresso, "note": "média das matrículas"},
             "inProgress": {"value": em_andamento, "note": "matrículas ativas"},
             "completed": {"value": len(concluidas), "note": "cursos finalizados"},
@@ -426,11 +441,60 @@ def colaborador_detalhe(id_usuario: int, usuario=Depends(usuario_atual)):
 # ------------------------------------------------------------------ progresso
 
 
-def montar_progresso(linhas_ranking: list, linhas_evolucao: list) -> dict:
-    """Tela Progresso: indicadores, ranking e horas por dia de cada setor da equipe."""
+def evolucao_progresso(grupo_por_usuario: dict, historico: dict, hoje) -> tuple:
+    """Média diária do progresso por grupo (setor) e de todos ("todos").
+
+    `historico` é {id_usuario: {dia: percentual}}. Em cada dia vale o último percentual
+    conhecido de cada colaborador (até ele ter um registro, ele não entra na média).
+    Retorna (dias, {grupo: [média por dia], "todos": [...]}).
+    """
+    datas = [dia for registros in historico.values() for dia in registros]
+    if not datas:
+        return [], {}
+    dias = dias_da_serie(datas + [hoje])
+
+    ultimo = {}                                         # id_usuario -> último percentual conhecido
+    medias = {grupo: [] for grupo in set(grupo_por_usuario.values())}
+    medias["todos"] = []
+    for dia in dias:
+        for id_usuario, registros in historico.items():
+            if dia in registros:
+                ultimo[id_usuario] = registros[dia]
+        for grupo, serie in medias.items():
+            valores = [v for u, v in ultimo.items() if grupo == "todos" or grupo_por_usuario.get(u) == grupo]
+            serie.append(round(sum(valores) / len(valores), 1) if valores else 0)
+    return dias, medias
+
+
+def historico_por_usuario(linhas_historico: list) -> dict:
+    """Linhas (id_usuario, dia, valor) de PROGRESSO_USUARIO -> {id_usuario: {dia: percentual}}."""
+    historico = {}
+    for id_usuario, dia, valor in linhas_historico:     # em ordem de data: o último do dia prevalece
+        historico.setdefault(id_usuario, {})[dia] = float(valor)
+    return historico
+
+
+def evolucao_progresso_equipe(linhas_ranking: list, linhas_historico: list, hoje) -> tuple:
+    """Evolução do progresso médio da equipe por setor (e "todos").
+
+    Usa as linhas de buscar_ranking_progresso: só entram os colaboradores ativos da equipe,
+    e o ponto de hoje é o progresso atual das matrículas (mesma média do ranking).
+    """
+    historico = historico_por_usuario(linhas_historico)
+    setor_por_usuario = {}
+    for id_setor, _, _, id_usuario, _, matriculas, soma_percentual, _, _ in linhas_ranking:
+        setor_por_usuario[id_usuario] = str(id_setor)
+        historico.setdefault(id_usuario, {})[hoje] = float(soma_percentual) / matriculas if matriculas else 0
+    historico = {u: r for u, r in historico.items() if u in setor_por_usuario}
+    return evolucao_progresso(setor_por_usuario, historico, hoje)
+
+
+def montar_progresso(linhas_ranking: list, linhas_historico: list) -> dict:
+    """Tela Progresso: indicadores, ranking e evolução diária do progresso médio de cada setor da equipe."""
     setores = {}
     ranking = []
     total_matriculas = total_percentual = total_concluidos = total_horas = 0
+    hoje = datetime.now().date()
 
     for id_setor, setor, cor, id_usuario, nome, matriculas, soma_percentual, concluidos, horas in linhas_ranking:
         # Como na tela Setores: só entram os setores onde o gestor tem equipe
@@ -440,7 +504,7 @@ def montar_progresso(linhas_ranking: list, linhas_evolucao: list) -> dict:
         total_matriculas += matriculas
         total_percentual += soma_percentual
         total_concluidos += concluidos
-        total_horas += horas
+        total_horas += float(horas)
 
         ranking.append({
             "position": len(ranking) + 1,
@@ -448,22 +512,11 @@ def montar_progresso(linhas_ranking: list, linhas_evolucao: list) -> dict:
             "name": nome,
             "sector": setor,
             "progress": percentual(soma_percentual, matriculas),
-            "hours": int(horas),
+            "hours": round(float(horas)),
             "completed": int(concluidos),
         })
 
-    horas_por_dia = {
-        (str(id_setor), dia): int(horas)
-        for id_setor, dia, horas in linhas_evolucao
-    }
-    dias_com_conclusoes = [dia for _, dia, _ in linhas_evolucao]
-    hoje = datetime.now().date()
-    inicio = min(dias_com_conclusoes, default=hoje)
-    fim = max(dias_com_conclusoes, default=hoje)
-    dias = [
-        inicio + timedelta(days=i)
-        for i in range((fim - inicio).days + 1)
-    ] if dias_com_conclusoes else []
+    dias, progresso_por_dia = evolucao_progresso_equipe(linhas_ranking, linhas_historico, hoje)
 
     # legenda e filtro na ordem dos setores (o ranking vem ordenado por progresso)
     setores = dict(sorted(setores.items(), key=lambda item: int(item[0])))
@@ -476,17 +529,20 @@ def montar_progresso(linhas_ranking: list, linhas_evolucao: list) -> dict:
     return {
         "kpis": [
             {"label": "Progresso Geral", "value": f"{progresso_geral:.0f}%", "note": "Média das matrículas"},
-            {"label": "Média de Horas", "value": f"{media_horas:.1f}h", "note": "Cursos concluídos por colaborador"},
+            {"label": "Média de Horas", "value": f"{media_horas:.1f}h", "note": "Concluídos + em andamento, por colaborador"},
             {"label": "Taxa de Conclusão", "value": f"{taxa_conclusao:.0f}%", "note": "Proporção de matrículas concluídas"},
             {"label": "Colaboradores Ativos", "value": str(quantidade), "note": "Na sua equipe"},
         ],
         "ranking": ranking,
         "sectors": list(setores.values()),
         "legendSectors": list(setores),
-        "periodDefault": {"from": inicio.isoformat(), "to": fim.isoformat()},
+        "periodDefault": {
+            "from": (dias[0] if dias else hoje).isoformat(),
+            "to": (dias[-1] if dias else hoje).isoformat(),
+        },
         "dates": [dia.isoformat() for dia in dias],
-        "dailyHours": {
-            setor_id: [horas_por_dia.get((setor_id, dia), 0) for dia in dias]
+        "dailyProgress": {
+            setor_id: progresso_por_dia.get(setor_id, [0] * len(dias))
             for setor_id in setores
         },
     }
@@ -494,14 +550,14 @@ def montar_progresso(linhas_ranking: list, linhas_evolucao: list) -> dict:
 
 @app.get("/progresso")
 def progresso(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
-    """Ranking e evolução diária das conclusões por setor (só a equipe do gestor logado)."""
+    """Ranking e evolução diária do progresso médio por setor (só a equipe do gestor logado)."""
     try:
         linhas_ranking = bd.buscar_ranking_progresso(usuario["id_empresa"], usuario["id_usuario"])
-        linhas_evolucao = bd.buscar_horas_concluidas_por_dia(usuario["id_empresa"], usuario["id_usuario"])
+        linhas_historico = bd.buscar_historico_progresso_equipe(usuario["id_empresa"], usuario["id_usuario"])
     except Error as erro:
         print(f"Erro no MySQL: {erro}")
         raise HTTPException(status_code=500, detail="Erro interno ao consultar o progresso")
-    return montar_progresso(linhas_ranking, linhas_evolucao)
+    return montar_progresso(linhas_ranking, linhas_historico)
 
 # ------------------------------------------------------------------ cursos (catálogo do gestor)
 
@@ -636,7 +692,7 @@ def meu_curso_detalhe(id_curso: int, usuario=Depends(exigir_papel(PAPEL_COLABORA
 
 # ------------------------------------------------------------------ dashboards
 
-# Ainda sem: deltas "vs. período anterior", meta do mês e faixas da distribuição do progresso
+# Ainda sem: deltas "vs. período anterior" e meta do mês
 # (dependem de regra e do job diário que vai alimentar Registro_Progresso).
 SERIE_MIN_DIAS = 7                   # o gráfico mostra pelo menos uma semana
 CURSOS_EM_ANDAMENTO_LIMITE = 5
@@ -651,31 +707,33 @@ def dias_da_serie(datas: list) -> list:
     return [inicio + timedelta(days=i) for i in range((fim - inicio).days + 1)]
 
 
-def montar_dashboard_gestor(resumo_setores: list, horas_por_dia: list, cursos_andamento: list) -> dict:
+def montar_dashboard_gestor(resumo_setores: list, linhas_ranking: list, linhas_historico: list,
+                            cursos_andamento: list) -> dict:
     """Dashboard do gestor (só a equipe dele)."""
     setores = montar_resumo_setores(resumo_setores)["items"]
     colaboradores = sum(s["collaborators"] for s in setores)
     matriculas = sum(int(l["matriculas"]) for l in resumo_setores)
     soma = sum(float(l["soma_percentual"]) for l in resumo_setores)
-    horas = sum(int(l["horas"]) for l in resumo_setores)
+    horas = round(sum(float(l["horas"]) for l in resumo_setores))
     em_andamento = sum(int(c["quantidade"]) for c in cursos_andamento)
 
-    dias = dias_da_serie([dia for _, dia, _ in horas_por_dia])
-    horas_dia = {(str(id_setor), dia): int(h) for id_setor, dia, h in horas_por_dia}
-    daily = {s["id"]: [horas_dia.get((s["id"], d), 0) for d in dias] for s in setores}
-    daily["todos"] = [sum(serie[i] for serie in daily.values()) for i in range(len(dias))]
+    # gráfico: progresso médio diário por setor e da equipe inteira ("todos")
+    hoje = datetime.now().date()
+    dias, progresso_por_dia = evolucao_progresso_equipe(linhas_ranking, linhas_historico, hoje)
+    vazio = [0] * len(dias)
+    daily = {s["id"]: progresso_por_dia.get(s["id"], vazio) for s in setores}
+    daily["todos"] = progresso_por_dia.get("todos", vazio)
 
     return {
-        "periodDefault": {"from": dias[0].isoformat(), "to": dias[-1].isoformat()} if dias
-                         else {"from": datetime.now().date().isoformat(), "to": datetime.now().date().isoformat()},
+        "periodDefault": {"from": (dias[0] if dias else hoje).isoformat(), "to": (dias[-1] if dias else hoje).isoformat()},
         "dates": [d.isoformat() for d in dias],
-        "dailyHours": daily,
+        "dailyProgress": daily,
         "sectors": [{"id": s["id"], "name": s["name"]} for s in setores],   # opções do filtro de setor
         "gestor": {
             "subtitle": "Aqui está o panorama do desenvolvimento da sua equipe.",
             "kpis": [
                 {"label": "Colaboradores ativos", "value": formatar_numero(colaboradores), "note": "na sua equipe"},
-                {"label": "Horas de desenvolvimento", "value": f"{formatar_numero(horas)}h", "note": "cursos concluídos"},
+                {"label": "Horas de desenvolvimento", "value": f"{formatar_numero(horas)}h", "note": "concluídos + progresso em andamento"},
                 {"label": "Progresso médio", "value": f"{percentual(soma, matriculas)}%", "note": "média das matrículas"},
                 {"label": "Cursos em andamento", "value": formatar_numero(em_andamento), "note": "matrículas ativas"},
             ],
@@ -687,37 +745,34 @@ def montar_dashboard_gestor(resumo_setores: list, horas_por_dia: list, cursos_an
                 {"name": c["curso"], "value": percentual(c["soma_percentual"], c["quantidade"])}
                 for c in cursos_andamento[:CURSOS_EM_ANDAMENTO_LIMITE]
             ],
-            "progressDistribution": [],      # faixas Alto / Em andamento / Baixo: regra não definida
         },
     }
 
 
-def montar_dashboard_colaborador(matriculas: list) -> dict:
+def montar_dashboard_colaborador(matriculas: list, historico: list) -> dict:
     """Dashboard do colaborador logado."""
     concluidas = [m for m in matriculas if m["status"] == "CONCLUIDO"]
-    horas = sum(int(m["carga_horaria"]) for m in concluidas)
+    horas = horas_estudadas(matriculas)
     soma = sum(float(m["percentual_atual"]) for m in matriculas)
 
-    horas_dia = {}
-    for m in concluidas:
-        if m["data_conclusao"]:
-            horas_dia[m["data_conclusao"]] = horas_dia.get(m["data_conclusao"], 0) + int(m["carga_horaria"])
-    dias = dias_da_serie(list(horas_dia))
-    hoje = datetime.now().date().isoformat()
+    # gráfico: histórico PROGRESSO_USUARIO + o progresso atual das matrículas como ponto de hoje
+    hoje = datetime.now().date()
+    registros = {h["data_registro"].date(): float(h["valor"]) for h in historico}
+    registros[hoje] = soma / len(matriculas) if matriculas else 0
+    dias, medias = evolucao_progresso({}, {"eu": registros}, hoje)
 
     return {
-        "periodDefault": {"from": dias[0].isoformat(), "to": dias[-1].isoformat()} if dias
-                         else {"from": hoje, "to": hoje},
+        "periodDefault": {"from": dias[0].isoformat(), "to": dias[-1].isoformat()},
         "colaborador": {
             "subtitle": "Aqui está o panorama do seu desenvolvimento.",
             "kpis": [
-                {"label": "Horas de Desenvolvimento", "value": f"{formatar_numero(horas)}h", "note": "cursos concluídos"},
+                {"label": "Horas de Desenvolvimento", "value": f"{formatar_numero(horas)}h", "note": "concluídos + progresso em andamento"},
                 {"label": "Progresso Geral", "value": f"{percentual(soma, len(matriculas))}%", "note": "média das matrículas"},
                 {"label": "Cursos em Andamento", "value": str(sum(1 for m in matriculas if m["status"] == "EM_ANDAMENTO")), "note": "matrículas ativas"},
                 {"label": "Cursos Concluídos", "value": str(len(concluidas)), "note": "cursos finalizados"},
             ],
             "goal": None,                    # meta do mês: regra não definida
-            "evolution": [{"date": d.isoformat(), "value": horas_dia.get(d, 0)} for d in dias],
+            "evolution": [{"date": d.isoformat(), "value": v} for d, v in zip(dias, medias["todos"])],
         },
     }
 
@@ -728,12 +783,13 @@ def dashboard_gestor(usuario=Depends(exigir_papel(PAPEL_GESTOR))):
     empresa, gestor = usuario["id_empresa"], usuario["id_usuario"]
     try:
         resumo = bd.buscar_resumo_setores(empresa, gestor)
-        horas = bd.buscar_horas_concluidas_por_dia(empresa, gestor)
+        ranking = bd.buscar_ranking_progresso(empresa, gestor)
+        historico = bd.buscar_historico_progresso_equipe(empresa, gestor)
         cursos_andamento = bd.listar_cursos_em_andamento_equipe(empresa, gestor)
     except Error as erro:
         print(f"Erro no MySQL: {erro}")
         raise HTTPException(status_code=500, detail="Erro interno ao consultar o dashboard")
-    return montar_dashboard_gestor(resumo, horas, cursos_andamento)
+    return montar_dashboard_gestor(resumo, ranking, historico, cursos_andamento)
 
 
 @app.get("/dashboard/colaborador")
@@ -741,10 +797,11 @@ def dashboard_colaborador(usuario=Depends(exigir_papel(PAPEL_COLABORADOR))):
     """Dashboard do colaborador logado."""
     try:
         matriculas = bd.listar_matriculas_usuario(usuario["id_usuario"])
+        historico = bd.listar_historico_progresso_usuario(usuario["id_usuario"])
     except Error as erro:
         print(f"Erro no MySQL: {erro}")
         raise HTTPException(status_code=500, detail="Erro interno ao consultar o dashboard")
-    return montar_dashboard_colaborador(matriculas)
+    return montar_dashboard_colaborador(matriculas, historico)
 
 # ------------------------------------------------------------------ perfil
 

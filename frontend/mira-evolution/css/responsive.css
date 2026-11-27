@@ -110,8 +110,7 @@
   .page-title {
     font-size: 22px;
   }
-  .grid--2,
-  .dash-row--tables {
+  .grid--2 {
     grid-template-columns: minmax(0, 1fr);
   }
   .dash-row--tables {

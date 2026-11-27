@@ -177,7 +177,7 @@ As respostas da API têm o **mesmo formato dos antigos arquivos `data/*.json`**,
 
 ### O que ainda não tem dados reais
 - **Detalhe do curso:** instrutor, início, prazo e módulos aparecem como "Não informado" ou "Módulos não disponíveis" (o banco não tem essas informações). O botão **"Continuar Curso" fica desativado** até existir a integração com as plataformas.
-- **Indicadores:** sem a variação "vs. período anterior". A **meta do mês** mostra "ainda não foi definida" e a tabela **"Distribuição do progresso"** mostra "Indicador em definição".
+- **Indicadores:** sem a variação "vs. período anterior". A **meta do mês** mostra "ainda não foi definida".
 - **Configurações:** sem o bloco Segurança (2FA e renovação de senha não fazem parte do sistema por enquanto). A seção Integrações está comentada no HTML.
 - **Meu perfil:** e-mail e departamento são somente leitura.
 

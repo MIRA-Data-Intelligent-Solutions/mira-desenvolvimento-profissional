@@ -337,6 +337,58 @@ a.card__footer:hover {
   }
 }
 
+/* Botão aguardando resposta (carregandoBotao em ui.js): esconde texto e ícone, mostra o spinner no centro.
+   A largura não muda, então o layout não "pula". A cor do spinner vem do JS (cor original do texto). */
+.is-loading {
+  position: relative;
+  color: transparent !important;
+  cursor: progress !important;
+}
+/* cor transparente (e não visibility) para o leitor de tela continuar lendo o nome do botão */
+.is-loading > :not(.btn__spinner) {
+  color: transparent !important;
+}
+.is-loading svg {
+  visibility: hidden;
+}
+.is-loading > .btn__spinner {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+}
+.login__submit > .btn__spinner {
+  width: 22px;
+  height: 22px;
+}
+.btn.is-loading[disabled],
+.login__submit.is-loading[disabled] {
+  opacity: 0.85;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* o giro é a informação "aguarde": mantém, só mais devagar */
+  .btn__spinner {
+    animation-duration: 1.5s !important;
+    animation-iteration-count: infinite !important;
+  }
+}
+
+/* Formulário esperando os dados da API (carregandoFormulario em ui.js): campos viram skeleton */
+.is-carregando .input,
+.is-carregando .select select {
+  color: transparent;
+  border-color: transparent;
+  background: linear-gradient(90deg, var(--skeleton-a), var(--skeleton-b), var(--skeleton-a));
+  background-size: 200% 100%;
+  animation: shimmer 1.3s linear infinite;
+  pointer-events: none;
+}
+.is-carregando .input::placeholder {
+  color: transparent;
+}
+.is-carregando .select .icon {
+  visibility: hidden;
+}
+
 /* Botão de filtro do cabeçalho (data, "Filtros") */
 .filter-btn {
   display: inline-flex;
@@ -955,6 +1007,11 @@ a.card__footer:hover {
 }
 .toast--error {
   --tone: var(--danger);
+}
+/* Aviso fixo enquanto o servidor demora (ex.: Render "acordando"); some sozinho quando a resposta chega */
+.toast--lento .btn__spinner {
+  flex: none;
+  color: var(--primary);
 }
 @keyframes toast-in {
   from {

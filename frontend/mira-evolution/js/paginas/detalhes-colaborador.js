@@ -85,18 +85,18 @@ $(function () {
     if (grafico) { grafico.destroy(); grafico = null; }
     var pontos = colaborador.frequency.slice(-diasEscolhidos());
     if (!colaborador.frequency.length) {
-      $('#grafico-frequencia').removeClass('detail__plot').html(emptyState({ title: 'Sem registros de frequência', iconName: 'calendar' }));
+      $('#grafico-frequencia').removeClass('detail__plot').html(emptyState({ title: 'Sem registros de progresso', iconName: 'calendar' }));
       return;
     }
     $('#grafico-frequencia').empty();
     grafico = areaChart(document.getElementById('grafico-frequencia'), {
       categories: pontos.map(function (p) { return p.date; }),
-      series: [{ name: 'Frequência', color: 'var(--chart-line)', data: pontos.map(function (p) { return p.value; }) }],
+      series: [{ name: 'Progresso', color: 'var(--chart-line)', data: pontos.map(function (p) { return p.value; }) }],
       height: 214,
       formatX: function (c) { return formatDate(c, 'DD/MM'); },
       formatTitle: function (c) { return formatDate(c); },
       formatY: function (v) { return Math.round(v) + '%'; },
-      ariaLabel: 'Evolução de frequência'
+      ariaLabel: 'Evolução do Progresso'
     });
   }
 

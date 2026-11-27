@@ -2,7 +2,7 @@
 (function () {
 
 /* ---------------------------------------------------------------- aviso (toast) */
-function toast(message, { type = 'info', duration = 3600 } = {}) {
+function toastHost() {
   let host = document.querySelector('.toasts');
   if (!host) {
     host = document.createElement('div');
@@ -10,6 +10,11 @@ function toast(message, { type = 'info', duration = 3600 } = {}) {
     host.setAttribute('aria-live', 'polite');
     document.body.append(host);
   }
+  return host;
+}
+
+function toast(message, { type = 'info', duration = 3600 } = {}) {
+  const host = toastHost();
   const el = document.createElement('div');
   el.className = `toast toast--${type}`;
   el.setAttribute('role', type === 'error' ? 'alert' : 'status');
@@ -21,6 +26,79 @@ function toast(message, { type = 'info', duration = 3600 } = {}) {
     el.style.opacity = '0';
     setTimeout(() => el.remove(), 220);
   }, duration);
+}
+
+/* ---------------------------------------------------------------- carregando */
+
+/**
+ * Liga/desliga o spinner de um botão enquanto espera a API: desabilita, mostra o giro no lugar do texto
+ * e marca aria-busy. Aceita elemento ou objeto jQuery. Ex.: carregandoBotao($salvar, true)
+ */
+function carregandoBotao(botao, ligado) {
+  const el = botao?.jquery ? botao[0] : botao;
+  if (!el) return;
+  if (ligado) {
+    if (el.classList.contains('is-loading')) return;
+    const cor = getComputedStyle(el).color;        // lida antes de o texto ficar transparente
+    el.disabled = true;
+    el.classList.add('is-loading');
+    el.setAttribute('aria-busy', 'true');
+    const giro = document.createElement('span');
+    giro.className = 'btn__spinner';
+    giro.setAttribute('aria-hidden', 'true');
+    giro.style.color = cor;
+    el.append(giro);
+  } else {
+    el.disabled = false;
+    el.classList.remove('is-loading');
+    el.removeAttribute('aria-busy');
+    el.querySelector(':scope > .btn__spinner')?.remove();
+  }
+}
+
+/**
+ * Formulário esperando os dados da API: campos viram skeleton e ficam travados até ligado = false.
+ * Só destrava o que ele mesmo travou (campos desabilitados de propósito continuam assim).
+ */
+function carregandoFormulario(form, ligado) {
+  const el = form?.jquery ? form[0] : form;
+  if (!el) return;
+  el.classList.toggle('is-carregando', ligado);
+  if (ligado) {
+    el.setAttribute('aria-busy', 'true');
+    el.querySelectorAll('input, select, textarea, button').forEach((c) => {
+      if (c.disabled) return;
+      c.disabled = true;
+      c.dataset.travadoCarregando = '';
+    });
+  } else {
+    el.removeAttribute('aria-busy');
+    el.querySelectorAll('[data-travado-carregando]').forEach((c) => {
+      c.disabled = false;
+      delete c.dataset.travadoCarregando;
+    });
+  }
+}
+
+/**
+ * Aviso "servidor demorando" (chamado por requisitarApi em dados.js quando a resposta passa de alguns
+ * segundos). Conta as chamadas lentas em andamento: o aviso some quando a última termina.
+ */
+let chamadasLentas = 0;
+let avisoLento = null;
+function avisoServidorLento(ligado) {
+  chamadasLentas = Math.max(0, chamadasLentas + (ligado ? 1 : -1));
+  if (chamadasLentas && !avisoLento) {
+    avisoLento = document.createElement('div');
+    avisoLento.className = 'toast toast--lento';
+    avisoLento.setAttribute('role', 'status');
+    avisoLento.innerHTML = '<span class="btn__spinner" aria-hidden="true"></span>' +
+      '<span>Conectando ao servidor… Na primeira vez isso pode levar até 1 minuto.</span>';
+    toastHost().append(avisoLento);
+  } else if (!chamadasLentas && avisoLento) {
+    avisoLento.remove();
+    avisoLento = null;
+  }
 }
 
 /* ---------------------------------------------------------------- modal */
@@ -86,12 +164,13 @@ function openModal({ title, description = '', body = '', confirmLabel = 'Salvar'
     e.preventDefault();
     if (!onSubmit) return;
     const submit = form.querySelector('[type="submit"]');
-    submit.disabled = true;
+    if (submit.classList.contains('is-loading')) return;   // evita envio duplo
+    carregandoBotao(submit, true);
     try {
       const keepOpen = (await onSubmit(form, { close })) === false;
       if (!keepOpen) close();
     } finally {
-      submit.disabled = false;
+      carregandoBotao(submit, false);
     }
   });
   (form.querySelector('[data-autofocus]') || form.querySelector('input, select, textarea') || form.querySelector('button'))?.focus();
@@ -192,6 +271,9 @@ function showPopover(trigger, { html, bind, align = 'right', label = '' }) {
 
   // funções usadas pelas páginas
   window.toast = toast;
+  window.carregandoBotao = carregandoBotao;
+  window.carregandoFormulario = carregandoFormulario;
+  window.avisoServidorLento = avisoServidorLento;
   window.openModal = openModal;
   window.validateForm = validateForm;
   window.rules = rules;

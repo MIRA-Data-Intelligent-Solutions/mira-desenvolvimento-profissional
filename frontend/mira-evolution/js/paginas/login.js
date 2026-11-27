@@ -19,6 +19,11 @@ $(function () {
 
   $usuario.trigger('focus');
 
+  // Voltou para cá pelo "voltar" do navegador (página restaurada do cache): tira o spinner do botão
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) carregandoBotao($enviar, false);
+  });
+
   /* ---------------------------------------------------------------- interações */
 
   $('[data-action="toggle-pass"]').on('click', function () {
@@ -58,14 +63,16 @@ $(function () {
       ($.trim($usuario.val()) ? $senha : $usuario).trigger('focus');
       return;
     }
-    $enviar.prop('disabled', true).addClass('is-loading');
+    if ($enviar.hasClass('is-loading')) return;   // evita envio duplo
+    carregandoBotao($enviar, true);
     var resultado = await entrar($usuario.val(), $senha.val(), $form.find('[name="remember"]').prop('checked'));
-    $enviar.prop('disabled', false).removeClass('is-loading');
     if (!resultado.ok) {
+      carregandoBotao($enviar, false);
       mostrarErro(resultado.error);
       $senha.trigger('select');
       return;
     }
+    // Deu certo: o spinner continua até a próxima página abrir
     window.location.href = destinoDepoisDoLogin(resultado.sessao.role);
   });
 
